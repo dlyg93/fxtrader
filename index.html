@@ -3023,7 +3023,7 @@ function toggleTradeLog(){
   const body = $('tradeLogBody');
   const toggle = $('tradeLogToggle');
   if(!body) return;
-  const open = body.style.display !== 'none';
+  const open = getComputedStyle(body).display !== 'none';
   body.style.display = open ? 'none' : 'block';
   if(toggle) toggle.textContent = open ? '▾' : '▴';
 }
