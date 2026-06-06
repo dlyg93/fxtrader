@@ -1410,23 +1410,6 @@
       </div>
     </div>
     <div id="tradeLogBody">
-    <div id="journalFilterBar" class="filter-bar" style="display:none;">
-      <div class="filter-row">
-        <div class="filter-field" style="max-width:130px;"><label>Datum van</label><input type="date" id="fDateFrom" onchange="applyFilters()"></div>
-        <div class="filter-field" style="max-width:130px;"><label>Datum tot</label><input type="date" id="fDateTo" onchange="applyFilters()"></div>
-        <div class="filter-field" style="max-width:110px;"><label>Uitkomst</label>
-          <select id="fResult" onchange="applyFilters()"><option value="">Alle</option><option value="win">✓ Win</option><option value="loss">✕ Loss</option><option value="be">— BE</option><option value="open">○ Open</option></select>
-        </div>
-        <div class="filter-field"><label>Pair</label>
-          <select id="fPair" onchange="applyFilters()"><option value="">Alle</option><option>EUR/USD</option><option>GBP/USD</option><option>XAU/USD</option><option>USD/JPY</option><option>NAS100</option></select>
-        </div>
-        <div class="filter-field" style="max-width:120px;"><label>Edge</label>
-          <select id="fEdge" onchange="applyFilters()"><option value="">Alle</option><option value="yes">✓ Edge</option><option value="partial">~ Deels</option><option value="no">✕ Geen</option></select>
-        </div>
-        <div class="filter-field"><label>Zoeken</label><input type="text" id="fSearch" placeholder="zoekterm..." oninput="applyFilters()"></div>
-      </div>
-      <div class="filter-actions"><button class="filter-btn" onclick="clearFilters()" style="border:1px solid var(--border);background:var(--surface2);color:var(--muted);">✕ Reset</button></div>
-    </div>
       <div id="journalFilterBar" class="filter-bar" style="display:none;">
         <div class="filter-row">
           <div class="filter-field" style="max-width:130px;"><label>Datum van</label><input type="date" id="fDateFrom" onchange="applyFilters()"></div>
