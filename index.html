@@ -3055,7 +3055,7 @@ function renderAccountsList(){
 
 function renderAccountSelects(){
   const opts = `<option value="">— Geen account —</option>` +
-    fxAccounts.filter(a => !a.breached).map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+    fxAccounts.map(a => `<option value="${a.id}">${a.breached ? '⚠ ' : ''}${a.name}${a.breached ? ' (gebreacht)' : ''}</option>`).join('');
   ['accountSelect','jAccount','eAccount'].forEach(id => {
     const sel = $(id);
     if(sel){ sel.innerHTML = opts; sel.value = fxActiveAccountId || ''; }
