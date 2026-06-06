@@ -4458,6 +4458,8 @@ function saveApiKey(){
   const key = $('anthropicApiKey')?.value.trim();
   if(!key){ alert('Voer een geldige API sleutel in.'); return; }
   try{ localStorage.setItem('fxAnthropicKey', key); }catch(e){}
+  // Sync naar Google Drive als verbonden
+  if(gdriveToken) scheduleDriveSave();
   // Toon bevestiging
   const btn = document.querySelector('button[onclick="saveApiKey()"]');
   if(btn){ const orig=btn.textContent; btn.textContent='Opgeslagen!'; btn.style.color='var(--green)'; setTimeout(()=>{btn.textContent=orig;btn.style.color='';},2000); }
@@ -4623,6 +4625,7 @@ async function gdriveSaveAll(silent){
       plan:JSON.parse(localStorage.getItem('fxPlan')||'{}'),
       tvSettings:JSON.parse(localStorage.getItem('fxTVSettings')||'{}'),
       alerts:JSON.parse(localStorage.getItem('fxAlerts')||'[]'),
+      anthropicKey:localStorage.getItem('fxAnthropicKey')||'',
       savedAt:new Date().toISOString()
     };
     const json=JSON.stringify(data,null,2);
@@ -4673,6 +4676,11 @@ async function gdriveLoadAll(silent){
     if(data.plan)localStorage.setItem('fxPlan',JSON.stringify(data.plan));
     if(data.tvSettings)localStorage.setItem('fxTVSettings',JSON.stringify(data.tvSettings));
     if(data.alerts){localStorage.setItem('fxAlerts',JSON.stringify(data.alerts));priceAlerts=data.alerts;renderAlerts();}
+    if(data.anthropicKey){
+      localStorage.setItem('fxAnthropicKey',data.anthropicKey);
+      const el=$('anthropicApiKey');
+      if(el)el.value=data.anthropicKey;
+    }
 
     loadSavedMarktData();updateBackupInfo();loadTVSettings();
 
