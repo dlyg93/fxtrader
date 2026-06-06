@@ -1402,10 +1402,12 @@
   <div class="card">
     <div class="card-title" style="justify-content:space-between;cursor:pointer;" onclick="toggleTradeLog()">
       <div style="display:flex;align-items:center;gap:8px;"><div class="dot" style="background:var(--accent)"></div>Trade log <span id="filterCount" style="font-size:11px;color:var(--muted);font-weight:400;"></span></div>
-      <div style="display:flex;gap:8px;" onclick="event.stopPropagation()">
-        <button onclick="toggleFilters()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;">⚙ Filters</button>
-        <button onclick="exportCSV()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--green);background:rgba(46,204,138,0.1);color:var(--green);cursor:pointer;">↓ CSV</button>
-        <button onclick="clearTrades()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕ Wis alles</button>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;gap:8px;" onclick="event.stopPropagation()">
+          <button onclick="toggleFilters()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;">⚙ Filters</button>
+          <button onclick="exportCSV()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--green);background:rgba(46,204,138,0.1);color:var(--green);cursor:pointer;">↓ CSV</button>
+          <button onclick="clearTrades()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕ Wis alles</button>
+        </div>
         <span id="tradeLogToggle" style="color:var(--muted);font-size:12px;font-family:var(--font-head);padding:4px 6px;">▴</span>
       </div>
     </div>
