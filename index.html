@@ -4438,11 +4438,15 @@ function saveApiKey(){
   const key = $('anthropicApiKey')?.value.trim();
   if(!key){ alert('Voer een geldige API sleutel in.'); return; }
   try{ localStorage.setItem('fxAnthropicKey', key); }catch(e){}
-  // Sync naar Google Drive als verbonden
-  if(gdriveToken) scheduleDriveSave();
   // Toon bevestiging
   const btn = document.querySelector('button[onclick="saveApiKey()"]');
   if(btn){ const orig=btn.textContent; btn.textContent='Opgeslagen!'; btn.style.color='var(--green)'; setTimeout(()=>{btn.textContent=orig;btn.style.color='';},2000); }
+  // Sync onmiddellijk naar Google Drive als verbonden
+  if(gdriveToken){
+    gdriveSaveAll(true).then(()=>{
+      if(btn){ btn.textContent='Opgeslagen + Drive ✓'; btn.style.color='var(--green)'; setTimeout(()=>{btn.textContent='Opslaan';btn.style.color='';},3000); }
+    });
+  }
 }
 
 function loadApiKey(){
