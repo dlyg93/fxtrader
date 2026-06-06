@@ -4298,30 +4298,9 @@ const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split(
           </div>
 
           <div id="gdriveSetupForm">
-            <p>Sla je data automatisch op in Google Drive zodat je op elke computer verder kunt. Eenmalig instellen in 5 minuten.</p>
+            <p>Sla je data automatisch op in Google Drive zodat je op elk toestel verder kunt. Klik op de knop hieronder om in te loggen.</p>
 
-            <div class="gdrive-field">
-              <label>Google Client ID</label>
-              <input type="text" id="gClientId" placeholder="xxxx.apps.googleusercontent.com" oninput="saveGdriveConfig()">
-            </div>
-
-            <details style="margin-bottom:10px;">
-              <summary style="font-size:11px;color:var(--accent);cursor:pointer;user-select:none;margin-bottom:8px;">Hoe maak ik een Client ID aan? (klik)</summary>
-              <ol class="gdrive-steps" style="margin-top:8px;">
-                <li>Ga naar <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent);">console.cloud.google.com</a></li>
-                <li>Maak een nieuw project aan (bv. "FX Trader")</li>
-                <li>Ga naar <strong style="color:var(--text)">APIs &amp; Services → Library</strong> → zoek "Google Drive API" → Activeer</li>
-                <li>Ga naar <strong style="color:var(--text)">APIs &amp; Services → OAuth consent screen</strong> → Kies "External" → vul je naam in → Sla op → Voeg je eigen Gmail toe als testgebruiker</li>
-                <li>Ga naar <strong style="color:var(--text)">APIs &amp; Services → Credentials</strong> → "Create Credentials" → "OAuth Client ID"</li>
-                <li>Kies type: <strong style="color:var(--text)">Web application</strong></li>
-                <li>Voeg bij <strong style="color:var(--text)">"Authorized JavaScript origins"</strong> het volgende toe:<br>
-                  <code style="background:var(--bg);padding:2px 6px;border-radius:3px;color:var(--accent);display:inline-block;margin-top:3px;">null</code>
-                  <span style="color:var(--muted);font-size:10px;"> (voor lokale bestanden)</span>
-                </li>
-                <li><strong style="color:var(--amber)">Laat "Authorized redirect URIs" leeg</strong> — niet nodig voor deze methode</li>
-                <li>Klik "Create" → kopieer de <strong style="color:var(--text)">Client ID</strong> en plak hem hierboven</li>
-              </ol>
-            </details>
+            <input type="hidden" id="gClientId" value="1073322955504-6qbvh4blvulpqo7qh4714ov1o5sf48u4.apps.googleusercontent.com">
 
             <button class="btn-export" onclick="gdriveSignIn()" id="gdriveSignInBtn" style="width:100%;justify-content:center;display:flex;align-items:center;gap:8px;">
               Inloggen met Google
@@ -4450,6 +4429,7 @@ const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split(
 // ---- GOOGLE DRIVE SYNC ----
 const GDRIVE_FILENAME = 'fxtrader-data.json';
 const GDRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+const GDRIVE_CLIENT_ID = '1073322955504-6qbvh4blvulpqo7qh4714ov1o5sf48u4.apps.googleusercontent.com';
 let gdriveToken = null;
 let gdriveFileId = null;
 let gdriveSaveTimer = null;
@@ -4530,15 +4510,13 @@ function getWeekNumber(d){
 
 function saveGdriveConfig(){
   try{
-    const cfg={clientId:$('gClientId').value.trim()};
+    const cfg={clientId:GDRIVE_CLIENT_ID};
     localStorage.setItem('fxGdriveConfig',JSON.stringify(cfg));
   }catch(e){}
 }
 
 function gdriveSignIn(){
-  const clientId=$('gClientId').value.trim();
-  if(!clientId){alert('Voer eerst je Google Client ID in.');return;}
-  localStorage.setItem('fxGdriveConfig',JSON.stringify({clientId}));
+  const clientId=GDRIVE_CLIENT_ID;
 
   // Gebruik Google Identity Services (GIS) — werkt correct vanuit file://
   if(typeof google==='undefined'||!google.accounts){
@@ -4769,8 +4747,8 @@ async function silentTokenRefresh(clientId){
 // Laad config en herstel sessie automatisch bij opstarten
 async function loadGdriveConfig(){
   try{
-    const cfg=JSON.parse(localStorage.getItem('fxGdriveConfig')||'{}');
-    if(cfg.clientId&&$('gClientId')) $('gClientId').value=cfg.clientId;
+    const cfg={clientId:GDRIVE_CLIENT_ID};
+    localStorage.setItem('fxGdriveConfig',JSON.stringify(cfg));
 
     const token=localStorage.getItem('fxGdriveToken');
     if(token&&cfg.clientId){
