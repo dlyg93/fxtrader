@@ -190,6 +190,36 @@
     .journal-form { grid-template-columns: 1fr; }
     .trade-row { flex-wrap: wrap; gap: 6px; }
 
+    /* --- TRADE LOG: card-title knoppen wrappen --- */
+    .trade-log-header { flex-wrap: wrap; gap: 6px; }
+    .trade-log-btns { flex-wrap: wrap; gap: 5px; }
+    .trade-log-btns button { font-size: 10px; padding: 3px 7px; min-height: 32px; }
+
+    /* --- TRADE ENTRIES --- */
+    .trade-entry { padding: 10px 10px; gap: 8px; }
+    .trade-entry-actions { flex-direction: row; gap: 8px; align-items: center; }
+    .trade-edit { min-height: 32px; padding: 2px 6px; }
+    .trade-del { min-height: 32px; padding: 2px 6px; }
+
+    /* --- MODALS: edit & confirm --- */
+    .edit-modal-overlay { padding: 0; align-items: flex-end; }
+    .edit-modal {
+      border-radius: 18px 18px 0 0;
+      max-height: 92vh;
+      padding: 20px 16px 32px;
+      max-width: 100% !important;
+    }
+    .edit-modal h3 { font-size: 14px; margin-bottom: 14px; }
+    .edit-modal-actions { flex-direction: column-reverse; gap: 8px; }
+    .edit-modal-actions button { width: 100%; justify-content: center; min-height: 44px; }
+
+    /* --- LEARN GRID --- */
+    #learnGrid { grid-template-columns: 1fr !important; }
+
+    /* --- LEARN MODAL --- */
+    #learnModal { padding: 0; align-items: flex-end; }
+    #learnModal > div { border-radius: 18px 18px 0 0; max-width: 100%; max-height: 90vh; overflow-y: auto; }
+
     /* --- SESSIE BALK --- */
     .sb-row-label { font-size: 9px; width: 48px; }
     .sb-axis-row span { font-size: 8px; }
@@ -209,6 +239,14 @@
 
     /* --- WINDOW BANNER --- */
     .window-banner { padding: 10px 12px; }
+
+    /* --- ACCOUNT KAARTEN equity summary --- */
+    .account-equity-summary { flex-direction: column; }
+    .account-equity-summary > div { min-width: unset !important; width: 100%; }
+
+    /* --- ACCOUNT LIJST knoppen --- */
+    .account-list-item { flex-wrap: wrap; }
+    .account-list-btns { flex-wrap: wrap; margin-top: 6px; margin-left: 0 !important; width: 100%; justify-content: flex-end; }
   }
 
   @media (max-width: 420px) {
@@ -217,6 +255,8 @@
     .ror-grid { grid-template-columns: repeat(2, 1fr); }
     .monthly-grid { grid-template-columns: repeat(2, 1fr); }
     .streak-item { min-width: 100%; }
+    .trade-entry { flex-direction: column; }
+    .trade-entry-actions { flex-direction: row; justify-content: flex-end; }
   }
 
   /* SESSION BAR */
@@ -1400,10 +1440,10 @@
 
   <!-- ── TRADE LOG (lijst) ── -->
   <div class="card">
-    <div class="card-title" style="justify-content:space-between;cursor:pointer;" onclick="toggleTradeLog()">
+    <div class="card-title trade-log-header" style="justify-content:space-between;cursor:pointer;" onclick="toggleTradeLog()">
       <div style="display:flex;align-items:center;gap:8px;"><div class="dot" style="background:var(--accent)"></div>Trade log <span id="filterCount" style="font-size:11px;color:var(--muted);font-weight:400;"></span></div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <div style="display:flex;gap:8px;" onclick="event.stopPropagation()">
+        <div class="trade-log-btns" style="display:flex;gap:8px;" onclick="event.stopPropagation()">
           <button onclick="toggleFilters()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;">⚙ Filters</button>
           <button onclick="exportCSV()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--green);background:rgba(46,204,138,0.1);color:var(--green);cursor:pointer;">↓ CSV</button>
           <button onclick="clearTrades()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕ Wis alles</button>
@@ -3026,7 +3066,7 @@ function renderAccountsList(){
     const growthPct = bal?.initial > 0 ? ((bal.pnl / bal.initial)*100).toFixed(1) : '—';
     const bgColor = isBreached ? 'rgba(255,92,92,0.07)' : isActive ? 'rgba(79,158,255,0.08)' : 'var(--surface2)';
     const borderColor = isBreached ? 'rgba(255,92,92,0.35)' : isActive ? 'rgba(79,158,255,0.3)' : 'var(--border)';
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:${bgColor};border:1px solid ${borderColor};border-radius:10px;margin-bottom:6px;${isBreached?'opacity:0.75;':''}">
+    return `<div class="account-list-item" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:${bgColor};border:1px solid ${borderColor};border-radius:10px;margin-bottom:6px;${isBreached?'opacity:0.75;':''}">
       <div style="flex:1;">
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-family:var(--font-head);font-weight:700;font-size:13px;color:${isBreached?'var(--red)':isActive?'var(--accent)':'var(--text)'};">${acc.name}</span>
@@ -3041,7 +3081,7 @@ function renderAccountsList(){
           <span style="color:var(--muted);">${bal.trades} trades</span>`:''}
         </div>
       </div>
-      <div style="display:flex;gap:6px;margin-left:10px;flex-wrap:wrap;justify-content:flex-end;">
+      <div class="account-list-btns" style="display:flex;gap:6px;margin-left:10px;flex-wrap:wrap;justify-content:flex-end;">
         ${isBreached
           ? `<button onclick="unbreachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;">Herstel</button>`
           : `${!isActive?`<button onclick="switchAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--accent);background:rgba(79,158,255,0.1);color:var(--accent);cursor:pointer;font-family:var(--font-head);font-weight:700;">Activeer</button>`:''}
@@ -3548,7 +3588,7 @@ function renderTrades(){
         <div style="font-size:11px;color:${pnlColor};margin-top:2px;">${pnlSign}€${bal.pnl.toFixed(2)} P&L (${bal.trades} trades)</div>
       </div>`;
     }).filter(Boolean).join('');
-    return cards ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">${cards}</div>` : '';
+    return cards ? `<div class="account-equity-summary" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">${cards}</div>` : '';
   })() : '';
   log.innerHTML= equitySummary + filtered.map(t=>{
     const hasPrices = t.entry || t.sl || t.tp || t.lot;
@@ -3582,7 +3622,7 @@ function renderTrades(){
         <!-- Inline AI review result for this trade -->
         <div id="inline-review-${t.id}" style="display:none;margin-top:8px;"></div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;align-items:flex-end;">
+      <div class="trade-entry-actions" style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;align-items:flex-end;">
         <button class="trade-edit" onclick="reviewExistingTrade(${t.id})" title="AI review van deze trade" style="color:var(--purple);border:none;background:none;cursor:pointer;font-size:12px;font-family:var(--font-head);font-weight:700;">🤖</button>
         <button class="trade-edit" onclick="openEditModal(${t.id})" title="Bewerken">✎ edit</button>
         <button class="trade-del" onclick="deleteTrade(${t.id})" title="Verwijderen">×</button>
