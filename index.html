@@ -2970,6 +2970,27 @@ function deleteAccount(id){
   }, 'Account verwijderen');
 }
 
+function breachAccount(id){
+  showConfirm('Account markeren als gebreacht? Het account wordt inactief en kan niet meer geselecteerd worden voor nieuwe trades.', () => {
+    const acc = fxAccounts.find(a => a.id === id);
+    if(!acc) return;
+    acc.breached = true;
+    saveAccounts();
+    if(fxActiveAccountId === id){ fxActiveAccountId = fxAccounts.find(a=>!a.breached)?.id || ''; localStorage.setItem('fxActiveAccountId', fxActiveAccountId); }
+    renderAccountsList();
+    renderAccountSelects();
+  }, 'Account gebreacht markeren', 'Markeer als gebreacht');
+}
+
+function unbreachAccount(id){
+  const acc = fxAccounts.find(a => a.id === id);
+  if(!acc) return;
+  acc.breached = false;
+  saveAccounts();
+  renderAccountsList();
+  renderAccountSelects();
+}
+
 function switchAccount(id){
   fxActiveAccountId = id;
   localStorage.setItem('fxActiveAccountId', id);
@@ -3000,13 +3021,17 @@ function renderAccountsList(){
   el.innerHTML = fxAccounts.map(acc => {
     const bal = getAccountBalance(acc.id);
     const isActive = acc.id === fxActiveAccountId;
+    const isBreached = !!acc.breached;
     const pnlColor = (bal?.pnl||0) >= 0 ? 'var(--green)' : 'var(--red)';
     const growthPct = bal?.initial > 0 ? ((bal.pnl / bal.initial)*100).toFixed(1) : '—';
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:${isActive?'rgba(79,158,255,0.08)':'var(--surface2)'};border:1px solid ${isActive?'rgba(79,158,255,0.3)':'var(--border)'};border-radius:10px;margin-bottom:6px;">
+    const bgColor = isBreached ? 'rgba(255,92,92,0.07)' : isActive ? 'rgba(79,158,255,0.08)' : 'var(--surface2)';
+    const borderColor = isBreached ? 'rgba(255,92,92,0.35)' : isActive ? 'rgba(79,158,255,0.3)' : 'var(--border)';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:${bgColor};border:1px solid ${borderColor};border-radius:10px;margin-bottom:6px;${isBreached?'opacity:0.75;':''}">
       <div style="flex:1;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-family:var(--font-head);font-weight:700;font-size:13px;color:${isActive?'var(--accent)':'var(--text)'};">${acc.name}</span>
-          ${isActive?'<span style="font-size:9px;background:rgba(79,158,255,0.2);color:var(--accent);padding:1px 6px;border-radius:4px;font-family:var(--font-head);font-weight:700;">ACTIEF</span>':''}
+          <span style="font-family:var(--font-head);font-weight:700;font-size:13px;color:${isBreached?'var(--red)':isActive?'var(--accent)':'var(--text)'};">${acc.name}</span>
+          ${isBreached?'<span style="font-size:9px;background:rgba(255,92,92,0.2);color:var(--red);padding:1px 6px;border-radius:4px;font-family:var(--font-head);font-weight:700;">GEBREACHT</span>':
+            isActive?'<span style="font-size:9px;background:rgba(79,158,255,0.2);color:var(--accent);padding:1px 6px;border-radius:4px;font-family:var(--font-head);font-weight:700;">ACTIEF</span>':''}
         </div>
         ${acc.desc?`<div style="font-size:11px;color:var(--muted);margin-top:2px;">${acc.desc}</div>`:''}
         <div style="display:flex;gap:12px;margin-top:6px;font-size:11px;">
@@ -3016,8 +3041,12 @@ function renderAccountsList(){
           <span style="color:var(--muted);">${bal.trades} trades</span>`:''}
         </div>
       </div>
-      <div style="display:flex;gap:6px;margin-left:10px;">
-        ${!isActive?`<button onclick="switchAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--accent);background:rgba(79,158,255,0.1);color:var(--accent);cursor:pointer;font-family:var(--font-head);font-weight:700;">Activeer</button>`:''}
+      <div style="display:flex;gap:6px;margin-left:10px;flex-wrap:wrap;justify-content:flex-end;">
+        ${isBreached
+          ? `<button onclick="unbreachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;">Herstel</button>`
+          : `${!isActive?`<button onclick="switchAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--accent);background:rgba(79,158,255,0.1);color:var(--accent);cursor:pointer;font-family:var(--font-head);font-weight:700;">Activeer</button>`:''}
+             <button onclick="breachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid rgba(255,92,92,0.4);background:rgba(255,92,92,0.08);color:var(--red);cursor:pointer;font-family:var(--font-head);font-weight:700;">Gebreacht</button>`
+        }
         <button onclick="deleteAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕</button>
       </div>
     </div>`;
@@ -3026,7 +3055,7 @@ function renderAccountsList(){
 
 function renderAccountSelects(){
   const opts = `<option value="">— Geen account —</option>` +
-    fxAccounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+    fxAccounts.filter(a => !a.breached).map(a => `<option value="${a.id}">${a.name}</option>`).join('');
   ['accountSelect','jAccount','eAccount'].forEach(id => {
     const sel = $(id);
     if(sel){ sel.innerHTML = opts; sel.value = fxActiveAccountId || ''; }
