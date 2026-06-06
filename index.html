@@ -4656,8 +4656,11 @@ async function gdriveLoadAll(silent){
     if(data.alerts){localStorage.setItem('fxAlerts',JSON.stringify(data.alerts));priceAlerts=data.alerts;renderAlerts();}
     if(data.anthropicKey){
       localStorage.setItem('fxAnthropicKey',data.anthropicKey);
-      const el=$('anthropicApiKey');
-      if(el)el.value=data.anthropicKey;
+      // Vul het inputveld in — ook als de tab nog niet zichtbaar is
+      const fillKey = () => { const el=$('anthropicApiKey'); if(el) el.value=data.anthropicKey; };
+      fillKey();
+      // Fallback: probeer opnieuw na 1s (tab mogelijk nog niet gerenderd)
+      setTimeout(fillKey, 1000);
     }
 
     loadSavedMarktData();updateBackupInfo();loadTVSettings();
