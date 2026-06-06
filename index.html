@@ -1280,164 +1280,156 @@
 
 <!-- ===== TAB 4: JOURNAL ===== -->
 <div class="page" id="page-journal">
-  <div class="stats-row">
+
+  <!-- KPI rij -->
+  <div class="stats-row" style="margin-bottom:14px;">
     <div class="stat-box"><span class="stat-val" id="sTotalTrades">0</span><span class="stat-lbl">Trades</span></div>
     <div class="stat-box"><span class="stat-val" id="sWinrate" style="color:var(--green)">0%</span><span class="stat-lbl">Winrate</span></div>
     <div class="stat-box"><span class="stat-val" id="sPnL" style="color:var(--muted)">€0</span><span class="stat-lbl">Totaal P&amp;L</span></div>
     <div class="stat-box"><span class="stat-val" id="sAvgRR" style="color:var(--accent)">0.0</span><span class="stat-lbl">Gem. R:R</span></div>
   </div>
-  <div class="grid-2">
-    <div>
-      <div class="card">
-        <div class="card-title"><div class="dot" style="background:var(--green)"></div>Nieuwe trade loggen</div>
-        <div class="journal-form">
-          <div class="field"><label>Datum</label><input type="date" id="jDate"></div>
-          <div class="field"><label>Currency pair</label>
-            <select id="jPair">
-              <optgroup label="Majors"><option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option><option>GBP/JPY</option><option>USD/CHF</option><option>AUD/USD</option><option>NZD/USD</option><option>USD/CAD</option></optgroup>
-              <optgroup label="EUR Cross"><option>EUR/GBP</option><option>EUR/AUD</option><option>EUR/CAD</option><option>EUR/CHF</option><option>EUR/JPY</option></optgroup>
-              <optgroup label="Crypto"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option></optgroup>
-            </select>
-          </div>
-          <div class="field"><label>Richting</label>
-            <select id="jDir"><option value="long">LONG (kopen)</option><option value="short">SHORT (verkopen)</option></select>
-          </div>
-          <div class="field"><label>Uitkomst</label>
-            <select id="jResult"><option value="open">Open</option><option value="win">Win</option><option value="loss">Loss</option><option value="be">Break-even</option></select>
-          </div>
-          <div class="field"><label>Entry prijs</label><input type="number" id="jEntry" step="0.00001" placeholder="bv. 1.08550"></div>
-          <div class="field"><label>Lot grootte</label><input type="number" id="jLot" step="0.01" placeholder="bv. 0.25"></div>
-          <div class="field"><label>Stop-loss prijs</label><input type="number" id="jSL" step="0.00001" placeholder="bv. 1.08200"></div>
-          <div class="field"><label>Take profit prijs</label><input type="number" id="jTP" step="0.00001" placeholder="bv. 1.09200"></div>
-          <div class="field"><label>Winst/Verlies (€/$)</label><input type="number" id="jPnl" placeholder="bv. +75 of -40"></div>
-          <div class="field"><label>R:R ratio</label><input type="number" id="jRR" step="0.1" placeholder="bv. 2.1"></div>
-          <!-- TRADING EDGE -->
-          <div class="field full" style="margin-top:4px;padding-top:12px;border-top:1px solid var(--border);">
-            <label style="display:flex;align-items:center;gap:6px;">
-              Mijn trading edge op deze trade
-              <span style="font-size:10px;background:rgba(167,139,250,0.15);color:var(--purple);padding:2px 7px;border-radius:10px;font-family:var(--font-head);font-weight:700;">EDGE</span>
-            </label>
-            <textarea id="jEdgeDesc" style="min-height:60px;" placeholder="Beschrijf waarom je een meetbaar voordeel hebt op deze trade. Bv: 'Mijn strategie heeft 65% winrate op London breakouts met 3+ confluences in een bullish HTF trend. Dit is zo'n setup.'"></textarea>
-          </div>
-          <div class="field">
-            <label>Voldoet aan edge regels?</label>
-            <select id="jEdgeMatch">
-              <option value="">— Niet ingevuld —</option>
-              <option value="yes">✓ Ja — trade zit binnen mijn edge</option>
-              <option value="partial">~ Deels — niet alle criteria gevuld</option>
-              <option value="no">✕ Nee — trade buiten mijn edge</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Vertrouwen in de edge</label>
-            <select id="jEdgeConf">
-              <option value="">— Niet ingevuld —</option>
-              <option value="high">🟢 Hoog — sterke bevestiging</option>
-              <option value="medium">🟡 Matig — twijfelgeval</option>
-              <option value="low">🔴 Laag — zwakke bevestiging</option>
-            </select>
-          </div>
-          <div class="field full"><label>Notities / lessen</label><textarea id="jNotes" placeholder="Wat ging goed? Wat zou je anders doen? Welk patroon zag je?"></textarea></div>
-          <div class="field full">
-            <label>Screenshot trade (optioneel)</label>
-            <div class="j-dropzone" id="jDropzone">
-              <input type="file" accept="image/*" id="jChartFile" onchange="handleJournalImage(event)">
-              <div id="jDropzoneText" style="pointer-events:none;">
-                <div style="font-size:22px;opacity:0.35;margin-bottom:4px">+</div>
-                <div style="font-size:12px;color:var(--muted)">Sleep of klik — PNG, JPG, WebP</div>
-              </div>
-              <img id="jPreview" class="j-preview">
-            </div>
-            <div style="margin-top:6px;display:flex;align-items:center;gap:10px;">
-              <span id="jImgName" style="font-size:11px;color:var(--muted);flex:1;"></span>
-              <button type="button" id="jClearImg" onclick="clearJournalImage()" style="display:none;font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--font-mono);text-decoration:underline;">Verwijder afbeelding</button>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px;">
-          <button class="btn btn-primary" onclick="addTrade()">Trade toevoegen</button>
-          <button id="jReviewBtn" onclick="reviewTradeWithAI()"
-            style="padding:10px 18px;border-radius:8px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;border:1px solid var(--purple);background:rgba(167,139,250,0.1);color:var(--purple);transition:all 0.15s;">
-            🤖 AI Review
-          </button>
-          <span style="font-size:11px;color:var(--muted);">Voeg eerst alle details in, dan reviewt AI de trade</span>
-        </div>
 
-        <!-- AI REVIEW LOADING -->
-        <div id="jReviewLoading" style="display:none;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin-top:12px;">
-          <div class="spinner" style="border-top-color:var(--purple);"></div>
-          <span>AI analyseert je trade...</span>
+  <!-- ── NIEUWE TRADE LOGGEN (volle breedte, inklapbaar) ── -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title" onclick="toggleJournalForm()" style="cursor:pointer;user-select:none;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;"><div class="dot" style="background:var(--green)"></div>Nieuwe trade loggen</div>
+      <span id="journalFormToggle" style="color:var(--muted);font-size:12px;font-family:var(--font-head);">▾ toon formulier</span>
+    </div>
+    <div id="journalFormBody" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:4px 0 12px;">
+        <div class="field"><label>Datum</label><input type="date" id="jDate"></div>
+        <div class="field"><label>Currency pair</label>
+          <select id="jPair">
+            <optgroup label="Majors"><option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option><option>GBP/JPY</option><option>USD/CHF</option><option>AUD/USD</option><option>NZD/USD</option><option>USD/CAD</option></optgroup>
+            <optgroup label="Commodities"><option>XAU/USD</option><option>XAG/USD</option><option>WTI/USD</option></optgroup>
+            <optgroup label="Indices"><option>NAS100</option><option>SPX500</option><option>GER40</option></optgroup>
+            <optgroup label="EUR Cross"><option>EUR/GBP</option><option>EUR/AUD</option><option>EUR/CAD</option><option>EUR/CHF</option><option>EUR/JPY</option></optgroup>
+            <optgroup label="Crypto"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option></optgroup>
+          </select>
         </div>
+        <div class="field"><label>Richting</label>
+          <select id="jDir"><option value="long">LONG (kopen)</option><option value="short">SHORT (verkopen)</option></select>
+        </div>
+        <div class="field"><label>Uitkomst</label>
+          <select id="jResult"><option value="open">Open</option><option value="win">Win</option><option value="loss">Loss</option><option value="be">Break-even</option></select>
+        </div>
+        <div class="field"><label>Entry prijs</label><input type="number" id="jEntry" step="0.00001" placeholder="bv. 1.08550"></div>
+        <div class="field"><label>Lot grootte</label><input type="number" id="jLot" step="0.01" placeholder="bv. 0.25"></div>
+        <div class="field"><label>Stop-loss prijs</label><input type="number" id="jSL" step="0.00001" placeholder="bv. 1.08200"></div>
+        <div class="field"><label>Take profit prijs</label><input type="number" id="jTP" step="0.00001" placeholder="bv. 1.09200"></div>
+        <div class="field"><label>Winst/Verlies (€/$)</label><input type="number" id="jPnl" placeholder="bv. +75 of -40"></div>
+        <div class="field"><label>R:R ratio</label><input type="number" id="jRR" step="0.1" placeholder="bv. 2.1"></div>
+        <div class="field"><label>Voldoet aan edge?</label>
+          <select id="jEdgeMatch">
+            <option value="">— Niet ingevuld —</option>
+            <option value="yes">✓ Ja</option>
+            <option value="partial">~ Deels</option>
+            <option value="no">✕ Nee</option>
+          </select>
+        </div>
+        <div class="field"><label>Vertrouwen</label>
+          <select id="jEdgeConf">
+            <option value="">— Niet ingevuld —</option>
+            <option value="high">🟢 Hoog</option>
+            <option value="medium">🟡 Matig</option>
+            <option value="low">🔴 Laag</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div class="field">
+          <label style="display:flex;align-items:center;gap:6px;">Trading edge <span style="font-size:10px;background:rgba(167,139,250,0.15);color:var(--purple);padding:2px 7px;border-radius:10px;font-family:var(--font-head);font-weight:700;">EDGE</span></label>
+          <textarea id="jEdgeDesc" style="min-height:70px;" placeholder="Beschrijf waarom je een meetbaar voordeel hebt op deze trade..."></textarea>
+        </div>
+        <div class="field">
+          <label>Notities / lessen</label>
+          <textarea id="jNotes" style="min-height:70px;" placeholder="Wat ging goed? Wat zou je anders doen?"></textarea>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:12px;">
+        <label>Screenshot trade (optioneel)</label>
+        <div class="j-dropzone" id="jDropzone" style="max-height:120px;">
+          <input type="file" accept="image/*" id="jChartFile" onchange="handleJournalImage(event)">
+          <div id="jDropzoneText" style="pointer-events:none;">
+            <div style="font-size:18px;opacity:0.35;margin-bottom:2px">+</div>
+            <div style="font-size:11px;color:var(--muted)">Sleep of klik — PNG, JPG, WebP</div>
+          </div>
+          <img id="jPreview" class="j-preview">
+        </div>
+        <div style="margin-top:4px;display:flex;align-items:center;gap:10px;">
+          <span id="jImgName" style="font-size:11px;color:var(--muted);flex:1;"></span>
+          <button type="button" id="jClearImg" onclick="clearJournalImage()" style="display:none;font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--font-mono);text-decoration:underline;">Verwijder afbeelding</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="addTrade()">Trade toevoegen</button>
+        <button id="jReviewBtn" onclick="reviewTradeWithAI()" style="padding:10px 18px;border-radius:8px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;border:1px solid var(--purple);background:rgba(167,139,250,0.1);color:var(--purple);transition:all 0.15s;">🤖 AI Review</button>
+        <span style="font-size:11px;color:var(--muted);">Voeg eerst alle details in, dan reviewt AI de trade</span>
+      </div>
+      <div id="jReviewLoading" style="display:none;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin-top:12px;">
+        <div class="spinner" style="border-top-color:var(--purple);"></div>
+        <span>AI analyseert je trade...</span>
+      </div>
+      <div id="jReviewResult" class="trade-review-panel" style="display:none;"></div>
+    </div>
+  </div>
 
-        <!-- AI REVIEW RESULT -->
-        <div id="jReviewResult" class="trade-review-panel" style="display:none;"></div>
-
+  <!-- ── TRADING KALENDER ── -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-title" style="justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;"><div class="dot" style="background:var(--purple)"></div>Trading kalender</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button onclick="calPrevMonth()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:14px;">‹</button>
+        <span id="calMonthLabel" style="font-family:var(--font-head);font-weight:700;font-size:13px;min-width:120px;text-align:center;"></span>
+        <button onclick="calNextMonth()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:14px;">›</button>
       </div>
     </div>
-    <div>
-      <div class="card">
-        <div class="card-title"><div class="dot" style="background:var(--purple)"></div>Trade log</div>
+    <div id="tradingCalendar"></div>
+  </div>
 
-        <!-- ── FILTER BAR ── -->
-        <div class="filter-bar" id="journalFilterBar">
-          <div class="filter-row">
-            <div class="filter-field" style="max-width:130px;">
-              <label>Datum van</label>
-              <input type="date" id="fDateFrom" onchange="applyFilters()">
-            </div>
-            <div class="filter-field" style="max-width:130px;">
-              <label>Datum tot</label>
-              <input type="date" id="fDateTo" onchange="applyFilters()">
-            </div>
-            <div class="filter-field" style="max-width:110px;">
-              <label>Uitkomst</label>
-              <select id="fResult" onchange="applyFilters()">
-                <option value="">Alle</option>
-                <option value="win">✓ Win</option>
-                <option value="loss">✕ Loss</option>
-                <option value="be">— Break-even</option>
-                <option value="open">○ Open</option>
-              </select>
-            </div>
-          </div>
-          <div class="filter-row">
-            <div class="filter-field">
-              <label>Valutapaar</label>
-              <select id="fPair" onchange="applyFilters()">
-                <option value="">Alle pairs</option>
-                <optgroup label="Majors"><option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option><option>GBP/JPY</option><option>USD/CHF</option><option>AUD/USD</option><option>NZD/USD</option><option>USD/CAD</option></optgroup>
-                <optgroup label="EUR Cross"><option>EUR/GBP</option><option>EUR/AUD</option><option>EUR/CAD</option><option>EUR/CHF</option><option>EUR/JPY</option></optgroup>
-                <optgroup label="Crypto"><option>BTC/USD</option><option>ETH/USD</option><option>SOL/USD</option><option>XRP/USD</option></optgroup>
-              </select>
-            </div>
-            <div class="filter-field" style="max-width:120px;">
-              <label>Edge</label>
-              <select id="fEdge" onchange="applyFilters()">
-                <option value="">Alle</option>
-                <option value="yes">✓ Edge</option>
-                <option value="partial">~ Deels</option>
-                <option value="no">✕ Geen edge</option>
-              </select>
-            </div>
-          </div>
-          <div class="filter-row">
-            <div class="filter-field">
-              <label>Zoeken in notities &amp; edge</label>
-              <input type="text" id="fSearch" placeholder="zoekterm..." oninput="applyFilters()">
-            </div>
-          </div>
-          <div class="filter-actions">
-            <button class="filter-btn" onclick="clearFilters()" style="border:1px solid var(--border);background:var(--surface2);color:var(--muted);" title="Alle filters wissen">✕ Reset</button>
-            <button class="filter-btn" onclick="exportCSV()" style="border:1px solid var(--green);background:rgba(46,204,138,0.1);color:var(--green);" title="Exporteer (gefilterde) trades naar CSV voor Excel">↓ Export CSV</button>
-            <span class="filter-count" id="filterCount"></span>
-          </div>
-        </div>
-        <!-- ── EINDE FILTER BAR ── -->
-
-        <div class="trade-log" id="tradeLog"><div class="no-events">Nog geen trades gelogd.</div></div>
-        <div style="margin-top:10px;text-align:right"><button class="reset-link" onclick="clearTrades()">alle trades wissen</button></div>
+  <!-- ── TRADE LOG (lijst) ── -->
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;"><div class="dot" style="background:var(--accent)"></div>Trade log <span id="filterCount" style="font-size:11px;color:var(--muted);font-weight:400;"></span></div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="toggleFilters()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;">⚙ Filters</button>
+        <button onclick="exportCSV()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--green);background:rgba(46,204,138,0.1);color:var(--green);cursor:pointer;">↓ CSV</button>
+        <button onclick="clearTrades()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕ Wis alles</button>
       </div>
     </div>
+    <div id="journalFilterBar" class="filter-bar" style="display:none;">
+      <div class="filter-row">
+        <div class="filter-field" style="max-width:130px;"><label>Datum van</label><input type="date" id="fDateFrom" onchange="applyFilters()"></div>
+        <div class="filter-field" style="max-width:130px;"><label>Datum tot</label><input type="date" id="fDateTo" onchange="applyFilters()"></div>
+        <div class="filter-field" style="max-width:110px;"><label>Uitkomst</label>
+          <select id="fResult" onchange="applyFilters()"><option value="">Alle</option><option value="win">✓ Win</option><option value="loss">✕ Loss</option><option value="be">— BE</option><option value="open">○ Open</option></select>
+        </div>
+        <div class="filter-field"><label>Pair</label>
+          <select id="fPair" onchange="applyFilters()"><option value="">Alle</option><option>EUR/USD</option><option>GBP/USD</option><option>XAU/USD</option><option>USD/JPY</option><option>NAS100</option></select>
+        </div>
+        <div class="filter-field" style="max-width:120px;"><label>Edge</label>
+          <select id="fEdge" onchange="applyFilters()"><option value="">Alle</option><option value="yes">✓ Edge</option><option value="partial">~ Deels</option><option value="no">✕ Geen</option></select>
+        </div>
+        <div class="filter-field"><label>Zoeken</label><input type="text" id="fSearch" placeholder="zoekterm..." oninput="applyFilters()"></div>
+      </div>
+      <div class="filter-actions"><button class="filter-btn" onclick="clearFilters()" style="border:1px solid var(--border);background:var(--surface2);color:var(--muted);">✕ Reset</button></div>
+    </div>
+    <div class="trade-log" id="tradeLog"><div class="no-events">Nog geen trades gelogd.</div></div>
+  </div>
+
+</div>
+
+<!-- ── DAG DETAIL MODAL ── -->
+<div id="calDayModal" style="display:none;position:fixed;inset:0;background:rgba(10,11,16,0.88);z-index:600;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:680px;margin:0 auto;animation:slideUpModal 0.25s ease;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1;border-radius:18px 18px 0 0;">
+      <div>
+        <div id="calDayTitle" style="font-family:var(--font-head);font-weight:800;font-size:16px;"></div>
+        <div id="calDaySummary" style="font-size:11px;color:var(--muted);margin-top:2px;"></div>
+      </div>
+      <button onclick="closeCalDayModal()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:18px;padding:4px 10px;line-height:1;">✕</button>
+    </div>
+    <div id="calDayTrades" style="padding:16px 24px 24px;"></div>
   </div>
 </div>
 
@@ -2913,6 +2905,188 @@ function deleteTrade(id){ if(confirm('Trade verwijderen?')){ trades=trades.filte
 function clearTrades(){ if(confirm('Alle trades wissen?')){trades=[];saveTrades();renderTrades();} }
 
 // ================================================================
+// JOURNAL FORM TOGGLE
+// ================================================================
+function toggleJournalForm(){
+  const body = $('journalFormBody');
+  const toggle = $('journalFormToggle');
+  if(!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if(toggle) toggle.textContent = open ? '▾ toon formulier' : '▴ verberg formulier';
+}
+
+function toggleFilters(){
+  const bar = $('journalFilterBar');
+  if(bar) bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+}
+
+// ================================================================
+// TRADING KALENDER
+// ================================================================
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-based
+
+function renderCalendar(){
+  const cal = $('tradingCalendar');
+  const label = $('calMonthLabel');
+  if(!cal) return;
+
+  const monthNames = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+  if(label) label.textContent = monthNames[calMonth] + ' ' + calYear;
+
+  // Bouw dagmap: date string → trades
+  const dayMap = {};
+  trades.forEach(t => {
+    if(!t.date) return;
+    if(!dayMap[t.date]) dayMap[t.date] = [];
+    dayMap[t.date].push(t);
+  });
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const startOffset = (firstDay + 6) % 7; // Monday=0
+
+  let html = `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px;">`;
+
+  // Dag headers
+  ['Ma','Di','Wo','Do','Vr','Za','Zo'].forEach(d => {
+    html += `<div style="text-align:center;font-size:10px;font-family:var(--font-head);font-weight:700;color:var(--muted);padding:4px 0;">${d}</div>`;
+  });
+
+  // Lege vakjes voor offset
+  for(let i = 0; i < startOffset; i++){
+    html += `<div></div>`;
+  }
+
+  // Dag vakjes
+  for(let day = 1; day <= daysInMonth; day++){
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dayTrades = dayMap[dateStr] || [];
+    const today = new Date().toISOString().slice(0,10);
+    const isToday = dateStr === today;
+
+    let bgColor = 'var(--surface2)';
+    let textColor = 'var(--muted)';
+    let pnlText = '';
+    let border = '1px solid var(--border)';
+
+    if(dayTrades.length > 0){
+      const closed = dayTrades.filter(t => t.result !== 'open');
+      const totalPnl = closed.reduce((s,t) => s + (t.pnl||0), 0);
+      const wins = closed.filter(t => t.result === 'win').length;
+      const losses = closed.filter(t => t.result === 'loss').length;
+
+      if(closed.length > 0){
+        if(totalPnl > 0){ bgColor = 'rgba(46,204,138,0.15)'; border = '1px solid rgba(46,204,138,0.4)'; textColor = 'var(--green)'; }
+        else if(totalPnl < 0){ bgColor = 'rgba(255,92,92,0.15)'; border = '1px solid rgba(255,92,92,0.4)'; textColor = 'var(--red)'; }
+        else { bgColor = 'rgba(245,166,35,0.1)'; border = '1px solid rgba(245,166,35,0.3)'; textColor = 'var(--amber)'; }
+        pnlText = `<div style="font-size:9px;font-weight:700;margin-top:2px;">${totalPnl>=0?'+':''}€${totalPnl.toFixed(0)}</div>
+                   <div style="font-size:8px;opacity:0.8;">${dayTrades.length} trade${dayTrades.length>1?'s':''}</div>`;
+      } else {
+        // Enkel open trades
+        bgColor = 'rgba(79,158,255,0.08)'; border = '1px solid rgba(79,158,255,0.2)'; textColor = 'var(--accent)';
+        pnlText = `<div style="font-size:8px;margin-top:2px;opacity:0.8;">${dayTrades.length}× open</div>`;
+      }
+    }
+
+    const cursor = dayTrades.length > 0 ? 'cursor:pointer;' : '';
+    const todayStyle = isToday ? 'box-shadow:0 0 0 2px var(--accent);' : '';
+    const onclick = dayTrades.length > 0 ? `onclick="openCalDay('${dateStr}')"` : '';
+
+    html += `<div ${onclick} style="min-height:56px;border-radius:8px;background:${bgColor};border:${border};${todayStyle}${cursor}padding:6px 4px;display:flex;flex-direction:column;align-items:center;transition:opacity .15s;" ${dayTrades.length>0?'onmouseenter="this.style.opacity=\'0.8\'" onmouseleave="this.style.opacity=\'1\'"':''}>
+      <div style="font-size:11px;font-family:var(--font-head);font-weight:700;color:${isToday?'var(--accent)':textColor};">${day}</div>
+      <div style="color:${textColor};text-align:center;">${pnlText}</div>
+    </div>`;
+  }
+
+  html += `</div>`;
+
+  // Legenda
+  html += `<div style="display:flex;gap:16px;margin-top:10px;font-size:10px;color:var(--muted);flex-wrap:wrap;">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:3px;background:rgba(46,204,138,0.3);display:inline-block;"></span> Winstdag</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:3px;background:rgba(255,92,92,0.3);display:inline-block;"></span> Verliesdag</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:3px;background:rgba(245,166,35,0.2);display:inline-block;"></span> Break-even</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:3px;background:rgba(79,158,255,0.15);display:inline-block;"></span> Open trades</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:3px;border:2px solid var(--accent);display:inline-block;"></span> Vandaag</span>
+  </div>`;
+
+  cal.innerHTML = html;
+}
+
+function calPrevMonth(){
+  calMonth--;
+  if(calMonth < 0){ calMonth = 11; calYear--; }
+  renderCalendar();
+}
+function calNextMonth(){
+  calMonth++;
+  if(calMonth > 11){ calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+function openCalDay(dateStr){
+  const dayTrades = trades.filter(t => t.date === dateStr);
+  if(!dayTrades.length) return;
+
+  const modal = $('calDayModal');
+  const title = $('calDayTitle');
+  const summary = $('calDaySummary');
+  const container = $('calDayTrades');
+  if(!modal) return;
+
+  // Datum formatteren
+  const d = new Date(dateStr + 'T12:00:00');
+  const dayNames = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+  const monthNames = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+  if(title) title.textContent = `${dayNames[d.getDay()]} ${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+
+  const closed = dayTrades.filter(t => t.result !== 'open');
+  const totalPnl = closed.reduce((s,t) => s + (t.pnl||0), 0);
+  const wins = closed.filter(t => t.result === 'win').length;
+  if(summary) summary.textContent = `${dayTrades.length} trade${dayTrades.length>1?'s':''} · ${wins} win${wins!==1?'s':''} · P&L: ${totalPnl>=0?'+':''}€${totalPnl.toFixed(0)}`;
+
+  // Trade kaarten
+  container.innerHTML = dayTrades.map(t => {
+    const resColor = t.result==='win'?'var(--green)':t.result==='loss'?'var(--red)':t.result==='be'?'var(--amber)':'var(--muted)';
+    const resLabel = t.result==='win'?'WIN':t.result==='loss'?'LOSS':t.result==='be'?'BE':'OPEN';
+    const dirColor = t.dir==='long'?'var(--green)':'var(--red)';
+    return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-family:var(--font-head);font-weight:800;font-size:15px;color:var(--text);">${t.pair||'—'}</span>
+          <span style="font-size:11px;font-weight:700;color:${dirColor};background:${dirColor}22;padding:2px 8px;border-radius:4px;">${(t.dir||'').toUpperCase()}</span>
+        </div>
+        <span style="font-size:12px;font-weight:800;color:${resColor};background:${resColor}22;padding:3px 12px;border-radius:6px;font-family:var(--font-head);">${resLabel}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:${t.notes||t.edge_desc||t.img?'10':'0'}px;">
+        ${t.pnl!=null?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:16px;font-weight:800;color:${(t.pnl||0)>=0?'var(--green)':'var(--red)'};">${(t.pnl||0)>=0?'+':''}€${(t.pnl||0).toFixed(0)}</div><div style="font-size:9px;color:var(--muted);">P&L</div></div>`:''}
+        ${t.rr?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:16px;font-weight:800;color:var(--accent);">${t.rr}R</div><div style="font-size:9px;color:var(--muted);">R:R</div></div>`:''}
+        ${t.entry?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:13px;font-weight:700;color:var(--text);">${t.entry}</div><div style="font-size:9px;color:var(--muted);">Entry</div></div>`:''}
+        ${t.sl?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:13px;font-weight:700;color:var(--red);">${t.sl}</div><div style="font-size:9px;color:var(--muted);">SL</div></div>`:''}
+        ${t.tp?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:13px;font-weight:700;color:var(--green);">${t.tp}</div><div style="font-size:9px;color:var(--muted);">TP</div></div>`:''}
+        ${t.lot?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:13px;font-weight:700;color:var(--text);">${t.lot}</div><div style="font-size:9px;color:var(--muted);">Lot</div></div>`:''}
+      </div>
+      ${t.notes?`<div style="font-size:12px;color:var(--muted);line-height:1.7;padding:10px;background:var(--bg);border-radius:8px;margin-bottom:8px;"><strong style="color:var(--text);">📝 Notities:</strong> ${t.notes}</div>`:''}
+      ${t.edge_desc?`<div style="font-size:12px;color:var(--muted);line-height:1.7;padding:10px;background:rgba(167,139,250,0.06);border-radius:8px;border-left:3px solid var(--purple);margin-bottom:8px;"><strong style="color:var(--purple);">⚡ Edge:</strong> ${t.edge_desc}</div>`:''}
+      ${t.img?`<img src="${t.img}" style="width:100%;border-radius:8px;margin-top:4px;max-height:300px;object-fit:contain;background:var(--bg);">`:''}
+    </div>`;
+  }).join('');
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCalDayModal(){
+  const m = $('calDayModal');
+  if(m){ m.style.display='none'; document.body.style.overflow=''; }
+}
+document.addEventListener('click', e => {
+  const m = $('calDayModal');
+  if(m && e.target === m) closeCalDayModal();
+});
+
+// ================================================================
 // AI TRADE REVIEW  (journal tab)
 // ================================================================
 async function reviewTradeWithAI() {
@@ -3185,6 +3359,7 @@ function renderTradeReview(r, container) {
 }
 
 function renderTrades(){
+  renderCalendar();
   const log=$('tradeLog');
   const filtered = getFilteredTrades();
   const total = trades.length;
@@ -6055,6 +6230,7 @@ loadApiKey();
 updateKeyLevelsBar();
 loadLang();
 renderLearnCards('all', '');
+renderCalendar();
 // Drive startup modal (alleen als niet al verbonden via loadGdriveConfig)
 setTimeout(() => {
   if(!gdriveToken) checkDriveStartup();
