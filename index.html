@@ -1235,6 +1235,34 @@
     </div>
   </div>
 
+  <!-- SESSIE + TIJDSTIP -->
+  <div class="stats-grid2">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Winrate per sessie</div>
+      <div id="statsBySession"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--amber)"></div>Winrate per uur van de dag</div>
+      <div id="statsByHour"></div>
+    </div>
+  </div>
+
+  <!-- MAX DRAWDOWN + GEM WIN/LOSS + R DISTRIBUTIE -->
+  <div class="stats-grid3">
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--red)"></div>Max drawdown</div>
+      <div id="statsDrawdown"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--green)"></div>Gem. win vs verlies</div>
+      <div id="statsAvgWL"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot" style="background:var(--purple)"></div>R-distributie</div>
+      <div id="statsRDist"></div>
+    </div>
+  </div>
+
   <!-- MAANDELIJKS -->
   <div class="card">
     <div class="card-title"><div class="dot" style="background:var(--purple)"></div>Maandelijks P&amp;L overzicht</div>
@@ -5832,35 +5860,56 @@ function renderStats(){
   set('skExpect',  t.length ? (expect >= 0 ? '+' : '') + '€' + expect.toFixed(1) + '/R' : '—', expect >= 0 ? 'var(--green)' : 'var(--red)');
 
   if(!t.length){
-    ['statsByPair','statsByDay','statsByDir','statsByEdge','statsByResult','statsMonthly','streakBox','streakDetail']
+    ['statsByPair','statsByDay','statsByDir','statsByEdge','statsByResult','statsMonthly','streakBox','streakDetail','statsBySession','statsByHour','statsDrawdown','statsAvgWL','statsRDist']
       .forEach(id => { const e=$(id); if(e) e.innerHTML='<div class="no-data-msg">Nog geen afgesloten trades.</div>'; });
     const svg = $('equitySvg'); if(svg) svg.innerHTML='';
     return;
   }
 
-  // ---- Equity curve ----
+  // ---- Equity curve met assen ----
   const sorted = [...t].sort((a,b) => a.date.localeCompare(b.date));
   let cum = 0;
   const points = sorted.map(x => { cum += (x.pnl||0); return cum; });
   const svgEl = $('equitySvg');
   if(svgEl){
-    const W = 600, H = 160, pad = 12;
+    const W = 600, H = 180;
+    const padL = 52, padR = 16, padT = 14, padB = 28;
+    const innerW = W - padL - padR, innerH = H - padT - padB;
     const minV = Math.min(0, ...points), maxV = Math.max(0, ...points);
     const range = maxV - minV || 1;
-    const xStep = points.length > 1 ? (W - pad*2) / (points.length - 1) : W - pad*2;
-    const toX = i => pad + i * xStep;
-    const toY = v => pad + (1 - (v - minV) / range) * (H - pad*2);
+    const xStep = points.length > 1 ? innerW / (points.length - 1) : innerW;
+    const toX = i => padL + i * xStep;
+    const toY = v => padT + (1 - (v - minV) / range) * innerH;
     const zero = toY(0);
+    const lineColor = points[points.length-1] >= 0 ? '#2ecc8a' : '#ff5c5c';
+    const fillId = 'eqGrad2';
 
-    // zero-lijn
+    // Y-as labels (4 niveaus)
+    const yTicks = 4;
+    let yLabels = '';
+    for(let i = 0; i <= yTicks; i++){
+      const val = minV + (range * i / yTicks);
+      const y = toY(val);
+      const label = (val >= 0 ? '+' : '') + '€' + val.toFixed(0);
+      const color = val > 0 ? '#2ecc8a' : val < 0 ? '#ff5c5c' : 'var(--muted)';
+      yLabels += `<text x="${padL - 6}" y="${y + 4}" text-anchor="end" font-size="9" fill="${color}" font-family="monospace">${label}</text>`;
+      yLabels += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3,3"/>`;
+    }
+
+    // X-as labels (max 6 datums)
+    let xLabels = '';
+    const step = Math.max(1, Math.floor(points.length / 6));
+    for(let i = 0; i < points.length; i += step){
+      const x = toX(i);
+      const date = sorted[i]?.date?.slice(5) || ''; // MM-DD
+      xLabels += `<text x="${x}" y="${H - 6}" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="monospace">${date}</text>`;
+    }
+
     let d = `M${toX(0)},${toY(points[0])}`;
     points.forEach((v, i) => { if(i > 0) d += ` L${toX(i)},${toY(v)}`; });
-
-    // Vul gebied
     const fillPath = d + ` L${toX(points.length-1)},${zero} L${toX(0)},${zero} Z`;
-    const lineColor = points[points.length-1] >= 0 ? '#2ecc8a' : '#ff5c5c';
-    const fillId = 'eqGrad';
 
+    svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
     svgEl.innerHTML = `
       <defs>
         <linearGradient id="${fillId}" x1="0" y1="0" x2="0" y2="1">
@@ -5868,7 +5917,10 @@ function renderStats(){
           <stop offset="100%" stop-color="${lineColor}" stop-opacity="0.02"/>
         </linearGradient>
       </defs>
-      <line x1="${pad}" y1="${zero}" x2="${W-pad}" y2="${zero}" stroke="var(--border)" stroke-width="1"/>
+      ${yLabels}
+      ${xLabels}
+      <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" stroke="var(--border)" stroke-width="1"/>
+      <line x1="${padL}" y1="${zero}" x2="${W - padR}" y2="${zero}" stroke="var(--border2)" stroke-width="1"/>
       <path d="${fillPath}" fill="url(#${fillId})"/>
       <path d="${d}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
       <circle cx="${toX(points.length-1)}" cy="${toY(points[points.length-1])}" r="4" fill="${lineColor}"/>
@@ -5959,6 +6011,108 @@ function renderStats(){
   })).filter(r=>r.n>0);
   const resultColor = r => r.label==='Win'?'var(--green)':r.label==='Loss'?'var(--red)':'var(--muted)';
   barChart('statsByResult', resultRows, resultColor);
+
+  // ---- Winrate per sessie ----
+  const sessionOrder = ['Asian','London','New York','London/NY overlap','Andere'];
+  const bySession = {};
+  t.forEach(x => { const s = x.session||'Andere'; (bySession[s]=bySession[s]||[]).push(x); });
+  const sessionRows = sessionOrder.map(s => {
+    const arr = bySession[s]||[];
+    const w = arr.filter(x=>x.result==='win').length;
+    const n = arr.length;
+    return { label: s, pct: n ? w/n*100 : 0, n };
+  }).filter(r => r.n > 0);
+  barChart('statsBySession', sessionRows, r => byColor(r.pct));
+
+  // ---- Winrate per uur ----
+  const byHour = {};
+  t.forEach(x => {
+    if(x.time){ const h = x.time.slice(0,2)+'u'; (byHour[h]=byHour[h]||[]).push(x); }
+  });
+  const hourRows = Object.entries(byHour)
+    .map(([h, arr]) => ({ label: h, pct: arr.filter(x=>x.result==='win').length/arr.length*100, n: arr.length }))
+    .sort((a,b) => a.label.localeCompare(b.label));
+  const hourEl = $('statsByHour');
+  if(hourEl){
+    if(!hourRows.length){ hourEl.innerHTML='<div class="no-data-msg">Voeg een tijdstip toe aan je trades.</div>'; }
+    else barChart('statsByHour', hourRows, r => byColor(r.pct));
+  }
+
+  // ---- Max Drawdown ----
+  let peak = 0, maxDD = 0, ddStart = '', ddEnd = '';
+  let runPeak = 0;
+  sorted.forEach((x, i) => {
+    runPeak += (x.pnl||0);
+    if(runPeak > peak){ peak = runPeak; ddStart = x.date; }
+    const dd = peak - runPeak;
+    if(dd > maxDD){ maxDD = dd; ddEnd = x.date; }
+  });
+  const ddEl = $('statsDrawdown');
+  if(ddEl) ddEl.innerHTML = `
+    <div style="text-align:center;padding:12px 0;">
+      <div style="font-family:var(--font-head);font-weight:800;font-size:28px;color:var(--red);">-€${maxDD.toFixed(0)}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Max drawdown</div>
+      ${ddEnd ? `<div style="font-size:10px;color:var(--muted);margin-top:6px;">Dieptepunt: ${ddEnd}</div>` : ''}
+      <div style="margin-top:12px;display:flex;justify-content:center;gap:20px;">
+        <div style="text-align:center;">
+          <div style="font-size:14px;font-weight:700;color:var(--amber)">${maxDD > 0 && totalPnl !== 0 ? (maxDD/Math.abs(totalPnl)*100).toFixed(1)+'%' : '—'}</div>
+          <div style="font-size:10px;color:var(--muted)">% van totaal P&L</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:14px;font-weight:700;color:var(--text)">${maxWS}</div>
+          <div style="font-size:10px;color:var(--muted)">Max wins op rij</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:14px;font-weight:700;color:var(--red)">${maxLS}</div>
+          <div style="font-size:10px;color:var(--muted)">Max losses op rij</div>
+        </div>
+      </div>
+    </div>`;
+
+  // ---- Gem. win vs verlies ----
+  const avgWin  = wins.length  ? wins.reduce((s,x)=>s+(x.pnl||0),0)/wins.length   : 0;
+  const avgLoss = losses.length ? Math.abs(losses.reduce((s,x)=>s+(x.pnl||0),0)/losses.length) : 0;
+  const avgWLEl = $('statsAvgWL');
+  if(avgWLEl) avgWLEl.innerHTML = `
+    <div style="padding:8px 0;">
+      <div class="bar-row" style="margin-bottom:10px;">
+        <div class="bar-label">Gem. win</div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--green);"></div></div>
+        <div class="bar-meta" style="color:var(--green)">+€${avgWin.toFixed(0)}</div>
+      </div>
+      <div class="bar-row" style="margin-bottom:14px;">
+        <div class="bar-label">Gem. verlies</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${avgWin>0?(avgLoss/avgWin*100).toFixed(0):100}%;background:var(--red);"></div></div>
+        <div class="bar-meta" style="color:var(--red)">-€${avgLoss.toFixed(0)}</div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.8;border-top:1px solid var(--border);padding-top:10px;">
+        <div>Gem. R gewonnen: <strong style="color:var(--green)">${wins.length ? (wins.reduce((s,x)=>s+(x.rr||0),0)/wins.length).toFixed(2) : '—'}R</strong></div>
+        <div>Gem. R verloren: <strong style="color:var(--red)">1.00R</strong></div>
+        <div>Win/Loss ratio: <strong style="color:var(--text)">${avgLoss>0?(avgWin/avgLoss).toFixed(2):'∞'}</strong></div>
+      </div>
+    </div>`;
+
+  // ---- R-distributie histogram ----
+  const rBuckets = {'< -1R':0, '-1R':0, '0R (BE)':0, '+1R':0, '+2R':0, '+3R':0, '> +3R':0};
+  t.forEach(x => {
+    const r = x.result==='win' ? (x.rr||1) : x.result==='be' ? 0 : -1;
+    if(r < -1) rBuckets['< -1R']++;
+    else if(r <= -0.9) rBuckets['-1R']++;
+    else if(Math.abs(r) < 0.1) rBuckets['0R (BE)']++;
+    else if(r <= 1.5) rBuckets['+1R']++;
+    else if(r <= 2.5) rBuckets['+2R']++;
+    else if(r <= 3.5) rBuckets['+3R']++;
+    else rBuckets['> +3R']++;
+  });
+  const rMax = Math.max(...Object.values(rBuckets), 1);
+  const rColors = {'< -1R':'var(--red)','-1R':'var(--red)','0R (BE)':'var(--muted)','+1R':'var(--amber)','+2R':'var(--green)','+3R':'var(--green)','> +3R':'var(--green)'};
+  const rEl = $('statsRDist');
+  if(rEl) rEl.innerHTML = Object.entries(rBuckets).map(([label, count]) => `
+    <div class="bar-row">
+      <div class="bar-label" style="min-width:58px;">${label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(count/rMax*100).toFixed(0)}%;background:${rColors[label]};"></div></div>
+      <div class="bar-meta">${count}</div>
+    </div>`).join('');
 
   // Maandelijks P&L
   const byMonth = {};
