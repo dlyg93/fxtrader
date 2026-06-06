@@ -830,6 +830,7 @@
   <div class="tab" onclick="showTab('journal',this)">Trade Journal</div>
   <div class="tab" onclick="showTab('analyse',this)">Trade Analyse</div>
   <div class="tab" onclick="showTab('markt',this)">Markt Analyse</div>
+  <div class="tab" onclick="showTab('backtest',this)">📊 Backtest</div>
   <div class="tab" onclick="showTab('alerts',this)">Setup &amp; Backup</div>
   <div class="tab" onclick="showTab('leren',this)" data-i18n-tab="leren">📚 Leren</div>
 </nav>
@@ -1917,7 +1918,7 @@ function showTab(name, el) {
 
 function showTabByName(name){
   const tabs = document.querySelectorAll('.tab');
-  const tabNames = ['checklist','stats','entry','calc','journal','analyse','markt','alerts','leren'];
+  const tabNames = ['checklist','stats','entry','calc','journal','analyse','markt','backtest','alerts','leren'];
   const idx = tabNames.indexOf(name);
   if(idx >= 0 && tabs[idx]) showTab(name, tabs[idx]);
 }
@@ -4260,6 +4261,162 @@ function checkNotifPermOnLoad(){}
 const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split('T')[0];
 </script>
 
+<!-- ===== BACKTEST TAB ===== -->
+<div class="page" id="page-backtest">
+<style>
+.bt-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);padding:18px;margin-bottom:14px;}
+.bt-section h3{font-family:var(--font-head);font-weight:700;font-size:13px;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.bt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.bt-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:600px){.bt-grid,.bt-grid-3{grid-template-columns:1fr;}}
+.bt-field{display:flex;flex-direction:column;gap:4px;}
+.bt-field label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.bt-field input,.bt-field select,.bt-field textarea{background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--font-mono);font-size:12px;padding:8px 10px;}
+.bt-field textarea{min-height:60px;resize:vertical;}
+.criteria-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.criteria-chip{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;cursor:pointer;user-select:none;transition:all .15s;}
+.criteria-chip input[type=checkbox]{accent-color:var(--accent);width:13px;height:13px;}
+.criteria-chip:has(input:checked){border-color:var(--accent);background:rgba(79,158,255,.1);color:var(--accent);}
+.bt-result-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr auto;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);font-size:11px;}
+.bt-result-row:last-child{border-bottom:none;}
+.bt-result-header{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-family:var(--font-head);}
+.bt-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.bt-win{background:rgba(46,204,138,.15);color:var(--green);}
+.bt-loss{background:rgba(255,92,92,.15);color:var(--red);}
+.bt-be{background:rgba(245,166,35,.15);color:var(--amber);}
+.bt-kpi{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+.bt-kpi .val{font-family:var(--font-head);font-size:22px;font-weight:800;margin-bottom:2px;}
+.bt-kpi .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;}
+.bt-combo-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);border-radius:8px;margin-bottom:6px;font-size:11px;}
+.bt-combo-bar{height:6px;border-radius:3px;background:var(--accent);margin-top:4px;}
+</style>
+
+<!-- KPI row -->
+<div class="bt-grid-3" id="btKpiRow" style="margin-bottom:14px;">
+  <div class="bt-kpi"><div class="val" id="btKpiTotal">0</div><div class="lbl">Trades</div></div>
+  <div class="bt-kpi"><div class="val" id="btKpiWinrate">—</div><div class="lbl">Winrate</div></div>
+  <div class="bt-kpi"><div class="val" id="btKpiAvgR">—</div><div class="lbl">Gem. R</div></div>
+</div>
+
+<!-- Invoer -->
+<div class="bt-section">
+  <h3>➕ Trade toevoegen</h3>
+  <div class="bt-grid" style="margin-bottom:10px;">
+    <div class="bt-field">
+      <label>Datum</label>
+      <input type="date" id="btDate">
+    </div>
+    <div class="bt-field">
+      <label>Pair</label>
+      <select id="btPair">
+        <option value="XAU/USD">XAU/USD (Gold)</option>
+        <option value="EUR/USD">EUR/USD</option>
+        <option value="GBP/USD">GBP/USD</option>
+        <option value="USD/JPY">USD/JPY</option>
+        <option value="NAS100">NAS100</option>
+        <option value="andere">Andere</option>
+      </select>
+    </div>
+    <div class="bt-field">
+      <label>Richting</label>
+      <select id="btDir">
+        <option value="Long">Long</option>
+        <option value="Short">Short</option>
+      </select>
+    </div>
+    <div class="bt-field">
+      <label>Sessie</label>
+      <select id="btSession">
+        <option value="Asian">Asian</option>
+        <option value="London">London</option>
+        <option value="New York">New York</option>
+        <option value="London/NY overlap">London/NY overlap</option>
+      </select>
+    </div>
+    <div class="bt-field">
+      <label>Entry prijs</label>
+      <input type="number" id="btEntry" placeholder="2650.00" step="0.01">
+    </div>
+    <div class="bt-field">
+      <label>Stop Loss</label>
+      <input type="number" id="btSL" placeholder="2640.00" step="0.01">
+    </div>
+    <div class="bt-field">
+      <label>Take Profit</label>
+      <input type="number" id="btTP" placeholder="2680.00" step="0.01">
+    </div>
+    <div class="bt-field">
+      <label>Resultaat</label>
+      <select id="btResult">
+        <option value="Win">Win</option>
+        <option value="Loss">Loss</option>
+        <option value="BE">Break Even</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Criteria -->
+  <div style="margin-bottom:10px;">
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Setup criteria</div>
+    <div class="criteria-grid" id="btCriteriaGrid">
+      <!-- S&R -->
+      <label class="criteria-chip"><input type="checkbox" value="Daily S/R"> Daily S/R</label>
+      <label class="criteria-chip"><input type="checkbox" value="Weekly S/R"> Weekly S/R</label>
+      <label class="criteria-chip"><input type="checkbox" value="Monthly S/R"> Monthly S/R</label>
+      <label class="criteria-chip"><input type="checkbox" value="Round number"> Round number</label>
+      <label class="criteria-chip"><input type="checkbox" value="Previous H/L"> Prev. High/Low</label>
+      <!-- Trend -->
+      <label class="criteria-chip"><input type="checkbox" value="HTF bullish"> HTF Bullish</label>
+      <label class="criteria-chip"><input type="checkbox" value="HTF bearish"> HTF Bearish</label>
+      <label class="criteria-chip"><input type="checkbox" value="Ranging"> Ranging</label>
+      <!-- Patroon -->
+      <label class="criteria-chip"><input type="checkbox" value="Pin bar"> Pin bar</label>
+      <label class="criteria-chip"><input type="checkbox" value="Engulfing"> Engulfing</label>
+      <label class="criteria-chip"><input type="checkbox" value="Inside bar"> Inside bar</label>
+      <label class="criteria-chip"><input type="checkbox" value="FVG"> FVG</label>
+      <label class="criteria-chip"><input type="checkbox" value="BOS/CHoCH"> BOS/CHoCH</label>
+      <!-- Extra -->
+      <label class="criteria-chip"><input type="checkbox" value="London open"> London open</label>
+      <label class="criteria-chip"><input type="checkbox" value="NY open"> NY open</label>
+      <label class="criteria-chip"><input type="checkbox" value="News catalyst"> News catalyst</label>
+    </div>
+  </div>
+
+  <div class="bt-field" style="margin-bottom:12px;">
+    <label>Notities</label>
+    <textarea id="btNotes" placeholder="Beschrijf de setup, context, wat je zag..."></textarea>
+  </div>
+
+  <button class="save-btn" onclick="btAddTrade()" style="width:100%;justify-content:center;padding:10px;">Trade opslaan</button>
+</div>
+
+<!-- Statistieken per criteria -->
+<div class="bt-section" id="btStatsSection" style="display:none;">
+  <h3>📈 Prestatie per criteria</h3>
+  <div id="btCriteriaStats"></div>
+</div>
+
+<!-- AI Analyse -->
+<div class="bt-section" id="btAiSection" style="display:none;">
+  <h3>🤖 AI Analyse</h3>
+  <button class="save-btn" onclick="btAiAnalyse()" style="margin-bottom:12px;">Analyseer mijn backtest met Claude</button>
+  <div id="btAiOutput" style="font-size:12px;line-height:1.8;color:var(--text);white-space:pre-wrap;display:none;"></div>
+</div>
+
+<!-- Trade lijst -->
+<div class="bt-section">
+  <h3>📋 Backtest trades <span id="btTradeCount" style="color:var(--muted);font-weight:400;font-size:11px;"></span>
+    <button onclick="btClearAll()" style="margin-left:auto;padding:4px 10px;font-size:10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">Alles wissen</button>
+  </h3>
+  <div style="overflow-x:auto;">
+    <div class="bt-result-row bt-result-header">
+      <span>Datum / Pair</span><span>Richting</span><span>R/R</span><span>Sessie</span><span>Criteria</span><span>Resultaat</span><span></span>
+    </div>
+    <div id="btTradeList"></div>
+  </div>
+</div>
+</div>
+
 <!-- ===== TAB 7: SETUP & BACKUP ===== -->
 <div class="page" id="page-alerts">
   <div style="max-width:700px;margin:0 auto;">
@@ -4608,6 +4765,7 @@ async function gdriveSaveAll(silent){
       tvSettings:JSON.parse(localStorage.getItem('fxTVSettings')||'{}'),
       alerts:JSON.parse(localStorage.getItem('fxAlerts')||'[]'),
       anthropicKey:localStorage.getItem('fxAnthropicKey')||'',
+      btTrades:JSON.parse(localStorage.getItem('fxBacktestTrades')||'[]'),
       savedAt:new Date().toISOString()
     };
     const json=JSON.stringify(data,null,2);
@@ -4658,6 +4816,7 @@ async function gdriveLoadAll(silent){
     if(data.plan)localStorage.setItem('fxPlan',JSON.stringify(data.plan));
     if(data.tvSettings)localStorage.setItem('fxTVSettings',JSON.stringify(data.tvSettings));
     if(data.alerts){localStorage.setItem('fxAlerts',JSON.stringify(data.alerts));priceAlerts=data.alerts;renderAlerts();}
+    if(data.btTrades){ localStorage.setItem('fxBacktestTrades',JSON.stringify(data.btTrades)); btTrades=data.btTrades; btRender(); btUpdateKpi(); btRenderCriteriaStats(); }
     if(data.anthropicKey){
       localStorage.setItem('fxAnthropicKey',data.anthropicKey);
       // Vul het inputveld in — ook als de tab nog niet zichtbaar is
@@ -5721,6 +5880,148 @@ setTimeout(() => {
 // Instrument info banner alleen tonen op voorbereiding (actieve tab bij start)
 const _infoBanner = $('instrumentInfoBanner');
 if(_infoBanner) _infoBanner.style.display = 'flex';
+
+// ================================================================
+// BACKTEST
+// ================================================================
+let btTrades = JSON.parse(localStorage.getItem('fxBacktestTrades')||'[]');
+
+function btSave(){ try{ localStorage.setItem('fxBacktestTrades', JSON.stringify(btTrades)); }catch(e){} scheduleDriveSave(); }
+
+function btAddTrade(){
+  const date = $('btDate').value;
+  const pair = $('btPair').value;
+  const dir  = $('btDir').value;
+  const sess = $('btSession').value;
+  const entry= parseFloat($('btEntry').value);
+  const sl   = parseFloat($('btSL').value);
+  const tp   = parseFloat($('btTP').value);
+  const res  = $('btResult').value;
+  const notes= $('btNotes').value.trim();
+  if(!date||!entry||!sl||!tp){ alert('Vul minstens datum, entry, SL en TP in.'); return; }
+
+  const criteria = Array.from(document.querySelectorAll('#btCriteriaGrid input:checked')).map(c=>c.value);
+  const rr = Math.abs(tp-entry) / Math.abs(entry-sl);
+
+  btTrades.unshift({ id: Date.now(), date, pair, dir, sess, entry, sl, tp, rr: +rr.toFixed(2), result: res, criteria, notes });
+  btSave();
+  btRender();
+  btUpdateKpi();
+  btRenderCriteriaStats();
+
+  // Reset form
+  ['btEntry','btSL','btTP','btNotes'].forEach(id=>{ const el=$(id); if(el) el.value=''; });
+  document.querySelectorAll('#btCriteriaGrid input').forEach(c=>c.checked=false);
+  $('btDate').value = new Date().toISOString().slice(0,10);
+}
+
+function btDeleteTrade(id){
+  if(!confirm('Trade verwijderen?')) return;
+  btTrades = btTrades.filter(t=>t.id!==id);
+  btSave(); btRender(); btUpdateKpi(); btRenderCriteriaStats();
+}
+
+function btClearAll(){
+  if(!confirm('Alle backtest trades wissen?')) return;
+  btTrades=[];
+  btSave(); btRender(); btUpdateKpi(); btRenderCriteriaStats();
+}
+
+function btRender(){
+  const list = $('btTradeList');
+  const count = $('btTradeCount');
+  if(!list) return;
+  if(count) count.textContent = '('+btTrades.length+' trades)';
+  if(!btTrades.length){ list.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">Nog geen trades — voeg er een toe hierboven.</div>'; return; }
+  list.innerHTML = btTrades.map(t=>`
+    <div class="bt-result-row">
+      <span><strong style="color:var(--text)">${t.date}</strong><br><span style="color:var(--muted)">${t.pair}</span></span>
+      <span style="color:${t.dir==='Long'?'var(--green)':'var(--red)'}">${t.dir}</span>
+      <span style="color:var(--accent)">${t.rr}R</span>
+      <span style="color:var(--muted)">${t.sess}</span>
+      <span style="color:var(--muted);font-size:10px;">${(t.criteria||[]).slice(0,2).join(', ')}${(t.criteria||[]).length>2?' +'+((t.criteria||[]).length-2):''}  </span>
+      <span class="bt-tag ${t.result==='Win'?'bt-win':t.result==='Loss'?'bt-loss':'bt-be'}">${t.result}</span>
+      <button onclick="btDeleteTrade(${t.id})" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;">✕</button>
+    </div>`).join('');
+}
+
+function btUpdateKpi(){
+  const total = btTrades.length;
+  const wins  = btTrades.filter(t=>t.result==='Win').length;
+  const winrate = total ? Math.round(wins/total*100)+'%' : '—';
+  const avgR = total ? (btTrades.reduce((s,t)=>s+(t.result==='Win'?t.rr:t.result==='Loss'?-1:0),0)/total).toFixed(2)+'R' : '—';
+  const el1=$('btKpiTotal'), el2=$('btKpiWinrate'), el3=$('btKpiAvgR');
+  if(el1) el1.textContent=total;
+  if(el2){ el2.textContent=winrate; el2.style.color=wins/total>=0.5?'var(--green)':'var(--red)'; }
+  if(el3){ el3.textContent=avgR; el3.style.color=parseFloat(avgR)>=0?'var(--green)':'var(--red)'; }
+}
+
+function btRenderCriteriaStats(){
+  const section=$('btStatsSection'), container=$('btCriteriaStats');
+  const aiSection=$('btAiSection');
+  if(!section||!container) return;
+  if(btTrades.length<3){ section.style.display='none'; if(aiSection)aiSection.style.display='none'; return; }
+  section.style.display='block'; if(aiSection)aiSection.style.display='block';
+
+  // Verzamel alle criteria
+  const map={};
+  btTrades.forEach(t=>{
+    (t.criteria||[]).forEach(c=>{
+      if(!map[c]) map[c]={wins:0,total:0};
+      map[c].total++;
+      if(t.result==='Win') map[c].wins++;
+    });
+  });
+
+  const sorted = Object.entries(map).filter(([,v])=>v.total>=2).sort(([,a],[,b])=>(b.wins/b.total)-(a.wins/a.total));
+  if(!sorted.length){ container.innerHTML='<div style="color:var(--muted);font-size:12px;">Nog te weinig data per criteria (min. 2 trades per criteria).</div>'; return; }
+
+  container.innerHTML = sorted.map(([c,v])=>{
+    const wr = Math.round(v.wins/v.total*100);
+    const color = wr>=60?'var(--green)':wr>=45?'var(--amber)':'var(--red)';
+    return `<div class="bt-combo-row">
+      <div>
+        <span style="color:var(--text);font-weight:600;">${c}</span>
+        <div class="bt-combo-bar" style="width:${wr}%;background:${color};max-width:200px;"></div>
+      </div>
+      <div style="text-align:right;">
+        <span style="color:${color};font-weight:700;font-size:14px;">${wr}%</span>
+        <div style="color:var(--muted);font-size:10px;">${v.wins}/${v.total} trades</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function btAiAnalyse(){
+  const apiKey = localStorage.getItem('fxAnthropicKey')||'';
+  if(!apiKey){ alert('Voer eerst je Anthropic API sleutel in via Setup & Backup.'); return; }
+  if(btTrades.length<3){ alert('Voeg minstens 3 trades toe voor een zinvolle analyse.'); return; }
+
+  const output=$('btAiOutput');
+  if(output){ output.style.display='block'; output.textContent='Claude analyseert je backtest...\n'; }
+
+  const summary = btTrades.map(t=>`${t.date} | ${t.pair} | ${t.dir} | ${t.sess} | ${t.rr}R | ${t.result} | criteria: ${(t.criteria||[]).join(', ')||'geen'}`).join('\n');
+  const prompt = `Je bent een ervaren forex/gold trader coach. Analyseer deze backtest data en geef concrete, eerlijke feedback in het Nederlands.\n\nBacktest trades (${btTrades.length} totaal):\n${summary}\n\nGeef:\n1. Sterke punten (welke criteria/setups werken)\n2. Zwakke punten (wat vermijden)\n3. Concrete aanbevelingen om de winrate te verhogen\n4. Optimale sessie/criteria combinatie op basis van de data`;
+
+  try{
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body: JSON.stringify({model:'claude-opus-4-5',max_tokens:1024,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await resp.json();
+    if(output) output.textContent = data.content?.[0]?.text || 'Geen antwoord ontvangen.';
+  }catch(e){
+    if(output) output.textContent='Fout bij verbinding met Claude: '+e.message;
+  }
+}
+
+// Init backtest bij laden
+document.addEventListener('DOMContentLoaded',()=>{
+  const today = new Date().toISOString().slice(0,10);
+  const d=$('btDate'); if(d) d.value=today;
+  btRender(); btUpdateKpi(); btRenderCriteriaStats();
+});
 
 // ================================================================
 // STATISTIEKEN DASHBOARD
