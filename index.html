@@ -3015,7 +3015,7 @@ function renderAccountsList(){
 function renderAccountSelects(){
   const opts = `<option value="">— Geen account —</option>` +
     fxAccounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-  ['accountSelect','jAccount'].forEach(id => {
+  ['accountSelect','jAccount','eAccount'].forEach(id => {
     const sel = $(id);
     if(sel){ sel.innerHTML = opts; sel.value = fxActiveAccountId || ''; }
   });
@@ -3495,7 +3495,21 @@ function renderTrades(){
     log.innerHTML='<div class="no-events">'+(total ? 'Geen trades gevonden met deze filters.' : 'Nog geen trades gelogd.')+'</div>';
     updateStats();return;
   }
-  log.innerHTML=filtered.map(t=>{
+  const equitySummary = fxAccounts.length ? (() => {
+    const cards = fxAccounts.map(acc => {
+      const bal = getAccountBalance(acc.id);
+      if(!bal) return '';
+      const pnlColor = bal.pnl >= 0 ? 'var(--green)' : 'var(--red)';
+      const pnlSign = bal.pnl >= 0 ? '+' : '';
+      return `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;min-width:160px;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;margin-bottom:4px;">${acc.name}</div>
+        <div style="font-size:15px;font-family:var(--font-head);font-weight:800;color:var(--text);">€${bal.current.toFixed(2)}</div>
+        <div style="font-size:11px;color:${pnlColor};margin-top:2px;">${pnlSign}€${bal.pnl.toFixed(2)} P&L (${bal.trades} trades)</div>
+      </div>`;
+    }).filter(Boolean).join('');
+    return cards ? `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">${cards}</div>` : '';
+  })() : '';
+  log.innerHTML= equitySummary + filtered.map(t=>{
     const hasPrices = t.entry || t.sl || t.tp || t.lot;
     const priceLine = hasPrices ? `<div class="trade-levels">
       ${t.lot?`<span class="trade-lot">${t.lot} lot</span>`:''}
@@ -3555,6 +3569,7 @@ function openEditModal(id){
   if(!t) return;
   $('eId').value = t.id;
   $('eDate').value = t.date||'';
+  $('eAccount').value = t.accountId||'';
   $('ePair').value = t.pair||'EUR/USD';
   $('eDir').value = t.dir||'long';
   $('eResult').value = t.result||'open';
@@ -3612,6 +3627,7 @@ function saveEditTrade(){
   trades[idx] = {
     ...trades[idx],
     date: $('eDate').value,
+    accountId: $('eAccount').value,
     pair: $('ePair').value,
     dir: $('eDir').value,
     result: $('eResult').value,
@@ -4719,6 +4735,11 @@ const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split(
     <input type="hidden" id="eId">
     <div class="journal-form">
       <div class="field"><label>Datum</label><input type="date" id="eDate"></div>
+      <div class="field"><label>Account</label>
+        <select id="eAccount" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--accent);font-family:var(--font-head);font-weight:700;font-size:12px;padding:8px 10px;">
+          <option value="">— Geen account —</option>
+        </select>
+      </div>
       <div class="field"><label>Currency pair</label>
         <select id="ePair">
           <optgroup label="Majors"><option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option><option>GBP/JPY</option><option>USD/CHF</option><option>AUD/USD</option><option>NZD/USD</option><option>USD/CAD</option></optgroup>
