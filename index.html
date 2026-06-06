@@ -2259,10 +2259,10 @@ buildTimeline();
 
 function updateClock(){
   const now = new Date();
-  $('headerClock').textContent = pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+  const clk = $('headerClock'); if(clk) clk.textContent = pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
   const days=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
   const months=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
-  $('headerDate').textContent = days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
+  const hd = $('headerDate'); if(hd) hd.textContent = days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
   const h = now.getHours(), m = now.getMinutes();
   const mins = h*60+m;
   updateSessionUI(mins);
@@ -4799,7 +4799,12 @@ let gdriveSaveTimer = null;
 
 function openSettings(){
   const m=$('settingsModal');
-  if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; updateBackupInfo(); }
+  if(m){
+    m.style.display='flex';
+    document.body.style.overflow='hidden';
+    try{ updateBackupInfo(); }catch(e){}
+    renderAccountsList();
+  }
 }
 function closeSettings(){
   const m=$('settingsModal');
