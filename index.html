@@ -2918,8 +2918,19 @@ function addTrade(){
   const rr2 = $('jReviewResult'); if(rr2){ rr2.style.display='none'; rr2.innerHTML=''; }
 }
 
-function deleteTrade(id){ if(confirm('Trade verwijderen?')){ trades=trades.filter(t=>t.id!==id); saveTrades(); renderTrades(); } }
-function clearTrades(){ if(confirm('Alle trades wissen?')){trades=[];saveTrades();renderTrades();} }
+function showConfirm(msg, onOk, title='Bevestigen', btnLabel='Verwijderen'){
+  $('confirmModalTitle').textContent = title;
+  $('confirmModalMsg').textContent = msg;
+  $('confirmModalOk').textContent = btnLabel;
+  $('confirmModalOverlay').classList.add('show');
+  const ok = $('confirmModalOk');
+  const cancel = $('confirmModalCancel');
+  const close = () => { $('confirmModalOverlay').classList.remove('show'); ok.onclick=null; cancel.onclick=null; };
+  ok.onclick = () => { close(); onOk(); };
+  cancel.onclick = close;
+}
+function deleteTrade(id){ showConfirm('Trade verwijderen? Dit kan niet ongedaan gemaakt worden.', ()=>{ trades=trades.filter(t=>t.id!==id); saveTrades(); renderTrades(); }, 'Trade verwijderen'); }
+function clearTrades(){ showConfirm('Alle trades wissen? Dit verwijdert de volledige trade log en kan niet ongedaan gemaakt worden.', ()=>{trades=[];saveTrades();renderTrades();}, 'Trade log wissen', 'Alles wissen'); }
 
 // ================================================================
 // ACCOUNT SYSTEEM
@@ -2950,12 +2961,13 @@ function addAccount(){
 }
 
 function deleteAccount(id){
-  if(!confirm('Account verwijderen? Trades blijven bewaard maar zijn niet meer gekoppeld.')) return;
-  fxAccounts = fxAccounts.filter(a => a.id !== id);
-  saveAccounts();
-  if(fxActiveAccountId === id){ fxActiveAccountId = fxAccounts.length ? fxAccounts[0].id : ''; localStorage.setItem('fxActiveAccountId', fxActiveAccountId); }
-  renderAccountsList();
-  renderAccountSelects();
+  showConfirm('Account verwijderen? Trades blijven bewaard maar zijn niet meer gekoppeld aan dit account.', () => {
+    fxAccounts = fxAccounts.filter(a => a.id !== id);
+    saveAccounts();
+    if(fxActiveAccountId === id){ fxActiveAccountId = fxAccounts.length ? fxAccounts[0].id : ''; localStorage.setItem('fxActiveAccountId', fxActiveAccountId); }
+    renderAccountsList();
+    renderAccountSelects();
+  }, 'Account verwijderen');
 }
 
 function switchAccount(id){
@@ -4726,6 +4738,18 @@ const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split(
 <!-- IMAGE LIGHTBOX -->
 <div class="img-lightbox" id="imgLightbox" onclick="closeLightbox()">
   <img id="imgLightboxSrc" src="" alt="Trade screenshot">
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="edit-modal-overlay" id="confirmModalOverlay">
+  <div class="edit-modal" style="max-width:420px;padding:28px 28px 24px;" onclick="event.stopPropagation()">
+    <h3 id="confirmModalTitle" style="font-size:15px;margin-bottom:10px;">Bevestigen</h3>
+    <p id="confirmModalMsg" style="font-size:13px;color:var(--muted);margin:0 0 24px;line-height:1.5;"></p>
+    <div class="edit-modal-actions">
+      <button class="btn-secondary" id="confirmModalCancel">Annuleren</button>
+      <button class="btn btn-primary" id="confirmModalOk" style="background:var(--red);border-color:var(--red);">Verwijderen</button>
+    </div>
+  </div>
 </div>
 
 <!-- EDIT TRADE MODAL -->
