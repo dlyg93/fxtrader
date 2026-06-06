@@ -806,7 +806,7 @@
     </div>
     <div class="header-date" id="headerDate"></div>
     <div class="header-clock" id="headerClock"></div>
-    <div class="sync-badge sync-idle" id="syncBadge" onclick="showTab('alerts', document.querySelector('.tab:last-child'))" title="Google Drive sync status">
+    <div class="sync-badge sync-idle" id="syncBadge" onclick="openSettings()" title="Google Drive sync status" style="cursor:pointer;">
       <div class="sync-dot" id="syncDot"></div>
       <span id="syncText">Drive</span>
     </div>
@@ -818,6 +818,7 @@
       <span class="theme-toggle-icon">◑</span>
       <span id="themeLabel">Light</span>
     </button>
+    <button class="theme-toggle" onclick="openSettings()" title="Instellingen" style="font-size:16px;padding:6px 10px;">⚙️</button>
     <div class="session-badge" id="sessionBadge">...</div>
   </div>
 </header>
@@ -830,7 +831,6 @@
   <div class="tab" onclick="showTab('journal',this)">Trade Journal</div>
   <div class="tab" onclick="showTab('analyse',this)">Trade Analyse</div>
   <div class="tab" onclick="showTab('markt',this)">Markt Analyse</div>
-  <div class="tab" onclick="showTab('alerts',this)">Setup &amp; Backup</div>
   <div class="tab" onclick="showTab('leren',this)" data-i18n-tab="leren">📚 Leren</div>
 </nav>
 
@@ -1917,7 +1917,7 @@ function showTab(name, el) {
 
 function showTabByName(name){
   const tabs = document.querySelectorAll('.tab');
-  const tabNames = ['checklist','stats','entry','calc','journal','analyse','markt','alerts','leren'];
+  const tabNames = ['checklist','stats','entry','calc','journal','analyse','markt','leren'];
   const idx = tabNames.indexOf(name);
   if(idx >= 0 && tabs[idx]) showTab(name, tabs[idx]);
 }
@@ -4260,13 +4260,24 @@ function checkNotifPermOnLoad(){}
 const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split('T')[0];
 </script>
 
-<!-- ===== TAB 7: SETUP & BACKUP ===== -->
-<div class="page" id="page-alerts">
-  <div style="max-width:700px;margin:0 auto;">
+<!-- ===== INSTELLINGEN MODAL ===== -->
+<div id="settingsModal" style="display:none;position:fixed;inset:0;background:rgba(10,11,16,0.85);z-index:500;align-items:center;justify-content:center;padding:16px;animation:fadeInBg 0.2s ease;">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:slideUpModal 0.25s ease;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1;border-radius:18px 18px 0 0;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:20px;">⚙️</span>
+        <span style="font-family:var(--font-head);font-weight:800;font-size:16px;">Instellingen</span>
+      </div>
+      <button onclick="closeSettings()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:18px;padding:4px 10px;line-height:1;">✕</button>
+    </div>
+
+    <div style="padding:20px 24px;">
 
       <!-- ANTHROPIC API KEY -->
-      <div class="card" style="margin-bottom:16px;">
-        <div class="card-title"><div class="dot" style="background:var(--accent)"></div>Anthropic API sleutel</div>
+      <div style="margin-bottom:20px;">
+        <div style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;"></span>Anthropic API sleutel</div>
         <div style="padding:12px 14px;background:rgba(79,158,255,0.06);border:1px solid rgba(79,158,255,0.2);border-radius:8px;">
           <div style="display:flex;gap:8px;align-items:center;">
             <input type="password" id="anthropicApiKey" placeholder="sk-ant-api03-..." style="flex:1;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--font-mono);font-size:12px;">
@@ -4276,39 +4287,38 @@ const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split(
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title"><div class="dot" style="background:var(--green)"></div>Data backup &amp; herstel</div>
+      <hr style="border-color:var(--border);margin-bottom:20px;">
 
-        <!-- GOOGLE DRIVE SYNC -->
+      <!-- GOOGLE DRIVE -->
+      <div style="margin-bottom:20px;">
+        <div style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;"></span>Google Drive sync</div>
         <div class="gdrive-setup" id="gdriveSetupCard">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
             <svg width="18" height="18" viewBox="0 0 87.3 78" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5l5.4 9.35z" fill="#0066DA"/><path d="M43.65 25L29.9 1.2C28.55 2 27.4 3.1 26.6 4.5L1.2 49.5C.4 50.9 0 52.45 0 54h27.5L43.65 25z" fill="#00AC47"/><path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.8L73.55 76.8z" fill="#EA4335"/><path d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2L43.65 25z" fill="#00832D"/><path d="M59.8 54H27.5L13.75 77.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2L59.8 54z" fill="#2684FC"/><path d="M73.4 27L48 4.5c-1.35-.8-2.9-1.2-4.5-1.2s-3.15.4-4.5 1.2L13.6 27c-1.35.8-2.5 1.9-3.3 3.3L27.5 54h32.3L77.1 30.3c-.8-1.4-2.35-2.5-3.7-3.3z" fill="#FFBA00"/></svg>
-            <h4 style="color:var(--text)">Google Drive sync</h4>
-            <span id="gdriveStatusBadge" class="sync-badge sync-idle" style="margin-left:auto;font-size:10px;padding:2px 8px;">Niet verbonden</span>
+            <span id="gdriveStatusBadge" class="sync-badge sync-idle" style="font-size:10px;padding:2px 8px;">Niet verbonden</span>
           </div>
-
           <div id="gdriveConnected" style="display:none;">
             <div style="font-size:12px;color:var(--green);margin-bottom:10px;">Verbonden als <strong id="gdriveUserEmail"></strong></div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn-export" onclick="gdriveSaveAll()" style="font-size:11px;padding:7px 14px;">Nu opslaan naar Drive</button>
+              <button class="btn-export" onclick="gdriveSaveAll()" style="font-size:11px;padding:7px 14px;">Nu opslaan</button>
               <button class="btn-export" onclick="gdriveLoadAll()" style="font-size:11px;padding:7px 14px;border-color:var(--purple);color:var(--purple);background:rgba(167,139,250,0.1);">Laden van Drive</button>
               <button onclick="gdriveSignOut()" style="padding:7px 14px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:11px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);">Afmelden</button>
             </div>
             <div style="font-size:11px;color:var(--muted);margin-top:8px;" id="gdriveLastSync">Nog niet gesynchroniseerd</div>
           </div>
-
           <div id="gdriveSetupForm">
-            <p>Sla je data automatisch op in Google Drive zodat je op elk toestel verder kunt. Klik op de knop hieronder om in te loggen.</p>
-
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Sla je data automatisch op in Google Drive zodat je op elk toestel verder kunt.</p>
             <input type="hidden" id="gClientId" value="1073322955504-6qbvh4blvulpqo7qh4714ov1o5sf48u4.apps.googleusercontent.com">
-
-            <button class="btn-export" onclick="gdriveSignIn()" id="gdriveSignInBtn" style="width:100%;justify-content:center;display:flex;align-items:center;gap:8px;">
-              Inloggen met Google
-            </button>
+            <button class="btn-export" onclick="gdriveSignIn()" id="gdriveSignInBtn" style="width:100%;justify-content:center;display:flex;align-items:center;gap:8px;">Inloggen met Google</button>
           </div>
         </div>
+      </div>
 
-        <hr>
+      <hr style="border-color:var(--border);margin-bottom:20px;">
+
+      <!-- BACKUP -->
+      <div>
+        <div style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block;"></span>Data backup &amp; herstel</div>
         <div class="backup-row">
           <div class="backup-icon">📊</div>
           <div class="backup-info"><h4>Trade journal</h4><p id="tradeBackupInfo">— trades opgeslagen</p><div class="storage-bar"><div class="storage-fill" id="tradeStorageFill" style="width:0%"></div></div></div>
@@ -4327,16 +4337,18 @@ const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split(
         </div>
         <div class="backup-row">
           <div class="backup-icon">💾</div>
-          <div class="backup-info"><h4>Alles exporteren</h4><p>Journal + levels + instellingen + alerts</p></div>
+          <div class="backup-info"><h4>Alles exporteren</h4><p>Journal + levels + instellingen</p></div>
           <div class="backup-actions">
             <button class="btn-export" onclick="exportData('all')" style="border-color:var(--green);color:var(--green);background:rgba(46,204,138,0.1);">Alles</button>
             <div class="btn-import-wrap"><button class="btn-import">Alles laden</button><input type="file" accept=".json" onchange="importData(event,'all')"></div>
           </div>
         </div>
         <div style="padding:10px 14px;background:rgba(255,92,92,0.05);border-radius:8px;border:1px solid rgba(255,92,92,0.2);font-size:11px;color:var(--muted);line-height:1.6;margin-top:4px;">
-          <strong style="color:var(--red)">Let op:</strong> localStorage wordt gewist bij het leegmaken van de browsercache. Exporteer regelmatig je trade journal naar een JSON-bestand.
+          <strong style="color:var(--red)">Let op:</strong> localStorage wordt gewist bij het leegmaken van de browsercache. Exporteer regelmatig je trade journal.
         </div>
       </div>
+
+    </div>
   </div>
 </div>
 
@@ -4433,6 +4445,20 @@ const GDRIVE_CLIENT_ID = '1073322955504-6qbvh4blvulpqo7qh4714ov1o5sf48u4.apps.go
 let gdriveToken = null;
 let gdriveFileId = null;
 let gdriveSaveTimer = null;
+
+function openSettings(){
+  const m=$('settingsModal');
+  if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; updateBackupInfo(); }
+}
+function closeSettings(){
+  const m=$('settingsModal');
+  if(m){ m.style.display='none'; document.body.style.overflow=''; }
+}
+// Sluit modal bij klik buiten het venster
+document.addEventListener('click', e=>{
+  const m=$('settingsModal');
+  if(m && e.target===m) closeSettings();
+});
 
 function saveApiKey(){
   const key = $('anthropicApiKey')?.value.trim();
