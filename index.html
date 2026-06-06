@@ -804,7 +804,13 @@
       </select>
       <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:10px;">▼</span>
     </div>
-    <div class="header-date" id="headerDate"></div>
+    <!-- ACCOUNT SELECTOR -->
+    <div style="position:relative;">
+      <select id="accountSelect" onchange="switchAccount(this.value)" style="padding:5px 26px 5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--accent);font-family:var(--font-head);font-weight:700;font-size:12px;appearance:none;cursor:pointer;min-width:120px;" title="Actief trading account">
+        <option value="">— Geen account —</option>
+      </select>
+      <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:10px;">▼</span>
+    </div>
     <div class="header-clock" id="headerClock"></div>
     <div class="sync-badge sync-idle" id="syncBadge" onclick="openSettings()" title="Google Drive sync status" style="cursor:pointer;">
       <div class="sync-dot" id="syncDot"></div>
@@ -1297,6 +1303,11 @@
     </div>
     <div id="journalFormBody" style="display:none;">
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;padding:4px 0 12px;">
+        <div class="field"><label>Account</label>
+          <select id="jAccount" style="background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--accent);font-family:var(--font-head);font-weight:700;font-size:12px;padding:8px 10px;">
+            <option value="">— Geen account —</option>
+          </select>
+        </div>
         <div class="field"><label>Datum</label><input type="date" id="jDate"></div>
         <div class="field"><label>Currency pair</label>
           <select id="jPair">
@@ -1389,14 +1400,16 @@
 
   <!-- ── TRADE LOG (lijst) ── -->
   <div class="card">
-    <div class="card-title" style="justify-content:space-between;">
+    <div class="card-title" style="justify-content:space-between;cursor:pointer;" onclick="toggleTradeLog()">
       <div style="display:flex;align-items:center;gap:8px;"><div class="dot" style="background:var(--accent)"></div>Trade log <span id="filterCount" style="font-size:11px;color:var(--muted);font-weight:400;"></span></div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;" onclick="event.stopPropagation()">
         <button onclick="toggleFilters()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;">⚙ Filters</button>
         <button onclick="exportCSV()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--green);background:rgba(46,204,138,0.1);color:var(--green);cursor:pointer;">↓ CSV</button>
         <button onclick="clearTrades()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕ Wis alles</button>
+        <span id="tradeLogToggle" style="color:var(--muted);font-size:12px;font-family:var(--font-head);padding:4px 6px;">▴</span>
       </div>
     </div>
+    <div id="tradeLogBody">
     <div id="journalFilterBar" class="filter-bar" style="display:none;">
       <div class="filter-row">
         <div class="filter-field" style="max-width:130px;"><label>Datum van</label><input type="date" id="fDateFrom" onchange="applyFilters()"></div>
@@ -1414,7 +1427,25 @@
       </div>
       <div class="filter-actions"><button class="filter-btn" onclick="clearFilters()" style="border:1px solid var(--border);background:var(--surface2);color:var(--muted);">✕ Reset</button></div>
     </div>
-    <div class="trade-log" id="tradeLog"><div class="no-events">Nog geen trades gelogd.</div></div>
+      <div id="journalFilterBar" class="filter-bar" style="display:none;">
+        <div class="filter-row">
+          <div class="filter-field" style="max-width:130px;"><label>Datum van</label><input type="date" id="fDateFrom" onchange="applyFilters()"></div>
+          <div class="filter-field" style="max-width:130px;"><label>Datum tot</label><input type="date" id="fDateTo" onchange="applyFilters()"></div>
+          <div class="filter-field" style="max-width:110px;"><label>Uitkomst</label>
+            <select id="fResult" onchange="applyFilters()"><option value="">Alle</option><option value="win">✓ Win</option><option value="loss">✕ Loss</option><option value="be">— BE</option><option value="open">○ Open</option></select>
+          </div>
+          <div class="filter-field"><label>Pair</label>
+            <select id="fPair" onchange="applyFilters()"><option value="">Alle</option><option>EUR/USD</option><option>GBP/USD</option><option>XAU/USD</option><option>USD/JPY</option><option>NAS100</option></select>
+          </div>
+          <div class="filter-field" style="max-width:120px;"><label>Edge</label>
+            <select id="fEdge" onchange="applyFilters()"><option value="">Alle</option><option value="yes">✓ Edge</option><option value="partial">~ Deels</option><option value="no">✕ Geen</option></select>
+          </div>
+          <div class="filter-field"><label>Zoeken</label><input type="text" id="fSearch" placeholder="zoekterm..." oninput="applyFilters()"></div>
+        </div>
+        <div class="filter-actions"><button class="filter-btn" onclick="clearFilters()" style="border:1px solid var(--border);background:var(--surface2);color:var(--muted);">✕ Reset</button></div>
+      </div>
+      <div class="trade-log" id="tradeLog"><div class="no-events">Nog geen trades gelogd.</div></div>
+    </div>
   </div>
 
 </div>
@@ -2889,6 +2920,7 @@ function addTrade(){
     rr: parseFloat($('jRR').value)||0,
     notes: $('jNotes').value.trim(),
     img: journalImageBase64 || null,
+    accountId: $('jAccount')?.value || fxActiveAccountId || '',
     ...getEdgeFields('j')
   };
   trades.unshift(t);
@@ -2905,8 +2937,114 @@ function deleteTrade(id){ if(confirm('Trade verwijderen?')){ trades=trades.filte
 function clearTrades(){ if(confirm('Alle trades wissen?')){trades=[];saveTrades();renderTrades();} }
 
 // ================================================================
-// JOURNAL FORM TOGGLE
+// ACCOUNT SYSTEEM
 // ================================================================
+let fxAccounts = JSON.parse(localStorage.getItem('fxAccounts')||'[]');
+let fxActiveAccountId = localStorage.getItem('fxActiveAccountId')||'';
+
+function saveAccounts(){
+  localStorage.setItem('fxAccounts', JSON.stringify(fxAccounts));
+  scheduleDriveSave();
+}
+
+function addAccount(){
+  const name = $('accName')?.value.trim();
+  const size = parseFloat($('accSize')?.value) || 0;
+  const desc = $('accDesc')?.value.trim();
+  if(!name){ alert('Geef een naam in voor het account.'); return; }
+  const acc = { id: 'acc_'+Date.now(), name, desc, initialSize: size, createdAt: new Date().toISOString() };
+  fxAccounts.push(acc);
+  saveAccounts();
+  if($('accName')) $('accName').value='';
+  if($('accSize')) $('accSize').value='';
+  if($('accDesc')) $('accDesc').value='';
+  renderAccountsList();
+  renderAccountSelects();
+  // Activeer automatisch als eerste account
+  if(!fxActiveAccountId){ switchAccount(acc.id); }
+}
+
+function deleteAccount(id){
+  if(!confirm('Account verwijderen? Trades blijven bewaard maar zijn niet meer gekoppeld.')) return;
+  fxAccounts = fxAccounts.filter(a => a.id !== id);
+  saveAccounts();
+  if(fxActiveAccountId === id){ fxActiveAccountId = fxAccounts.length ? fxAccounts[0].id : ''; localStorage.setItem('fxActiveAccountId', fxActiveAccountId); }
+  renderAccountsList();
+  renderAccountSelects();
+}
+
+function switchAccount(id){
+  fxActiveAccountId = id;
+  localStorage.setItem('fxActiveAccountId', id);
+  // Update header selector
+  const sel = $('accountSelect');
+  if(sel) sel.value = id;
+  // Update journal form selector
+  const jSel = $('jAccount');
+  if(jSel) jSel.value = id;
+  renderAccountsList();
+}
+
+function getAccountBalance(accId){
+  const acc = fxAccounts.find(a => a.id === accId);
+  if(!acc) return null;
+  const accTrades = trades.filter(t => t.accountId === accId && t.result !== 'open');
+  const pnl = accTrades.reduce((s,t) => s + (t.pnl||0), 0);
+  return { initial: acc.initialSize, pnl, current: acc.initialSize + pnl, trades: accTrades.length };
+}
+
+function renderAccountsList(){
+  const el = $('accountsList');
+  if(!el) return;
+  if(!fxAccounts.length){
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">Nog geen accounts aangemaakt.</div>';
+    return;
+  }
+  el.innerHTML = fxAccounts.map(acc => {
+    const bal = getAccountBalance(acc.id);
+    const isActive = acc.id === fxActiveAccountId;
+    const pnlColor = (bal?.pnl||0) >= 0 ? 'var(--green)' : 'var(--red)';
+    const growthPct = bal?.initial > 0 ? ((bal.pnl / bal.initial)*100).toFixed(1) : '—';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:${isActive?'rgba(79,158,255,0.08)':'var(--surface2)'};border:1px solid ${isActive?'rgba(79,158,255,0.3)':'var(--border)'};border-radius:10px;margin-bottom:6px;">
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:var(--font-head);font-weight:700;font-size:13px;color:${isActive?'var(--accent)':'var(--text)'};">${acc.name}</span>
+          ${isActive?'<span style="font-size:9px;background:rgba(79,158,255,0.2);color:var(--accent);padding:1px 6px;border-radius:4px;font-family:var(--font-head);font-weight:700;">ACTIEF</span>':''}
+        </div>
+        ${acc.desc?`<div style="font-size:11px;color:var(--muted);margin-top:2px;">${acc.desc}</div>`:''}
+        <div style="display:flex;gap:12px;margin-top:6px;font-size:11px;">
+          <span style="color:var(--muted);">Start: <strong style="color:var(--text)">€${(acc.initialSize||0).toLocaleString()}</strong></span>
+          ${bal?`<span style="color:var(--muted);">Huidig: <strong style="color:var(--text)">€${(bal.current||0).toLocaleString('nl-BE',{minimumFractionDigits:0,maximumFractionDigits:0})}</strong></span>
+          <span style="color:${pnlColor};font-weight:700;">${(bal.pnl||0)>=0?'+':''}€${(bal.pnl||0).toFixed(0)} (${growthPct}%)</span>
+          <span style="color:var(--muted);">${bal.trades} trades</span>`:''}
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-left:10px;">
+        ${!isActive?`<button onclick="switchAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--accent);background:rgba(79,158,255,0.1);color:var(--accent);cursor:pointer;font-family:var(--font-head);font-weight:700;">Activeer</button>`:''}
+        <button onclick="deleteAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderAccountSelects(){
+  const opts = `<option value="">— Geen account —</option>` +
+    fxAccounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+  ['accountSelect','jAccount'].forEach(id => {
+    const sel = $(id);
+    if(sel){ sel.innerHTML = opts; sel.value = fxActiveAccountId || ''; }
+  });
+}
+
+function toggleTradeLog(){
+  const body = $('tradeLogBody');
+  const toggle = $('tradeLogToggle');
+  if(!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if(toggle) toggle.textContent = open ? '▾' : '▴';
+}
+
 function toggleJournalForm(){
   const body = $('journalFormBody');
   const toggle = $('journalFormToggle');
@@ -2994,9 +3132,9 @@ function renderCalendar(){
     const todayStyle = isToday ? 'box-shadow:0 0 0 2px var(--accent);' : '';
     const onclick = dayTrades.length > 0 ? `onclick="openCalDay('${dateStr}')"` : '';
 
-    html += `<div ${onclick} style="min-height:56px;border-radius:8px;background:${bgColor};border:${border};${todayStyle}${cursor}padding:6px 4px;display:flex;flex-direction:column;align-items:center;transition:opacity .15s;" ${dayTrades.length>0?'onmouseenter="this.style.opacity=\'0.8\'" onmouseleave="this.style.opacity=\'1\'"':''}>
-      <div style="font-size:11px;font-family:var(--font-head);font-weight:700;color:${isToday?'var(--accent)':textColor};">${day}</div>
-      <div style="color:${textColor};text-align:center;">${pnlText}</div>
+    html += `<div ${onclick} style="min-height:75px;border-radius:10px;background:${bgColor};border:${border};${todayStyle}${cursor}padding:8px 6px;display:flex;flex-direction:column;align-items:center;transition:opacity .15s;" ${dayTrades.length>0?'onmouseenter="this.style.opacity=\'0.8\'" onmouseleave="this.style.opacity=\'1\'"':''}>
+      <div style="font-size:12px;font-family:var(--font-head);font-weight:700;color:${isToday?'var(--accent)':textColor};">${day}</div>
+      <div style="color:${textColor};text-align:center;margin-top:2px;">${pnlText}</div>
     </div>`;
   }
 
@@ -3070,6 +3208,9 @@ function openCalDay(dateStr){
       ${t.notes?`<div style="font-size:12px;color:var(--muted);line-height:1.7;padding:10px;background:var(--bg);border-radius:8px;margin-bottom:8px;"><strong style="color:var(--text);">📝 Notities:</strong> ${t.notes}</div>`:''}
       ${t.edge_desc?`<div style="font-size:12px;color:var(--muted);line-height:1.7;padding:10px;background:rgba(167,139,250,0.06);border-radius:8px;border-left:3px solid var(--purple);margin-bottom:8px;"><strong style="color:var(--purple);">⚡ Edge:</strong> ${t.edge_desc}</div>`:''}
       ${t.img?`<img src="${t.img}" style="width:100%;border-radius:8px;margin-top:4px;max-height:300px;object-fit:contain;background:var(--bg);">`:''}
+      <div style="margin-top:10px;text-align:right;">
+        <button onclick="closeCalDayModal();editTrade('${t.id}')" style="padding:6px 14px;border-radius:8px;font-family:var(--font-head);font-weight:700;font-size:11px;cursor:pointer;border:1px solid var(--accent);background:rgba(79,158,255,0.1);color:var(--accent);">✏ Wijzigen</button>
+      </div>
     </div>`;
   }).join('');
 
@@ -4526,6 +4667,23 @@ const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split(
 
       <hr style="border-color:var(--border);margin-bottom:20px;">
 
+      <!-- ACCOUNTS -->
+      <div style="margin-bottom:20px;">
+        <div style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;"></span>Trading accounts</div>
+        <div id="accountsList" style="margin-bottom:12px;"></div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-family:var(--font-head);font-weight:700;">Nieuw account toevoegen</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <div><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Naam</label><input type="text" id="accName" placeholder="bv. ICMarkets Live" style="width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;"></div>
+            <div><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Account size (€/$)</label><input type="number" id="accSize" placeholder="bv. 10000" style="width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;"></div>
+          </div>
+          <div style="margin-bottom:8px;"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Omschrijving</label><input type="text" id="accDesc" placeholder="bv. Live account prop firm, max 2% risico/trade" style="width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;"></div>
+          <button onclick="addAccount()" class="save-btn" style="width:100%;justify-content:center;">Account toevoegen</button>
+        </div>
+      </div>
+
+      <hr style="border-color:var(--border);margin-bottom:20px;">
+
       <!-- BACKUP -->
       <div>
         <div style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--amber);display:inline-block;"></span>Data backup &amp; herstel</div>
@@ -4844,6 +5002,8 @@ async function gdriveSaveAll(silent){
       tvSettings:JSON.parse(localStorage.getItem('fxTVSettings')||'{}'),
       alerts:JSON.parse(localStorage.getItem('fxAlerts')||'[]'),
       anthropicKey:localStorage.getItem('fxAnthropicKey')||'',
+      fxAccounts:JSON.parse(localStorage.getItem('fxAccounts')||'[]'),
+      fxActiveAccountId:localStorage.getItem('fxActiveAccountId')||'',
       savedAt:new Date().toISOString()
     };
     const json=JSON.stringify(data,null,2);
@@ -4896,12 +5056,12 @@ async function gdriveLoadAll(silent){
     if(data.alerts){localStorage.setItem('fxAlerts',JSON.stringify(data.alerts));priceAlerts=data.alerts;renderAlerts();}
     if(data.anthropicKey){
       localStorage.setItem('fxAnthropicKey',data.anthropicKey);
-      // Vul het inputveld in — ook als de tab nog niet zichtbaar is
       const fillKey = () => { const el=$('anthropicApiKey'); if(el) el.value=data.anthropicKey; };
-      fillKey();
-      // Fallback: probeer opnieuw na 1s (tab mogelijk nog niet gerenderd)
-      setTimeout(fillKey, 1000);
+      fillKey(); setTimeout(fillKey, 1000);
     }
+    if(data.fxAccounts){ localStorage.setItem('fxAccounts', JSON.stringify(data.fxAccounts)); fxAccounts=data.fxAccounts; }
+    if(data.fxActiveAccountId){ localStorage.setItem('fxActiveAccountId', data.fxActiveAccountId); fxActiveAccountId=data.fxActiveAccountId; }
+    renderAccountSelects(); renderAccountsList();
 
     loadSavedMarktData();updateBackupInfo();loadTVSettings();
 
@@ -6231,6 +6391,8 @@ updateKeyLevelsBar();
 loadLang();
 renderLearnCards('all', '');
 renderCalendar();
+renderAccountSelects();
+renderAccountsList();
 // Drive startup modal (alleen als niet al verbonden via loadGdriveConfig)
 setTimeout(() => {
   if(!gdriveToken) checkDriveStartup();
