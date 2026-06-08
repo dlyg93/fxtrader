@@ -7761,6 +7761,233 @@ const STRATEGY_CHARTS = {
   </svg>`,
 };
 
+// ================================================================
+// ANIMATED CHARTS (CSS-geanimeerde SVG's)
+// ================================================================
+const ANIMATED_CHARTS = {
+
+  fvg: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:160px;">
+    <style>
+      @keyframes fvg_fi{from{opacity:0}to{opacity:1}}
+      .fvg0{opacity:0;animation:fvg_fi .4s ease .1s forwards}
+      .fvg1{opacity:0;animation:fvg_fi .4s ease .4s forwards}
+      .fvg2{opacity:0;animation:fvg_fi .4s ease .7s forwards}
+      .fvg3{opacity:0;animation:fvg_fi .4s ease 1.0s forwards}
+      .fvg4{opacity:0;animation:fvg_fi .5s ease 1.4s forwards}
+      .fvg5{opacity:0;animation:fvg_fi .4s ease 1.9s forwards}
+      .fvg6{opacity:0;animation:fvg_fi .4s ease 2.3s forwards}
+      .fvg7{opacity:0;animation:fvg_fi .4s ease 2.7s forwards}
+      .fvg8{opacity:0;animation:fvg_fi .4s ease 3.1s forwards}
+      .fvg9{opacity:0;animation:fvg_fi .5s ease 3.6s forwards}
+      .fvg10{opacity:0;animation:fvg_fi .5s ease 4.2s forwards}
+    </style>
+    <rect width="300" height="160" fill="#0d0f14" rx="8"/>
+    <!-- Labels -->
+    <g class="fvg0">
+      <text x="10" y="15" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">Fair Value Gap — animatie</text>
+      <text x="10" y="155" fill="#4f9eff" font-size="7" font-family="monospace">C1 = eerste kaars · C2 = impuls · C3 = derde kaars</text>
+    </g>
+    <!-- Context candles -->
+    <g class="fvg1">
+      <rect x="18" y="100" width="11" height="22" fill="#ff5c5c" rx="1"/><line x1="23" y1="97" x2="23" y2="124" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="36" y="92" width="11" height="20" fill="#2ecc8a" rx="1"/><line x1="41" y1="89" x2="41" y2="114" stroke="#2ecc8a" stroke-width="1"/>
+    </g>
+    <!-- C1 -->
+    <g class="fvg2">
+      <rect x="55" y="80" width="13" height="24" fill="#2ecc8a" rx="1"/>
+      <line x1="61" y1="77" x2="61" y2="106" stroke="#2ecc8a" stroke-width="1.5"/>
+      <text x="52" y="130" fill="#4f9eff" font-size="7" font-family="monospace">C1</text>
+    </g>
+    <!-- C2: impulse -->
+    <g class="fvg3">
+      <rect x="75" y="40" width="13" height="42" fill="#2ecc8a" rx="1"/>
+      <line x1="81" y1="35" x2="81" y2="84" stroke="#2ecc8a" stroke-width="2"/>
+      <text x="72" y="130" fill="#4f9eff" font-size="7" font-family="monospace">C2</text>
+    </g>
+    <!-- FVG zone highlight + lines -->
+    <g class="fvg4">
+      <rect x="55" y="50" width="55" height="28" fill="rgba(245,166,35,0.18)" rx="2"/>
+      <line x1="55" y1="50" x2="110" y2="50" stroke="#f5a623" stroke-width="1.2" stroke-dasharray="3,2"/>
+      <line x1="55" y1="78" x2="110" y2="78" stroke="#f5a623" stroke-width="1.2" stroke-dasharray="3,2"/>
+      <text x="113" y="58" fill="#f5a623" font-size="8" font-family="monospace" font-weight="bold">FVG</text>
+      <text x="113" y="68" fill="#f5a623" font-size="7" font-family="monospace">50%:</text>
+      <line x1="55" y1="64" x2="110" y2="64" stroke="rgba(245,166,35,0.5)" stroke-width="1" stroke-dasharray="2,2"/>
+    </g>
+    <!-- C3 -->
+    <g class="fvg5">
+      <rect x="95" y="28" width="13" height="20" fill="#2ecc8a" rx="1"/>
+      <line x1="101" y1="25" x2="101" y2="50" stroke="#2ecc8a" stroke-width="1.5"/>
+      <text x="92" y="130" fill="#4f9eff" font-size="7" font-family="monospace">C3</text>
+    </g>
+    <!-- Continuation -->
+    <g class="fvg6">
+      <rect x="115" y="18" width="11" height="16" fill="#2ecc8a" rx="1"/><line x1="120" y1="15" x2="120" y2="36" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="132" y="10" width="11" height="14" fill="#2ecc8a" rx="1"/><line x1="137" y1="7" x2="137" y2="26" stroke="#2ecc8a" stroke-width="1"/>
+    </g>
+    <!-- Pullback naar FVG -->
+    <g class="fvg7">
+      <text x="145" y="36" fill="#ff5c5c" font-size="7" font-family="monospace">↓ pullback</text>
+      <rect x="152" y="42" width="11" height="24" fill="#ff5c5c" rx="1"/><line x1="157" y1="38" x2="157" y2="68" stroke="#ff5c5c" stroke-width="1.5"/>
+    </g>
+    <g class="fvg8">
+      <rect x="168" y="50" width="11" height="20" fill="#ff5c5c" rx="1"/><line x1="173" y1="46" x2="173" y2="72" stroke="#ff5c5c" stroke-width="1.5"/>
+    </g>
+    <!-- Entry in FVG -->
+    <g class="fvg9">
+      <circle cx="178" cy="64" r="5" fill="none" stroke="#f5a623" stroke-width="2"/>
+      <text x="184" y="60" fill="#f5a623" font-size="8" font-family="monospace" font-weight="bold">Entry!</text>
+      <text x="184" y="70" fill="#f5a623" font-size="7" font-family="monospace">in FVG zone</text>
+    </g>
+    <!-- Continuation na fill -->
+    <g class="fvg10">
+      <rect x="188" y="30" width="11" height="28" fill="#2ecc8a" rx="1"/><line x1="193" y1="26" x2="193" y2="60" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="205" y="16" width="11" height="20" fill="#2ecc8a" rx="1"/><line x1="210" y1="13" x2="210" y2="38" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="222" y="8" width="11" height="16" fill="#2ecc8a" rx="1"/><line x1="227" y1="5" x2="227" y2="26" stroke="#2ecc8a" stroke-width="1"/>
+      <text x="190" y="140" fill="#2ecc8a" font-size="8" font-family="monospace">↑ Prijs hervat richting</text>
+    </g>
+  </svg>`,
+
+  liquiditysweep: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:160px;">
+    <style>
+      @keyframes lq_fi{from{opacity:0}to{opacity:1}}
+      .lq0{opacity:0;animation:lq_fi .4s ease .1s forwards}
+      .lq1{opacity:0;animation:lq_fi .4s ease .5s forwards}
+      .lq2{opacity:0;animation:lq_fi .4s ease .9s forwards}
+      .lq3{opacity:0;animation:lq_fi .4s ease 1.3s forwards}
+      .lq4{opacity:0;animation:lq_fi .4s ease 1.7s forwards}
+      .lq5{opacity:0;animation:lq_fi .6s ease 2.2s forwards}
+      .lq6{opacity:0;animation:lq_fi .5s ease 3.0s forwards}
+      .lq7{opacity:0;animation:lq_fi .4s ease 3.7s forwards}
+      .lq8{opacity:0;animation:lq_fi .4s ease 4.2s forwards}
+      .lq9{opacity:0;animation:lq_fi .5s ease 4.8s forwards}
+    </style>
+    <rect width="300" height="160" fill="#0d0f14" rx="8"/>
+    <g class="lq0">
+      <text x="10" y="15" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">Liquidity Sweep — animatie</text>
+    </g>
+    <!-- Equal highs level -->
+    <g class="lq1">
+      <line x1="20" y1="52" x2="190" y2="52" stroke="rgba(79,158,255,0.5)" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <text x="192" y="56" fill="#4f9eff" font-size="7" font-family="monospace">Stops!</text>
+    </g>
+    <!-- Candles approaching -->
+    <g class="lq2">
+      <rect x="20" y="72" width="11" height="26" fill="#2ecc8a" rx="1"/><line x1="25" y1="68" x2="25" y2="100" stroke="#2ecc8a" stroke-width="1"/>
+      <circle cx="25" cy="54" r="3" fill="#4f9eff"/>
+    </g>
+    <g class="lq3">
+      <rect x="38" y="64" width="11" height="22" fill="#ff5c5c" rx="1"/><line x1="43" y1="60" x2="43" y2="88" stroke="#ff5c5c" stroke-width="1"/>
+    </g>
+    <g class="lq4">
+      <rect x="56" y="58" width="11" height="20" fill="#2ecc8a" rx="1"/><line x1="61" y1="54" x2="61" y2="80" stroke="#2ecc8a" stroke-width="1"/>
+      <circle cx="61" cy="54" r="3" fill="#4f9eff"/>
+    </g>
+    <!-- SWEEP candle -->
+    <g class="lq5">
+      <text x="74" y="24" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">⚡ SWEEP!</text>
+      <rect x="75" y="56" width="13" height="16" fill="#2ecc8a" rx="1"/>
+      <line x1="81" y1="30" x2="81" y2="74" stroke="#2ecc8a" stroke-width="2.5"/>
+      <circle cx="81" cy="30" r="4" fill="#ff5c5c" opacity="0.8"/>
+    </g>
+    <!-- Rejection -->
+    <g class="lq6">
+      <text x="96" y="44" fill="#ff5c5c" font-size="8" font-family="monospace">↓ Reversal</text>
+      <rect x="96" y="62" width="13" height="30" fill="#ff5c5c" rx="1"/>
+      <line x1="102" y1="56" x2="102" y2="94" stroke="#ff5c5c" stroke-width="2"/>
+    </g>
+    <!-- Strong drop -->
+    <g class="lq7">
+      <rect x="116" y="80" width="11" height="28" fill="#ff5c5c" rx="1"/><line x1="121" y1="76" x2="121" y2="110" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="133" y="96" width="11" height="26" fill="#ff5c5c" rx="1"/><line x1="138" y1="92" x2="138" y2="124" stroke="#ff5c5c" stroke-width="1.5"/>
+    </g>
+    <g class="lq8">
+      <rect x="150" y="108" width="11" height="24" fill="#ff5c5c" rx="1"/><line x1="155" y1="104" x2="155" y2="134" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="167" y="118" width="11" height="22" fill="#ff5c5c" rx="1"/><line x1="172" y1="114" x2="172" y2="142" stroke="#ff5c5c" stroke-width="1.5"/>
+    </g>
+    <!-- Entry + label -->
+    <g class="lq9">
+      <circle cx="102" cy="60" r="5" fill="none" stroke="#f5a623" stroke-width="2"/>
+      <text x="117" y="58" fill="#f5a623" font-size="8" font-family="monospace" font-weight="bold">Short entry</text>
+      <text x="10" y="155" fill="#4f9eff" font-size="7" font-family="monospace">Stops weggenomen → prijs keert → short kans</text>
+    </g>
+  </svg>`,
+
+  orb: `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:160px;">
+    <style>
+      @keyframes orb_fi{from{opacity:0}to{opacity:1}}
+      .orb0{opacity:0;animation:orb_fi .4s ease .1s forwards}
+      .orb1{opacity:0;animation:orb_fi .4s ease .5s forwards}
+      .orb2{opacity:0;animation:orb_fi .4s ease .9s forwards}
+      .orb3{opacity:0;animation:orb_fi .4s ease 1.3s forwards}
+      .orb4{opacity:0;animation:orb_fi .6s ease 1.8s forwards}
+      .orb5{opacity:0;animation:orb_fi .5s ease 2.5s forwards}
+      .orb6{opacity:0;animation:orb_fi .4s ease 3.1s forwards}
+      .orb7{opacity:0;animation:orb_fi .4s ease 3.5s forwards}
+      .orb8{opacity:0;animation:orb_fi .4s ease 3.9s forwards}
+      .orb9{opacity:0;animation:orb_fi .5s ease 4.4s forwards}
+    </style>
+    <rect width="300" height="160" fill="#0d0f14" rx="8"/>
+    <g class="orb0">
+      <text x="10" y="15" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">Opening Range Breakout (ORB15) — animatie</text>
+    </g>
+    <!-- Open marker -->
+    <g class="orb1">
+      <line x1="22" y1="20" x2="22" y2="145" stroke="#4f9eff" stroke-width="1" stroke-dasharray="2,2" opacity="0.6"/>
+      <text x="24" y="30" fill="#4f9eff" font-size="7" font-family="monospace">08:00 Open</text>
+    </g>
+    <!-- Range candles forming -->
+    <g class="orb2">
+      <rect x="24" y="74" width="10" height="24" fill="#ff5c5c" rx="1"/><line x1="29" y1="70" x2="29" y2="100" stroke="#ff5c5c" stroke-width="1"/>
+      <text x="24" y="152" fill="#4f9eff" font-size="7" font-family="monospace">Range vormt zich...</text>
+    </g>
+    <g class="orb3">
+      <rect x="40" y="68" width="10" height="20" fill="#2ecc8a" rx="1"/><line x1="45" y1="64" x2="45" y2="90" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="56" y="72" width="10" height="18" fill="#ff5c5c" rx="1"/><line x1="61" y1="68" x2="61" y2="92" stroke="#ff5c5c" stroke-width="1"/>
+    </g>
+    <!-- ORB H/L lines + zone -->
+    <g class="orb4">
+      <rect x="22" y="60" width="60" height="52" fill="rgba(79,158,255,0.08)" rx="2"/>
+      <line x1="22" y1="60" x2="255" y2="60" stroke="#2ecc8a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="257" y="64" fill="#2ecc8a" font-size="7" font-family="monospace">ORB H</text>
+      <line x1="22" y1="112" x2="255" y2="112" stroke="#ff5c5c" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="257" y="116" fill="#ff5c5c" font-size="7" font-family="monospace">ORB L</text>
+      <text x="22" y="152" fill="#2ecc8a" font-size="7" font-family="monospace">08:15 → Range vastgesteld!</text>
+    </g>
+    <!-- 08:15 marker -->
+    <g class="orb5">
+      <line x1="82" y1="20" x2="82" y2="145" stroke="#f5a623" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+      <text x="84" y="30" fill="#f5a623" font-size="7" font-family="monospace">08:15</text>
+      <text x="84" y="40" fill="#f5a623" font-size="7" font-family="monospace">Breakout!</text>
+    </g>
+    <!-- Breakout candle -->
+    <g class="orb6">
+      <rect x="84" y="36" width="12" height="28" fill="#2ecc8a" rx="1"/>
+      <line x1="90" y1="30" x2="90" y2="66" stroke="#2ecc8a" stroke-width="2.5"/>
+      <circle cx="90" cy="58" r="5" fill="none" stroke="#f5a623" stroke-width="2"/>
+      <text x="99" y="52" fill="#f5a623" font-size="7" font-family="monospace">Entry</text>
+    </g>
+    <!-- Continuation -->
+    <g class="orb7">
+      <rect x="102" y="26" width="10" height="18" fill="#2ecc8a" rx="1"/><line x1="107" y1="22" x2="107" y2="46" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="118" y="18" width="10" height="16" fill="#2ecc8a" rx="1"/><line x1="123" y1="14" x2="123" y2="36" stroke="#2ecc8a" stroke-width="1"/>
+    </g>
+    <g class="orb8">
+      <rect x="134" y="22" width="10" height="14" fill="#ff5c5c" rx="1"/><line x1="139" y1="18" x2="139" y2="38" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="150" y="14" width="10" height="16" fill="#2ecc8a" rx="1"/><line x1="155" y1="10" x2="155" y2="32" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="166" y="8" width="10" height="14" fill="#2ecc8a" rx="1"/><line x1="171" y1="5" x2="171" y2="24" stroke="#2ecc8a" stroke-width="1"/>
+    </g>
+    <!-- SL / TP lines -->
+    <g class="orb9">
+      <line x1="84" y1="120" x2="195" y2="120" stroke="#ff5c5c" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="197" y="124" fill="#ff5c5c" font-size="7" font-family="monospace">SL</text>
+      <line x1="84" y1="22" x2="195" y2="22" stroke="#2ecc8a" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="197" y="26" fill="#2ecc8a" font-size="7" font-family="monospace">TP</text>
+      <text x="22" y="152" fill="#2ecc8a" font-size="7" font-family="monospace">Breakout boven ORB High → long entry met SL onder ORB Low</text>
+    </g>
+  </svg>`,
+
+};
+
 function openLearnModal(itemId) {
   const l = currentLang;
   const item = LEARN_DATA.find(i => i.id === itemId);
@@ -7769,12 +7996,18 @@ function openLearnModal(itemId) {
   const col = CAT_COLORS[item.cat] || 'var(--accent)';
   const icon = CAT_ICONS[item.cat] || '●';
   const bodyHtml = (d.body||'').replace(/\n/g, '<br>');
-  const chart = STRATEGY_CHARTS[item.id] || '';
+  const staticChart  = STRATEGY_CHARTS[item.id]  || '';
+  const animChart    = ANIMATED_CHARTS[item.id]   || '';
+  const hasAnim      = !!animChart;
+  let   showAnim     = hasAnim; // default: toon animatie als beschikbaar
+  const chart        = showAnim ? animChart : staticChart;
 
   const inner = $('learnModalInner');
   if(!inner) return;
 
-  inner.innerHTML = `
+  function buildModal(useAnim){
+    const ch = (useAnim && animChart) ? animChart : staticChart;
+    inner.innerHTML = `
     <!-- Modal header -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--border);border-radius:18px 18px 0 0;background:var(--surface);position:sticky;top:0;z-index:1;">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -7784,14 +8017,17 @@ function openLearnModal(itemId) {
           <div style="font-size:11px;color:var(--muted);margin-top:2px;">${d.short}</div>
         </div>
       </div>
-      <button onclick="closeLearnModal()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:18px;padding:4px 10px;line-height:1;flex-shrink:0;">✕</button>
+      <div style="display:flex;gap:6px;align-items:center;">
+        ${hasAnim ? `<button onclick="replayLearnAnim()" title="Replay animatie" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--accent);cursor:pointer;font-size:13px;padding:4px 10px;">▶ Replay</button>` : ''}
+        <button onclick="closeLearnModal()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:18px;padding:4px 10px;line-height:1;flex-shrink:0;">✕</button>
+      </div>
     </div>
 
     <!-- Chart -->
-    ${chart ? `<div style="padding:16px 24px 0;">${chart}</div>` : ''}
+    ${ch ? `<div id="learnChartContainer" style="padding:16px 24px 0;">${ch}</div>` : ''}
 
     <!-- Body -->
-    <div style="padding:${chart?'16':'24'}px 24px 0;font-size:13px;color:var(--text);line-height:1.9;">
+    <div style="padding:16px 24px 0;font-size:13px;color:var(--text);line-height:1.9;">
       ${bodyHtml}
     </div>
 
@@ -7803,10 +8039,20 @@ function openLearnModal(itemId) {
     </div>` : ''}
 
     <div style="height:24px;"></div>
-  `;
+  `;}
+
+  buildModal(showAnim);
 
   const modal = $('learnModal');
   if(modal){ modal.style.display='flex'; document.body.style.overflow='hidden'; }
+}
+
+function replayLearnAnim(){
+  const c = $('learnChartContainer');
+  if(!c) return;
+  const html = c.innerHTML;
+  c.innerHTML = '';
+  requestAnimationFrame(() => { c.innerHTML = html; });
 }
 
 function closeLearnModal(){
