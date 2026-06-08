@@ -6824,6 +6824,15 @@ const LEARN_DATA = [
       example:'EUR/USD Asian range: 1.0842–1.0865. London open 08:00: breakout above 1.0865 → retest 1.0865 at 08:50 → H1 bullish candle → long entry 1.0868, SL 1.0852, TP 1.0904 → R:R 1:2.3.' }
   },
 
+  { id:'orb', cat:'strategies',
+    NL:{ term:'Opening Range Breakout (ORB)', short:'Trade de doorbraak van de high/low die in de eerste N minuten na de open gevormd wordt.',
+      body:'De Opening Range Breakout (ORB) is een klassieke strategie waarbij je de high en low van de eerste 5, 15 of 30 minuten na de marktopening markeert. Zodra prijs die range breekt, trade je mee in de richting van de doorbraak.\n\nWERKING:\n1. Bepaal je opening range periode: 5 min (ORB5), 15 min (ORB15) of 30 min (ORB30)\n2. Markeer de high en low van die periode — dit is de "range"\n3. Wacht op een duidelijke candle-close BUITEN de range\n4. Entry bij de re-entry of bij de close van de breakout candle\n5. SL net binnen de range (onder ORB-low bij long, boven ORB-high bij short)\n6. TP = minimaal 1.5× de range-breedte\n\nBESTE MOMENTEN:\n🕗 London open (08:00–08:15 BE) → ORB15 op EUR/USD, GBP/USD\n🕒 NY open (14:30–14:45 BE) → ORB15 op USD-paren, XAU/USD\n\nREGELS:\n• Alleen traden als de doorbraak gepaard gaat met volume/sterke candle\n• Vermijd ORB bij hoge impact news in de range-periode\n• Geen entry als prijs al meer dan 70% van de dagrange bewogen heeft\n• Combineer met HTF trend: alleen long ORB als Daily/H4 bullish is\n\nVARIANTEN:\n• ORB5: agressiever, meer signals, hogere fout-ratio\n• ORB15: meest populair, goede balans\n• ORB30: conservatiever, minder signals maar betrouwbaarder',
+      example:'EUR/USD, London open 08:00. ORB15: high 1.0872, low 1.0858 (range = 14 pip). Om 08:22 sluit H1 candle boven 1.0872 → long entry 1.0874, SL 1.0856 (net onder low), TP 1.0895 (14 pip range × 1.5 = 21 pip). R:R = 1:1.2.' },
+    EN:{ term:'Opening Range Breakout (ORB)', short:'Trade the breakout of the high/low formed in the first N minutes after the open.',
+      body:'The Opening Range Breakout (ORB) is a classic strategy where you mark the high and low of the first 5, 15 or 30 minutes after market open. Once price breaks that range, you trade in the direction of the breakout.\n\nHOW IT WORKS:\n1. Choose your opening range period: 5 min (ORB5), 15 min (ORB15) or 30 min (ORB30)\n2. Mark the high and low of that period — this is the "range"\n3. Wait for a clear candle close OUTSIDE the range\n4. Entry on re-entry or at close of breakout candle\n5. SL just inside the range (below ORB-low for long, above ORB-high for short)\n6. TP = minimum 1.5× the range width\n\nBEST MOMENTS:\n🕗 London open (08:00–08:15 BE) → ORB15 on EUR/USD, GBP/USD\n🕒 NY open (14:30–14:45 BE) → ORB15 on USD pairs, XAU/USD\n\nRULES:\n• Only trade if breakout is accompanied by volume/strong candle\n• Avoid ORB during high impact news within the range period\n• No entry if price has already moved more than 70% of daily range\n• Combine with HTF trend: only long ORB if Daily/H4 is bullish\n\nVARIANTS:\n• ORB5: aggressive, more signals, higher fail rate\n• ORB15: most popular, good balance\n• ORB30: conservative, fewer signals but more reliable',
+      example:'EUR/USD, London open 08:00. ORB15: high 1.0872, low 1.0858 (range = 14 pips). At 08:22 H1 candle closes above 1.0872 → long entry 1.0874, SL 1.0856 (just below low), TP 1.0895 (14 pip range × 1.5 = 21 pips). R:R = 1:1.2.' }
+  },
+
   // ── PSYCHOLOGIE ──
   { id:'fomo', cat:'psychology',
     NL:{ term:'FOMO (Fear of Missing Out)', short:'De angst een trade te missen, wat leidt tot slechte entries.',
@@ -7661,6 +7670,56 @@ const STRATEGY_CHARTS = {
     <circle cx="222" cy="92" r="4" fill="#2ecc8a" opacity="0.7"/>
     <text x="238" y="80" fill="#f5a623" font-size="7" font-family="monospace">EQ</text>
     <text x="232" y="96" fill="#2ecc8a" font-size="7" font-family="monospace">Long!</text>
+  </svg>`,
+
+  orb: `<svg viewBox="0 0 300 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:155px;">
+    <rect width="300" height="155" fill="#0d0f14" rx="8"/>
+    <text x="10" y="16" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">Opening Range Breakout (ORB15)</text>
+    <!-- Time axis labels -->
+    <text x="18" y="148" fill="#4f9eff" font-size="7" font-family="monospace">08:00</text>
+    <text x="68" y="148" fill="#4f9eff" font-size="7" font-family="monospace">08:15</text>
+    <text x="118" y="148" fill="#muted" font-size="7" font-family="monospace">08:30</text>
+    <text x="178" y="148" fill="#muted" font-size="7" font-family="monospace">09:00</text>
+    <!-- Opening range zone (08:00-08:15) -->
+    <rect x="20" y="58" width="52" height="52" fill="rgba(79,158,255,0.1)" rx="2"/>
+    <!-- ORB candles (range formation) -->
+    <rect x="22" y="72" width="9" height="24" fill="#ff5c5c" rx="1"/><line x1="26" y1="68" x2="26" y2="98" stroke="#ff5c5c" stroke-width="1"/>
+    <rect x="35" y="66" width="9" height="20" fill="#2ecc8a" rx="1"/><line x1="39" y1="62" x2="39" y2="88" stroke="#2ecc8a" stroke-width="1"/>
+    <rect x="48" y="70" width="9" height="18" fill="#ff5c5c" rx="1"/><line x1="52" y1="66" x2="52" y2="90" stroke="#ff5c5c" stroke-width="1"/>
+    <!-- ORB High line -->
+    <line x1="20" y1="58" x2="240" y2="58" stroke="#2ecc8a" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="242" y="62" fill="#2ecc8a" font-size="8" font-family="monospace">ORB H</text>
+    <!-- ORB Low line -->
+    <line x1="20" y1="110" x2="240" y2="110" stroke="#ff5c5c" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="242" y="114" fill="#ff5c5c" font-size="8" font-family="monospace">ORB L</text>
+    <!-- Range label -->
+    <line x1="15" y1="58" x2="15" y2="110" stroke="#4f9eff" stroke-width="1"/>
+    <line x1="12" y1="58" x2="18" y2="58" stroke="#4f9eff" stroke-width="1"/>
+    <line x1="12" y1="110" x2="18" y2="110" stroke="#4f9eff" stroke-width="1"/>
+    <text x="2" y="87" fill="#4f9eff" font-size="7" font-family="monospace" transform="rotate(-90,8,87)">Range</text>
+    <!-- Breakout candle (after 08:15) -->
+    <rect x="75" y="36" width="11" height="26" fill="#2ecc8a" rx="1"/>
+    <line x1="80" y1="30" x2="80" y2="64" stroke="#2ecc8a" stroke-width="2"/>
+    <!-- Breakout label -->
+    <text x="64" y="28" fill="#2ecc8a" font-size="7" font-family="monospace">Breakout!</text>
+    <!-- Entry arrow -->
+    <path d="M80,44 L80,34" stroke="#f5a623" stroke-width="1.5"/>
+    <circle cx="80" cy="56" r="4" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+    <text x="88" y="60" fill="#f5a623" font-size="7" font-family="monospace">Entry</text>
+    <!-- Continuation -->
+    <rect x="92" y="26" width="9" height="18" fill="#2ecc8a" rx="1"/><line x1="96" y1="22" x2="96" y2="46" stroke="#2ecc8a" stroke-width="1"/>
+    <rect x="107" y="18" width="9" height="16" fill="#2ecc8a" rx="1"/><line x1="111" y1="14" x2="111" y2="36" stroke="#2ecc8a" stroke-width="1"/>
+    <rect x="122" y="22" width="9" height="14" fill="#ff5c5c" rx="1"/><line x1="126" y1="18" x2="126" y2="38" stroke="#ff5c5c" stroke-width="1"/>
+    <rect x="137" y="14" width="9" height="16" fill="#2ecc8a" rx="1"/><line x1="141" y1="10" x2="141" y2="32" stroke="#2ecc8a" stroke-width="1"/>
+    <!-- SL line -->
+    <line x1="75" y1="118" x2="175" y2="118" stroke="#ff5c5c" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="177" y="122" fill="#ff5c5c" font-size="7" font-family="monospace">SL</text>
+    <!-- TP line -->
+    <line x1="75" y1="24" x2="175" y2="24" stroke="#2ecc8a" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="177" y="28" fill="#2ecc8a" font-size="7" font-family="monospace">TP</text>
+    <!-- Open marker -->
+    <line x1="20" y1="22" x2="20" y2="138" stroke="#4f9eff" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+    <text x="22" y="33" fill="#4f9eff" font-size="7" font-family="monospace">Open</text>
   </svg>`,
 
   inducement: `<svg viewBox="0 0 300 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:155px;">
