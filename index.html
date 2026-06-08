@@ -8030,6 +8030,1124 @@ const ANIMATED_CHARTS = {
     </g>
   </svg>`,
 
+  // ── BASICS ──
+  pip: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes pp{from{opacity:0}to{opacity:1}}.p0{opacity:0;animation:pp .4s ease .1s forwards}.p1{opacity:0;animation:pp .4s ease .6s forwards}.p2{opacity:0;animation:pp .4s ease 1.2s forwards}.p3{opacity:0;animation:pp .4s ease 1.8s forwards}.p4{opacity:0;animation:pp .5s ease 2.5s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="p0"><text x="10" y="14" fill="#4f9eff" font-size="9" font-family="monospace" font-weight="bold">Pip — kleinste prijsbeweging</text></g>
+    <g class="p1">
+      <rect x="20" y="30" width="260" height="30" fill="rgba(79,158,255,0.08)" rx="6"/>
+      <text x="30" y="50" fill="#muted" font-size="13" font-family="monospace" fill="#4f9eff">EUR/USD:  1.0850<tspan fill="#2ecc8a" font-weight="bold">0</tspan></text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#4f9eff" font-size="7" font-family="monospace">Dit is de startprijs</text>
+    </g>
+    <g class="p2">
+      <rect x="20" y="70" width="260" height="30" fill="rgba(46,204,138,0.08)" rx="6"/>
+      <text x="30" y="90" fill="#2ecc8a" font-size="13" font-family="monospace">EUR/USD:  1.0851<tspan font-weight="bold">0</tspan></text>
+      <line x1="175" y1="62" x2="175" y2="72" stroke="#2ecc8a" stroke-width="1.5"/>
+      <text x="178" y="68" fill="#2ecc8a" font-size="8" font-family="monospace">+1 pip</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#2ecc8a" font-size="7" font-family="monospace">Prijs stijgt met 0.00010 = 1 pip</text>
+    </g>
+    <g class="p3">
+      <rect x="20" y="110" width="260" height="28" fill="rgba(79,158,255,0.06)" rx="6"/>
+      <text x="30" y="125" fill="#f5a623" font-size="11" font-family="monospace">0.1 lot × 1 pip = €1 winst</text>
+      <text x="30" y="137" fill="#muted" font-size="10" font-family="monospace" fill="#4f9eff">1.0 lot × 1 pip = €10 winst</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Waarde per pip hangt af van je lot grootte</text>
+    </g>
+    <g class="p4">
+      <rect x="20" y="143" width="260" height="12" fill="rgba(167,139,250,0.1)" rx="3"/>
+      <text x="25" y="152" fill="#a78bfa" font-size="8" font-family="monospace">JPY-paren: pip = 0.01 (2e decimaal) — let op!</text>
+    </g>
+  </svg>`,
+
+  spread: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes sp{from{opacity:0}to{opacity:1}}.s0{opacity:0;animation:sp .4s ease .1s forwards}.s1{opacity:0;animation:sp .4s ease .6s forwards}.s2{opacity:0;animation:sp .5s ease 1.3s forwards}.s3{opacity:0;animation:sp .5s ease 2.0s forwards}.s4{opacity:0;animation:sp .4s ease 2.8s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="s0"><text x="10" y="14" fill="#4f9eff" font-size="9" font-family="monospace" font-weight="bold">Spread — kost bij elke trade</text></g>
+    <g class="s1">
+      <rect x="20" y="28" width="115" height="40" fill="rgba(46,204,138,0.1)" rx="6"/>
+      <text x="30" y="45" fill="#2ecc8a" font-size="10" font-family="monospace">BID (verkoop)</text>
+      <text x="30" y="60" fill="#2ecc8a" font-size="14" font-family="monospace" font-weight="bold">1.08500</text>
+    </g>
+    <g class="s2">
+      <rect x="165" y="28" width="115" height="40" fill="rgba(255,92,92,0.1)" rx="6"/>
+      <text x="175" y="45" fill="#ff5c5c" font-size="10" font-family="monospace">ASK (koop)</text>
+      <text x="175" y="60" fill="#ff5c5c" font-size="14" font-family="monospace" font-weight="bold">1.08502</text>
+    </g>
+    <g class="s3">
+      <line x1="136" y1="48" x2="164" y2="48" stroke="#f5a623" stroke-width="2"/>
+      <rect x="130" y="38" width="40" height="14" fill="rgba(13,15,20,0.9)" rx="3"/>
+      <text x="136" y="48" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">0.2 pip</text>
+      <text x="122" y="35" fill="#f5a623" font-size="7" font-family="monospace">SPREAD</text>
+    </g>
+    <g class="s4">
+      <rect x="20" y="82" width="260" height="55" fill="rgba(79,158,255,0.06)" rx="6"/>
+      <text x="30" y="98" fill="#4f9eff" font-size="9" font-family="monospace">Jij koopt op ASK: 1.08502</text>
+      <text x="30" y="112" fill="#4f9eff" font-size="9" font-family="monospace">Break-even = 1.08502 + spread</text>
+      <text x="30" y="126" fill="#f5a623" font-size="9" font-family="monospace">Laag spread = goedkoper traden!</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">EUR/USD spread ≈ 0.1–0.6 pip bij grote brokers</text>
+    </g>
+  </svg>`,
+
+  lot: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes lt{from{opacity:0}to{opacity:1}}.l0{opacity:0;animation:lt .4s ease .1s forwards}.l1{opacity:0;animation:lt .4s ease .5s forwards}.l2{opacity:0;animation:lt .4s ease 1.0s forwards}.l3{opacity:0;animation:lt .4s ease 1.5s forwards}.l4{opacity:0;animation:lt .4s ease 2.0s forwards}.l5{opacity:0;animation:lt .5s ease 2.6s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="l0"><text x="10" y="14" fill="#4f9eff" font-size="9" font-family="monospace" font-weight="bold">Lot grootte — positiegrootte</text></g>
+    <g class="l1">
+      <rect x="10" y="22" width="280" height="14" fill="rgba(79,158,255,0.08)" rx="3"/>
+      <text x="15" y="32" fill="#4f9eff" font-size="8" font-family="monospace">Naam          Lots    EUR/USD   Pip-waarde</text>
+    </g>
+    <g class="l2">
+      <rect x="10" y="38" width="280" height="13" fill="rgba(46,204,138,0.06)" rx="2"/>
+      <text x="15" y="48" fill="#2ecc8a" font-size="8" font-family="monospace">Standaard     1.00    €100.000  €10/pip</text>
+    </g>
+    <g class="l3">
+      <rect x="10" y="53" width="280" height="13" fill="rgba(79,158,255,0.04)" rx="2"/>
+      <text x="15" y="63" fill="#4f9eff" font-size="8" font-family="monospace">Mini          0.10    €10.000   €1/pip</text>
+    </g>
+    <g class="l4">
+      <rect x="10" y="68" width="280" height="13" fill="rgba(245,166,35,0.04)" rx="2"/>
+      <text x="15" y="78" fill="#f5a623" font-size="8" font-family="monospace">Micro         0.01    €1.000    €0.10/pip</text>
+    </g>
+    <g class="l5">
+      <rect x="10" y="92" width="280" height="50" fill="rgba(167,139,250,0.08)" rx="6"/>
+      <text x="20" y="108" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">Voorbeeld: 0.10 lot, 20 pip winst</text>
+      <text x="20" y="122" fill="#2ecc8a" font-size="9" font-family="monospace">0.10 × €1/pip × 20 pip = +€20</text>
+      <text x="20" y="136" fill="#ff5c5c" font-size="9" font-family="monospace">0.10 × €1/pip × 20 pip = −€20 bij verlies</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#a78bfa" font-size="7" font-family="monospace">Grote lots = meer winst maar ook meer risico</text>
+    </g>
+  </svg>`,
+
+  leverage: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes lv{from{opacity:0}to{opacity:1}}.lv0{opacity:0;animation:lv .4s ease .1s forwards}.lv1{opacity:0;animation:lv .4s ease .6s forwards}.lv2{opacity:0;animation:lv .5s ease 1.3s forwards}.lv3{opacity:0;animation:lv .5s ease 2.0s forwards}.lv4{opacity:0;animation:lv .4s ease 2.8s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="lv0"><text x="10" y="14" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">Leverage — hefboomwerking</text></g>
+    <g class="lv1">
+      <rect x="10" y="24" width="130" height="55" fill="rgba(79,158,255,0.08)" rx="6"/>
+      <text x="20" y="40" fill="#4f9eff" font-size="8" font-family="monospace">Jouw kapitaal</text>
+      <text x="20" y="56" fill="#4f9eff" font-size="18" font-family="monospace" font-weight="bold">€1.000</text>
+      <text x="20" y="70" fill="#4f9eff" font-size="7" font-family="monospace">eigen inleg</text>
+    </g>
+    <g class="lv2">
+      <text x="148" y="54" fill="#f5a623" font-size="14" font-family="monospace" font-weight="bold">×30</text>
+      <rect x="185" y="24" width="108" height="55" fill="rgba(46,204,138,0.08)" rx="6"/>
+      <text x="195" y="40" fill="#2ecc8a" font-size="8" font-family="monospace">Positiegrootte</text>
+      <text x="195" y="56" fill="#2ecc8a" font-size="15" font-family="monospace" font-weight="bold">€30.000</text>
+      <text x="195" y="70" fill="#2ecc8a" font-size="7" font-family="monospace">0.30 lot EUR/USD</text>
+    </g>
+    <g class="lv3">
+      <rect x="10" y="92" width="135" height="48" fill="rgba(46,204,138,0.07)" rx="6"/>
+      <text x="18" y="107" fill="#2ecc8a" font-size="8" font-family="monospace">+50 pip winst:</text>
+      <text x="18" y="122" fill="#2ecc8a" font-size="12" font-family="monospace" font-weight="bold">+€150 (+15%)</text>
+      <text x="18" y="134" fill="#2ecc8a" font-size="7" font-family="monospace">op €1.000 kapitaal</text>
+    </g>
+    <g class="lv4">
+      <rect x="155" y="92" width="135" height="48" fill="rgba(255,92,92,0.07)" rx="6"/>
+      <text x="163" y="107" fill="#ff5c5c" font-size="8" font-family="monospace">−50 pip verlies:</text>
+      <text x="163" y="122" fill="#ff5c5c" font-size="12" font-family="monospace" font-weight="bold">−€150 (−15%)</text>
+      <text x="163" y="134" fill="#ff5c5c" font-size="7" font-family="monospace">leverage werkt 2 kanten op!</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Hoge leverage = hogere risico — gebruik max 1:10 als beginner</text>
+    </g>
+  </svg>`,
+
+  rratio: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes rr{from{opacity:0}to{opacity:1}}.rr0{opacity:0;animation:rr .4s ease .1s forwards}.rr1{opacity:0;animation:rr .4s ease .5s forwards}.rr2{opacity:0;animation:rr .4s ease 1.0s forwards}.rr3{opacity:0;animation:rr .5s ease 1.6s forwards}.rr4{opacity:0;animation:rr .5s ease 2.4s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="rr0"><text x="10" y="14" fill="#2ecc8a" font-size="9" font-family="monospace" font-weight="bold">R:R Ratio — risico vs beloning</text></g>
+    <g class="rr1">
+      <line x1="60" y1="88" x2="240" y2="88" stroke="#4f9eff" stroke-width="1.5"/>
+      <rect x="52" y="82" width="36" height="12" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="54" y="92" fill="#4f9eff" font-size="8" font-family="monospace">Entry</text>
+      <circle cx="60" cy="88" r="4" fill="#4f9eff"/>
+    </g>
+    <g class="rr2">
+      <line x1="60" y1="118" x2="240" y2="118" stroke="#ff5c5c" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <rect x="52" y="112" width="22" height="12" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="54" y="122" fill="#ff5c5c" font-size="8" font-family="monospace">SL</text>
+      <line x1="45" y1="88" x2="45" y2="118" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="10" y="98" width="32" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="12" y="107" fill="#ff5c5c" font-size="8" font-family="monospace">1R = €50</text>
+    </g>
+    <g class="rr3">
+      <line x1="60" y1="28" x2="240" y2="28" stroke="#2ecc8a" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <rect x="52" y="22" width="22" height="12" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="54" y="32" fill="#2ecc8a" font-size="8" font-family="monospace">TP</text>
+      <line x1="45" y1="28" x2="45" y2="88" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="10" y="52" width="32" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="12" y="61" fill="#2ecc8a" font-size="8" font-family="monospace">2R = €100</text>
+    </g>
+    <g class="rr4">
+      <rect x="60" y="105" width="180" height="46" fill="rgba(245,166,35,0.08)" rx="6"/>
+      <text x="70" y="120" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">R:R = 1:2</text>
+      <text x="70" y="133" fill="#2ecc8a" font-size="8" font-family="monospace">Win: +€100  (2 keer risico)</text>
+      <text x="70" y="145" fill="#ff5c5c" font-size="8" font-family="monospace">Verlies: −€50  (1 keer risico)</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Minimaal 1:2 → ook met 40% winrate winstgevend</text>
+    </g>
+  </svg>`,
+
+  margin: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes mg{from{opacity:0}to{opacity:1}}.mg0{opacity:0;animation:mg .4s ease .1s forwards}.mg1{opacity:0;animation:mg .4s ease .6s forwards}.mg2{opacity:0;animation:mg .5s ease 1.3s forwards}.mg3{opacity:0;animation:mg .4s ease 2.1s forwards}.mg4{opacity:0;animation:mg .5s ease 2.8s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="mg0"><text x="10" y="14" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">Margin — vereist onderpand</text></g>
+    <g class="mg1">
+      <rect x="10" y="24" width="280" height="35" fill="rgba(167,139,250,0.08)" rx="6"/>
+      <text x="20" y="38" fill="#a78bfa" font-size="9" font-family="monospace">Account: €5.000 · Leverage 1:30</text>
+      <text x="20" y="52" fill="#4f9eff" font-size="9" font-family="monospace">Positie 0.30 lot EUR/USD = €30.000</text>
+    </g>
+    <g class="mg2">
+      <rect x="10" y="68" width="130" height="55" fill="rgba(255,92,92,0.08)" rx="6"/>
+      <text x="18" y="83" fill="#ff5c5c" font-size="8" font-family="monospace">Margin gebruikt</text>
+      <text x="18" y="98" fill="#ff5c5c" font-size="16" font-family="monospace" font-weight="bold">€1.000</text>
+      <text x="18" y="113" fill="#ff5c5c" font-size="7" font-family="monospace">geblokkeerd</text>
+    </g>
+    <g class="mg3">
+      <rect x="155" y="68" width="135" height="55" fill="rgba(46,204,138,0.08)" rx="6"/>
+      <text x="163" y="83" fill="#2ecc8a" font-size="8" font-family="monospace">Vrije margin</text>
+      <text x="163" y="98" fill="#2ecc8a" font-size="16" font-family="monospace" font-weight="bold">€4.000</text>
+      <text x="163" y="113" fill="#2ecc8a" font-size="7" font-family="monospace">beschikbaar</text>
+    </g>
+    <g class="mg4">
+      <rect x="10" y="133" width="280" height="18" fill="rgba(245,166,35,0.08)" rx="4"/>
+      <text x="18" y="145" fill="#f5a623" font-size="8" font-family="monospace">Margin call als vrije margin te laag wordt → positie gesloten!</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Houd altijd voldoende vrije margin — vermijd margin calls</text>
+    </g>
+  </svg>`,
+
+  // ── RISK MANAGEMENT ──
+  positionsizing: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes ps{from{opacity:0}to{opacity:1}}.ps0{opacity:0;animation:ps .4s ease .1s forwards}.ps1{opacity:0;animation:ps .4s ease .6s forwards}.ps2{opacity:0;animation:ps .4s ease 1.2s forwards}.ps3{opacity:0;animation:ps .4s ease 1.8s forwards}.ps4{opacity:0;animation:ps .5s ease 2.5s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="ps0"><text x="10" y="14" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">Positiegrootte berekenen</text></g>
+    <g class="ps1">
+      <rect x="10" y="22" width="280" height="13" fill="rgba(79,158,255,0.1)" rx="3"/>
+      <text x="15" y="32" fill="#4f9eff" font-size="8" font-family="monospace">Formule: Lot = (Account × Risico%) ÷ (SL pip × Pip€)</text>
+    </g>
+    <g class="ps2">
+      <rect x="10" y="40" width="130" height="42" fill="rgba(79,158,255,0.07)" rx="5"/>
+      <text x="18" y="55" fill="#4f9eff" font-size="8" font-family="monospace">Account: €5.000</text>
+      <text x="18" y="69" fill="#4f9eff" font-size="8" font-family="monospace">Risico: 1% = €50</text>
+    </g>
+    <g class="ps3">
+      <rect x="155" y="40" width="135" height="42" fill="rgba(245,166,35,0.07)" rx="5"/>
+      <text x="163" y="55" fill="#f5a623" font-size="8" font-family="monospace">SL: 20 pip</text>
+      <text x="163" y="69" fill="#f5a623" font-size="8" font-family="monospace">Pip€: €10/lot</text>
+    </g>
+    <g class="ps4">
+      <rect x="10" y="92" width="280" height="55" fill="rgba(46,204,138,0.08)" rx="6"/>
+      <text x="20" y="108" fill="#2ecc8a" font-size="9" font-family="monospace">€50 ÷ (20 × €10) = €50 ÷ €200</text>
+      <text x="20" y="124" fill="#2ecc8a" font-size="14" font-family="monospace" font-weight="bold">= 0.25 lot</text>
+      <text x="20" y="140" fill="#muted" font-size="8" font-family="monospace" fill="#4f9eff">Bij 20 pip verlies: −€50 (1% van account)</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#2ecc8a" font-size="7" font-family="monospace">Bereken VOOR elke trade — nooit gokken met lot grootte</text>
+    </g>
+  </svg>`,
+
+  maxdrawdown: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes md{from{opacity:0}to{opacity:1}}.md0{opacity:0;animation:md .4s ease .1s forwards}.md1{opacity:0;animation:md .4s ease .5s forwards}.md2{opacity:0;animation:md .4s ease 1.0s forwards}.md3{opacity:0;animation:md .4s ease 1.6s forwards}.md4{opacity:0;animation:md .5s ease 2.3s forwards}.md5{opacity:0;animation:md .5s ease 3.0s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="md0"><text x="10" y="14" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">Max Drawdown — daling van piek</text></g>
+    <g class="md1">
+      <polyline points="20,130 50,110 80,90 110,70 140,55" fill="none" stroke="#2ecc8a" stroke-width="2"/>
+    </g>
+    <g class="md2">
+      <circle cx="140" cy="55" r="4" fill="#2ecc8a"/>
+      <rect x="142" y="48" width="38" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="144" y="57" fill="#2ecc8a" font-size="8" font-family="monospace">Piek €7k</text>
+    </g>
+    <g class="md3">
+      <polyline points="140,55 160,75 185,100 205,120" fill="none" stroke="#ff5c5c" stroke-width="2"/>
+      <rect x="140" y="55" width="65" height="65" fill="rgba(255,92,92,0.06)" rx="0"/>
+      <line x1="138" y1="55" x2="138" y2="120" stroke="#f5a623" stroke-width="1" stroke-dasharray="3,2"/>
+    </g>
+    <g class="md4">
+      <circle cx="205" cy="120" r="4" fill="#ff5c5c"/>
+      <rect x="207" y="113" width="56" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="209" y="122" fill="#ff5c5c" font-size="8" font-family="monospace">Dal €5.6k</text>
+      <rect x="100" y="82" width="36" height="22" fill="rgba(245,166,35,0.15)" rx="3"/>
+      <text x="104" y="91" fill="#f5a623" font-size="7" font-family="monospace" font-weight="bold">DD:</text>
+      <text x="104" y="100" fill="#f5a623" font-size="7" font-family="monospace">-20%</text>
+    </g>
+    <g class="md5">
+      <polyline points="205,120 230,105 255,88" fill="none" stroke="#2ecc8a" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="10" y="140" width="280" height="12" fill="rgba(245,166,35,0.07)" rx="3"/>
+      <text x="15" y="149" fill="#f5a623" font-size="7" font-family="monospace">20% verlies vereist 25% herstel — 50% verlies = 100% herstel!</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#ff5c5c" font-size="7" font-family="monospace">Max DD bewaken = account beschermen</text>
+    </g>
+  </svg>`,
+
+  // ── INDICATORS ──
+  ema: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes em{from{opacity:0}to{opacity:1}}.em0{opacity:0;animation:em .4s ease .1s forwards}.em1{opacity:0;animation:em .4s ease .5s forwards}.em2{opacity:0;animation:em .5s ease 1.0s forwards}.em3{opacity:0;animation:em .5s ease 1.7s forwards}.em4{opacity:0;animation:em .4s ease 2.5s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="em0"><text x="10" y="14" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">EMA — Exponential Moving Average</text></g>
+    <g class="em1">
+      <rect x="22" y="30" width="8" height="28" fill="#ff5c5c" rx="1"/><line x1="26" y1="28" x2="26" y2="60" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="36" y="36" width="8" height="22" fill="#2ecc8a" rx="1"/><line x1="40" y1="34" x2="40" y2="60" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="50" y="44" width="8" height="20" fill="#ff5c5c" rx="1"/><line x1="54" y1="42" x2="54" y2="66" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="64" y="50" width="8" height="22" fill="#2ecc8a" rx="1"/><line x1="68" y1="48" x2="68" y2="74" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="78" y="58" width="8" height="20" fill="#ff5c5c" rx="1"/><line x1="82" y1="56" x2="82" y2="80" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="92" y="64" width="8" height="22" fill="#2ecc8a" rx="1"/><line x1="96" y1="62" x2="96" y2="88" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="106" y="52" width="8" height="24" fill="#2ecc8a" rx="1"/><line x1="110" y1="50" x2="110" y2="78" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="120" y="40" width="8" height="22" fill="#2ecc8a" rx="1"/><line x1="124" y1="38" x2="124" y2="64" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="134" y="30" width="8" height="20" fill="#2ecc8a" rx="1"/><line x1="138" y1="28" x2="138" y2="52" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="148" y="22" width="8" height="18" fill="#2ecc8a" rx="1"/><line x1="152" y1="20" x2="152" y2="42" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="162" y="14" width="8" height="16" fill="#2ecc8a" rx="1"/><line x1="166" y1="12" x2="166" y2="32" stroke="#2ecc8a" stroke-width="1"/>
+    </g>
+    <g class="em2">
+      <polyline points="26,68 40,66 54,70 68,72 82,76 96,78 110,68 124,58 138,46 152,38 166,28" fill="none" stroke="#f5a623" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="170" y="22" width="42" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="172" y="31" fill="#f5a623" font-size="8" font-family="monospace">EMA 20</text>
+    </g>
+    <g class="em3">
+      <polyline points="26,78 40,76 54,80 68,84 82,88 96,90 110,80 124,70 138,60 152,52 166,44" fill="none" stroke="#4f9eff" stroke-width="2" stroke-dasharray="4,2" stroke-linejoin="round"/>
+      <rect x="170" y="38" width="42" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="172" y="47" fill="#4f9eff" font-size="8" font-family="monospace">EMA 50</text>
+      <circle cx="110" cy="74" r="6" fill="none" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="118" y="68" width="74" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="120" y="77" fill="#2ecc8a" font-size="7" font-family="monospace">EMA20 kruist EMA50 ↑</text>
+    </g>
+    <g class="em4">
+      <rect x="10" y="100" width="280" height="48" fill="rgba(167,139,250,0.07)" rx="6"/>
+      <text x="18" y="115" fill="#a78bfa" font-size="8" font-family="monospace" font-weight="bold">EMA20 boven EMA50 = Bullish trend</text>
+      <text x="18" y="128" fill="#2ecc8a" font-size="8" font-family="monospace">Prijs boven EMA20 → zoek longs</text>
+      <text x="18" y="141" fill="#ff5c5c" font-size="8" font-family="monospace">Prijs onder EMA20 → zoek shorts</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#a78bfa" font-size="7" font-family="monospace">EMA reageert sneller op recente koers dan SMA</text>
+    </g>
+  </svg>`,
+
+  rsi: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes rs{from{opacity:0}to{opacity:1}}.rs0{opacity:0;animation:rs .4s ease .1s forwards}.rs1{opacity:0;animation:rs .4s ease .5s forwards}.rs2{opacity:0;animation:rs .5s ease 1.1s forwards}.rs3{opacity:0;animation:rs .5s ease 1.8s forwards}.rs4{opacity:0;animation:rs .5s ease 2.6s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="rs0"><text x="10" y="14" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">RSI — Relative Strength Index</text></g>
+    <g class="rs1">
+      <rect x="10" y="22" width="280" height="55" fill="rgba(79,158,255,0.04)" rx="4"/>
+      <line x1="10" y1="30" x2="290" y2="30" stroke="rgba(255,92,92,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+      <rect x="240" y="24" width="50" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="242" y="32" fill="#ff5c5c" font-size="7" font-family="monospace">OB = 70</text>
+      <line x1="10" y1="66" x2="290" y2="66" stroke="rgba(46,204,138,0.4)" stroke-width="1" stroke-dasharray="3,2"/>
+      <rect x="240" y="60" width="50" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="242" y="68" fill="#2ecc8a" font-size="7" font-family="monospace">OS = 30</text>
+      <line x1="10" y1="48" x2="290" y2="48" stroke="rgba(245,166,35,0.3)" stroke-width="1" stroke-dasharray="2,2"/>
+      <text x="12" y="46" fill="#f5a623" font-size="6" font-family="monospace">50</text>
+    </g>
+    <g class="rs2">
+      <polyline points="15,60 35,55 55,48 75,38 90,28 105,24 120,30 135,42 150,55 165,65 180,70 195,72 210,68 225,58 240,48 255,38 270,30" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linejoin="round"/>
+    </g>
+    <g class="rs3">
+      <circle cx="105" cy="24" r="5" fill="none" stroke="#ff5c5c" stroke-width="2"/>
+      <rect x="108" y="18" width="70" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="110" y="27" fill="#ff5c5c" font-size="7" font-family="monospace">Overbought → short?</text>
+      <circle cx="197" cy="72" r="5" fill="none" stroke="#2ecc8a" stroke-width="2"/>
+      <rect x="200" y="66" width="70" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="202" y="75" fill="#2ecc8a" font-size="7" font-family="monospace">Oversold → long?</text>
+    </g>
+    <g class="rs4">
+      <rect x="10" y="90" width="280" height="55" fill="rgba(167,139,250,0.07)" rx="6"/>
+      <text x="18" y="105" fill="#a78bfa" font-size="8" font-family="monospace" font-weight="bold">RSI divergentie:</text>
+      <text x="18" y="118" fill="#2ecc8a" font-size="8" font-family="monospace">Prijs ↑ maar RSI ↓ = bearish divergentie</text>
+      <text x="18" y="131" fill="#ff5c5c" font-size="8" font-family="monospace">Prijs ↓ maar RSI ↑ = bullish divergentie</text>
+      <text x="18" y="140" fill="#f5a623" font-size="7" font-family="monospace">Gebruik nooit alleen — combineer met S/R</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#a78bfa" font-size="7" font-family="monospace">RSI range: 0–100 · Neutrale zone: 40–60</text>
+    </g>
+  </svg>`,
+
+  macd: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes mc{from{opacity:0}to{opacity:1}}.mc0{opacity:0;animation:mc .4s ease .1s forwards}.mc1{opacity:0;animation:mc .4s ease .5s forwards}.mc2{opacity:0;animation:mc .5s ease 1.1s forwards}.mc3{opacity:0;animation:mc .5s ease 1.8s forwards}.mc4{opacity:0;animation:mc .5s ease 2.6s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="mc0"><text x="10" y="14" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">MACD — trend &amp; momentum</text></g>
+    <g class="mc1">
+      <line x1="10" y1="80" x2="290" y2="80" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <text x="12" y="78" fill="#4f9eff" font-size="6" font-family="monospace">0</text>
+    </g>
+    <g class="mc2">
+      <polyline points="20,90 40,84 60,72 80,62 100,55 120,52 140,56 160,68 180,80 200,88 220,86 240,78 260,68 280,58" fill="none" stroke="#4f9eff" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="245" y="52" width="45" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="247" y="60" fill="#4f9eff" font-size="7" font-family="monospace">MACD lijn</text>
+      <polyline points="20,96 40,90 60,82 80,74 100,68 120,66 140,70 160,78 180,88 200,94 220,92 240,86 260,78 280,70" fill="none" stroke="#ff5c5c" stroke-width="1.5" stroke-dasharray="4,2" stroke-linejoin="round"/>
+      <rect x="245" y="64" width="45" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="247" y="72" fill="#ff5c5c" font-size="7" font-family="monospace">Signaal lijn</text>
+    </g>
+    <g class="mc3">
+      <rect x="100" y="100" width="8" height="22" fill="rgba(46,204,138,0.7)" rx="1"/>
+      <rect x="112" y="106" width="8" height="16" fill="rgba(46,204,138,0.5)" rx="1"/>
+      <rect x="124" y="110" width="8" height="10" fill="rgba(46,204,138,0.4)" rx="1"/>
+      <rect x="136" y="108" width="8" height="8" fill="rgba(255,92,92,0.4)" rx="1"/>
+      <rect x="148" y="104" width="8" height="14" fill="rgba(255,92,92,0.5)" rx="1"/>
+      <text x="100" y="130" fill="#2ecc8a" font-size="7" font-family="monospace">Histogram</text>
+    </g>
+    <g class="mc4">
+      <circle cx="120" cy="66" r="5" fill="none" stroke="#f5a623" stroke-width="2"/>
+      <rect x="126" y="60" width="80" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="128" y="69" fill="#f5a623" font-size="7" font-family="monospace">MACD kruist signaal ↑ = koop</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#a78bfa" font-size="7" font-family="monospace">MACD kruist boven signaal = bullish · onder = bearish</text>
+    </g>
+  </svg>`,
+
+  atr: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes at{from{opacity:0}to{opacity:1}}.at0{opacity:0;animation:at .4s ease .1s forwards}.at1{opacity:0;animation:at .4s ease .5s forwards}.at2{opacity:0;animation:at .5s ease 1.1s forwards}.at3{opacity:0;animation:at .5s ease 1.9s forwards}.at4{opacity:0;animation:at .4s ease 2.7s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="at0"><text x="10" y="14" fill="#a78bfa" font-size="9" font-family="monospace" font-weight="bold">ATR — Average True Range</text></g>
+    <g class="at1">
+      <rect x="20" y="40" width="10" height="30" fill="#ff5c5c" rx="1"/><line x1="25" y1="36" x2="25" y2="72" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="38" y="44" width="10" height="28" fill="#2ecc8a" rx="1"/><line x1="43" y1="40" x2="43" y2="74" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="56" y="48" width="10" height="26" fill="#ff5c5c" rx="1"/><line x1="61" y1="44" x2="61" y2="76" stroke="#ff5c5c" stroke-width="1.5"/>
+    </g>
+    <g class="at2">
+      <line x1="18" y1="36" x2="18" y2="76" stroke="#f5a623" stroke-width="2"/>
+      <line x1="14" y1="36" x2="22" y2="36" stroke="#f5a623" stroke-width="1.5"/>
+      <line x1="14" y1="76" x2="22" y2="76" stroke="#f5a623" stroke-width="1.5"/>
+      <rect x="0" y="50" width="16" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="2" y="59" fill="#f5a623" font-size="7" font-family="monospace">ATR</text>
+      <rect x="66" y="52" width="68" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="68" y="61" fill="#f5a623" font-size="7" font-family="monospace">= 40 pip range</text>
+    </g>
+    <g class="at3">
+      <rect x="10" y="90" width="280" height="56" fill="rgba(167,139,250,0.07)" rx="6"/>
+      <text x="18" y="105" fill="#a78bfa" font-size="8" font-family="monospace" font-weight="bold">Gebruik van ATR:</text>
+      <text x="18" y="119" fill="#4f9eff" font-size="8" font-family="monospace">SL = 1.5× ATR onder entry</text>
+      <text x="18" y="132" fill="#2ecc8a" font-size="8" font-family="monospace">TP = 3× ATR = R:R van 1:2</text>
+      <text x="18" y="141" fill="#f5a623" font-size="7" font-family="monospace">Hoge ATR = volatiele markt = wijdere stops</text>
+    </g>
+    <g class="at4">
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#a78bfa" font-size="7" font-family="monospace">ATR past je stop-loss automatisch aan de marktvolatiliteit aan</text>
+    </g>
+  </svg>`,
+
+  // ── STRATEGIES ──
+  londonbreakout: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes lb{from{opacity:0}to{opacity:1}}.lb0{opacity:0;animation:lb .4s ease .1s forwards}.lb1{opacity:0;animation:lb .4s ease .5s forwards}.lb2{opacity:0;animation:lb .5s ease 1.1s forwards}.lb3{opacity:0;animation:lb .5s ease 1.9s forwards}.lb4{opacity:0;animation:lb .4s ease 2.7s forwards}.lb5{opacity:0;animation:lb .5s ease 3.4s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="lb0"><text x="10" y="14" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">London Breakout Strategie</text></g>
+    <g class="lb1">
+      <rect x="15" y="52" width="70" height="58" fill="rgba(79,158,255,0.07)" rx="3"/>
+      <text x="18" y="46" fill="#4f9eff" font-size="7" font-family="monospace">Asian sessie (02–08u)</text>
+      <rect x="20" y="66" width="9" height="18" fill="#ff5c5c" rx="1"/><line x1="24" y1="63" x2="24" y2="86" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="35" y="62" width="9" height="16" fill="#2ecc8a" rx="1"/><line x1="39" y1="59" x2="39" y2="80" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="50" y="64" width="9" height="18" fill="#ff5c5c" rx="1"/><line x1="54" y1="61" x2="54" y2="84" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="65" y="60" width="9" height="16" fill="#2ecc8a" rx="1"/><line x1="69" y1="57" x2="69" y2="78" stroke="#2ecc8a" stroke-width="1"/>
+    </g>
+    <g class="lb2">
+      <line x1="15" y1="56" x2="270" y2="56" stroke="#2ecc8a" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <line x1="15" y1="100" x2="270" y2="100" stroke="#ff5c5c" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <rect x="240" y="49" width="52" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="242" y="57" fill="#2ecc8a" font-size="7" font-family="monospace">Asian High</text>
+      <rect x="240" y="93" width="52" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="242" y="101" fill="#ff5c5c" font-size="7" font-family="monospace">Asian Low</text>
+    </g>
+    <g class="lb3">
+      <line x1="88" y1="22" x2="88" y2="148" stroke="#f5a623" stroke-width="1" stroke-dasharray="2,2" opacity="0.7"/>
+      <rect x="89" y="22" width="44" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="91" y="30" fill="#f5a623" font-size="7" font-family="monospace">08:00 London</text>
+      <rect x="91" y="36" width="38" height="18" fill="#2ecc8a" rx="1"/>
+      <line x1="96" y1="30" x2="96" y2="56" stroke="#2ecc8a" stroke-width="2.5"/>
+      <text x="132" y="43" fill="#f5a623" font-size="8" font-family="monospace" font-weight="bold">⬆ Break!</text>
+    </g>
+    <g class="lb4">
+      <rect x="115" y="26" width="9" height="18" fill="#2ecc8a" rx="1"/><line x1="119" y1="22" x2="119" y2="46" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="130" y="18" width="9" height="16" fill="#2ecc8a" rx="1"/><line x1="134" y1="14" x2="134" y2="36" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="145" y="12" width="9" height="14" fill="#2ecc8a" rx="1"/><line x1="149" y1="8" x2="149" y2="28" stroke="#2ecc8a" stroke-width="1"/>
+      <circle cx="96" cy="54" r="4" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+      <line x1="100" y1="108" x2="180" y2="108" stroke="#ff5c5c" stroke-width="1" stroke-dasharray="3,2"/>
+      <rect x="182" y="102" width="16" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="184" y="110" fill="#ff5c5c" font-size="7" font-family="monospace">SL</text>
+    </g>
+    <g class="lb5">
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Breakout boven Asian High om 08:00–09:00 → long entry op retest</text>
+    </g>
+  </svg>`,
+
+  trendtrading: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes tt{from{opacity:0}to{opacity:1}}.tt0{opacity:0;animation:tt .4s ease .1s forwards}.tt1{opacity:0;animation:tt .4s ease .5s forwards}.tt2{opacity:0;animation:tt .4s ease 1.0s forwards}.tt3{opacity:0;animation:tt .5s ease 1.7s forwards}.tt4{opacity:0;animation:tt .4s ease 2.4s forwards}.tt5{opacity:0;animation:tt .5s ease 3.1s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="tt0"><text x="10" y="14" fill="#2ecc8a" font-size="9" font-family="monospace" font-weight="bold">Trend Trading — handel mee met de trend</text></g>
+    <g class="tt1">
+      <polyline points="20,130 60,100 100,75 140,55 180,38 220,24" fill="none" stroke="rgba(46,204,138,0.3)" stroke-width="1.5" stroke-dasharray="4,3"/>
+    </g>
+    <g class="tt2">
+      <line x1="20" y1="130" x2="60" y2="100" stroke="#2ecc8a" stroke-width="2"/>
+      <line x1="60" y1="100" x2="78" y2="112" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="78" cy="112" r="3" fill="#f5a623"/>
+      <rect x="80" y="106" width="44" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="82" y="114" fill="#f5a623" font-size="7" font-family="monospace">Entry 1 ↑</text>
+    </g>
+    <g class="tt3">
+      <line x1="78" y1="112" x2="110" y2="82" stroke="#2ecc8a" stroke-width="2"/>
+      <line x1="110" y1="82" x2="126" y2="94" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="126" cy="94" r="3" fill="#f5a623"/>
+      <rect x="128" y="88" width="44" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="130" y="96" fill="#f5a623" font-size="7" font-family="monospace">Entry 2 ↑</text>
+    </g>
+    <g class="tt4">
+      <line x1="126" y1="94" x2="160" y2="62" stroke="#2ecc8a" stroke-width="2"/>
+      <line x1="160" y1="62" x2="174" y2="72" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="174" cy="72" r="3" fill="#f5a623"/>
+      <rect x="176" y="66" width="44" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="178" y="74" fill="#f5a623" font-size="7" font-family="monospace">Entry 3 ↑</text>
+      <line x1="174" y1="72" x2="220" y2="36" stroke="#2ecc8a" stroke-width="2"/>
+    </g>
+    <g class="tt5">
+      <rect x="10" y="138" width="280" height="14" fill="rgba(46,204,138,0.07)" rx="3"/>
+      <text x="15" y="148" fill="#2ecc8a" font-size="7" font-family="monospace">Koop bij pullbacks (HL) in een uptrend · Elke dip is een kans</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#2ecc8a" font-size="7" font-family="monospace">Nooit traden TEGEN de trend op H4/Daily</text>
+    </g>
+  </svg>`,
+
+  scalping: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes sc{from{opacity:0}to{opacity:1}}.sc0{opacity:0;animation:sc .4s ease .1s forwards}.sc1{opacity:0;animation:sc .3s ease .5s forwards}.sc2{opacity:0;animation:sc .3s ease .8s forwards}.sc3{opacity:0;animation:sc .3s ease 1.1s forwards}.sc4{opacity:0;animation:sc .3s ease 1.4s forwards}.sc5{opacity:0;animation:sc .5s ease 1.8s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="sc0"><text x="10" y="14" fill="#4f9eff" font-size="9" font-family="monospace" font-weight="bold">Scalping — snelle kleine winsten</text></g>
+    <g class="sc1">
+      <rect x="15" y="68" width="8" height="18" fill="#2ecc8a" rx="1"/><line x1="19" y1="65" x2="19" y2="88" stroke="#2ecc8a" stroke-width="1"/>
+      <circle cx="19" cy="68" r="3" fill="#f5a623"/>
+      <text x="24" y="72" fill="#f5a623" font-size="6" font-family="monospace">in</text>
+    </g>
+    <g class="sc2">
+      <rect x="29" y="58" width="8" height="16" fill="#2ecc8a" rx="1"/><line x1="33" y1="55" x2="33" y2="76" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="43" y="52" width="8" height="14" fill="#2ecc8a" rx="1"/><line x1="47" y1="49" x2="47" y2="68" stroke="#2ecc8a" stroke-width="1"/>
+      <circle cx="55" cy="52" r="3" fill="#ff5c5c"/>
+      <text x="58" y="55" fill="#ff5c5c" font-size="6" font-family="monospace">out +5p</text>
+    </g>
+    <g class="sc3">
+      <rect x="65" y="58" width="8" height="18" fill="#ff5c5c" rx="1"/><line x1="69" y1="55" x2="69" y2="78" stroke="#ff5c5c" stroke-width="1"/>
+      <circle cx="69" cy="58" r="3" fill="#f5a623"/>
+      <text x="74" y="62" fill="#f5a623" font-size="6" font-family="monospace">in</text>
+      <rect x="79" y="64" width="8" height="14" fill="#ff5c5c" rx="1"/><line x1="83" y1="61" x2="83" y2="80" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="93" y="68" width="8" height="12" fill="#2ecc8a" rx="1"/><line x1="97" y1="65" x2="97" y2="82" stroke="#2ecc8a" stroke-width="1"/>
+      <circle cx="105" cy="68" r="3" fill="#ff5c5c"/>
+      <text x="108" y="71" fill="#ff5c5c" font-size="6" font-family="monospace">out −3p</text>
+    </g>
+    <g class="sc4">
+      <rect x="115" y="56" width="8" height="16" fill="#2ecc8a" rx="1"/><line x1="119" y1="53" x2="119" y2="74" stroke="#2ecc8a" stroke-width="1"/>
+      <circle cx="119" cy="56" r="3" fill="#f5a623"/>
+      <rect x="129" y="46" width="8" height="18" fill="#2ecc8a" rx="1"/><line x1="133" y1="43" x2="133" y2="66" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="143" y="38" width="8" height="16" fill="#2ecc8a" rx="1"/><line x1="147" y1="35" x2="147" y2="56" stroke="#2ecc8a" stroke-width="1"/>
+      <circle cx="155" cy="38" r="3" fill="#ff5c5c"/>
+      <text x="158" y="42" fill="#ff5c5c" font-size="6" font-family="monospace">out +8p</text>
+    </g>
+    <g class="sc5">
+      <rect x="10" y="95" width="280" height="52" fill="rgba(79,158,255,0.07)" rx="6"/>
+      <text x="18" y="110" fill="#4f9eff" font-size="8" font-family="monospace" font-weight="bold">Kenmerken scalping:</text>
+      <text x="18" y="123" fill="#4f9eff" font-size="8" font-family="monospace">• M1/M5 timeframe · 3–10 pip targets</text>
+      <text x="18" y="136" fill="#f5a623" font-size="8" font-family="monospace">• Hoge discipline + snelle executie vereist</text>
+      <text x="18" y="145" fill="#ff5c5c" font-size="7" font-family="monospace">• Spread telt zwaar mee bij kleine targets!</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#4f9eff" font-size="7" font-family="monospace">Niet geschikt voor beginners — vereist veel ervaring en focus</text>
+    </g>
+  </svg>`,
+
+  swingtrading: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes sw{from{opacity:0}to{opacity:1}}.sw0{opacity:0;animation:sw .4s ease .1s forwards}.sw1{opacity:0;animation:sw .4s ease .5s forwards}.sw2{opacity:0;animation:sw .5s ease 1.1s forwards}.sw3{opacity:0;animation:sw .5s ease 1.9s forwards}.sw4{opacity:0;animation:sw .5s ease 2.8s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="sw0"><text x="10" y="14" fill="#2ecc8a" font-size="9" font-family="monospace" font-weight="bold">Swing Trading — meerdere dagen</text></g>
+    <g class="sw1">
+      <text x="10" y="28" fill="#4f9eff" font-size="7" font-family="monospace">Daily chart — elke kaars = 1 dag</text>
+      <rect x="15" y="105" width="12" height="30" fill="#ff5c5c" rx="1"/><line x1="21" y1="100" x2="21" y2="137" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="33" y="98" width="12" height="28" fill="#ff5c5c" rx="1"/><line x1="39" y1="93" x2="39" y2="128" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="51" y="90" width="12" height="26" fill="#ff5c5c" rx="1"/><line x1="57" y1="85" x2="57" y2="118" stroke="#ff5c5c" stroke-width="1.5"/>
+    </g>
+    <g class="sw2">
+      <rect x="69" y="80" width="12" height="18" fill="#2ecc8a" rx="1"/><line x1="75" y1="75" x2="75" y2="100" stroke="#2ecc8a" stroke-width="1.5"/>
+      <circle cx="75" cy="98" r="5" fill="none" stroke="#f5a623" stroke-width="2"/>
+      <rect x="81" y="92" width="56" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="83" y="100" fill="#f5a623" font-size="8" font-family="monospace">Entry long!</text>
+      <line x1="65" y1="120" x2="200" y2="120" stroke="#ff5c5c" stroke-width="1" stroke-dasharray="3,2"/>
+      <rect x="202" y="114" width="16" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="204" y="122" fill="#ff5c5c" font-size="7" font-family="monospace">SL</text>
+    </g>
+    <g class="sw3">
+      <rect x="87" y="62" width="12" height="24" fill="#2ecc8a" rx="1"/><line x1="93" y1="58" x2="93" y2="88" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="105" y="46" width="12" height="22" fill="#2ecc8a" rx="1"/><line x1="111" y1="42" x2="111" y2="70" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="123" y="34" width="12" height="20" fill="#2ecc8a" rx="1"/><line x1="129" y1="30" x2="129" y2="56" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="141" y="24" width="12" height="18" fill="#2ecc8a" rx="1"/><line x1="147" y1="20" x2="147" y2="44" stroke="#2ecc8a" stroke-width="1.5"/>
+      <line x1="65" y1="32" x2="200" y2="32" stroke="#2ecc8a" stroke-width="1" stroke-dasharray="3,2"/>
+      <rect x="202" y="26" width="16" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="204" y="34" fill="#2ecc8a" font-size="7" font-family="monospace">TP</text>
+    </g>
+    <g class="sw4">
+      <rect x="10" y="138" width="280" height="14" fill="rgba(46,204,138,0.07)" rx="3"/>
+      <text x="15" y="148" fill="#2ecc8a" font-size="7" font-family="monospace">H4/Daily setup · SL 30–60p · TP 100–200p · Overnight ok</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#2ecc8a" font-size="7" font-family="monospace">Minder tijdsintensief dan scalping — ideaal voor werkenden</text>
+    </g>
+  </svg>`,
+
+  // ── PSYCHOLOGY ──
+  fomo: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes fo{from{opacity:0}to{opacity:1}}.fo0{opacity:0;animation:fo .4s ease .1s forwards}.fo1{opacity:0;animation:fo .4s ease .5s forwards}.fo2{opacity:0;animation:fo .5s ease 1.1s forwards}.fo3{opacity:0;animation:fo .5s ease 1.9s forwards}.fo4{opacity:0;animation:fo .4s ease 2.8s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="fo0"><text x="10" y="14" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">FOMO — Fear Of Missing Out</text></g>
+    <line x1="150" y1="18" x2="150" y2="152" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="20" y="26" fill="#ff5c5c" font-size="7" font-family="monospace">❌ FOMO entry (fout)</text>
+    <text x="160" y="26" fill="#2ecc8a" font-size="7" font-family="monospace">✓ Wachten (juist)</text>
+    <g class="fo1">
+      <rect x="20" y="90" width="9" height="22" fill="#ff5c5c" rx="1"/><line x1="24" y1="87" x2="24" y2="114" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="35" y="74" width="9" height="20" fill="#2ecc8a" rx="1"/><line x1="39" y1="71" x2="39" y2="96" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="50" y="56" width="9" height="22" fill="#2ecc8a" rx="1"/><line x1="54" y1="53" x2="54" y2="80" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="65" y="40" width="11" height="24" fill="#2ecc8a" rx="1"/><line x1="70" y1="36" x2="70" y2="66" stroke="#2ecc8a" stroke-width="2"/>
+      <text x="35" y="36" fill="#f5a623" font-size="7" font-family="monospace">40 pip rally!</text>
+    </g>
+    <g class="fo2">
+      <circle cx="80" cy="40" r="5" fill="#ff5c5c" opacity="0.8"/>
+      <rect x="82" y="34" width="60" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="84" y="42" fill="#ff5c5c" font-size="7" font-family="monospace">FOMO entry top!</text>
+      <rect x="80" y="40" width="9" height="30" fill="#ff5c5c" rx="1"/><line x1="84" y1="36" x2="84" y2="72" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="95" y="52" width="9" height="28" fill="#ff5c5c" rx="1"/><line x1="99" y1="49" x2="99" y2="82" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="110" y="62" width="9" height="24" fill="#ff5c5c" rx="1"/><line x1="114" y1="59" x2="114" y2="88" stroke="#ff5c5c" stroke-width="1.5"/>
+      <text x="80" y="100" fill="#ff5c5c" font-size="7" font-family="monospace">→ Verlies −30p</text>
+    </g>
+    <g class="fo3">
+      <rect x="160" y="90" width="9" height="22" fill="#ff5c5c" rx="1"/><line x1="164" y1="87" x2="164" y2="114" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="175" y="74" width="9" height="20" fill="#2ecc8a" rx="1"/><line x1="179" y1="71" x2="179" y2="96" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="190" y="56" width="9" height="22" fill="#2ecc8a" rx="1"/><line x1="194" y1="53" x2="194" y2="80" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="205" y="40" width="11" height="24" fill="#2ecc8a" rx="1"/>
+      <text x="175" y="36" fill="#2ecc8a" font-size="7" font-family="monospace">Rally gemist ✓</text>
+      <rect x="220" y="62" width="9" height="18" fill="#ff5c5c" rx="1"/><line x1="224" y1="59" x2="224" y2="82" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="235" y="68" width="9" height="16" fill="#ff5c5c" rx="1"/><line x1="239" y1="65" x2="239" y2="86" stroke="#ff5c5c" stroke-width="1"/>
+      <text x="218" y="56" fill="#f5a623" font-size="7" font-family="monospace">Pullback!</text>
+    </g>
+    <g class="fo4">
+      <circle cx="239" cy="84" r="5" fill="none" stroke="#2ecc8a" stroke-width="2"/>
+      <rect x="242" y="78" width="52" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="244" y="86" fill="#2ecc8a" font-size="7" font-family="monospace">Entry op retest</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Er is altijd een volgende setup — wacht op de retest</text>
+    </g>
+  </svg>`,
+
+  revengetrading: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes rv{from{opacity:0}to{opacity:1}}.rv0{opacity:0;animation:rv .4s ease .1s forwards}.rv1{opacity:0;animation:rv .4s ease .5s forwards}.rv2{opacity:0;animation:rv .5s ease 1.2s forwards}.rv3{opacity:0;animation:rv .5s ease 2.0s forwards}.rv4{opacity:0;animation:rv .5s ease 2.8s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="rv0"><text x="10" y="14" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">Revenge Trading — emotioneel traden</text></g>
+    <g class="rv1">
+      <rect x="20" y="55" width="28" height="30" fill="rgba(79,158,255,0.1)" rx="4"/>
+      <text x="24" y="68" fill="#4f9eff" font-size="7" font-family="monospace">Trade 1</text>
+      <text x="24" y="78" fill="#2ecc8a" font-size="8" font-family="monospace" font-weight="bold">0.1 lot</text>
+      <line x1="48" y1="70" x2="68" y2="70" stroke="#ff5c5c" stroke-width="1.5"/>
+      <text x="52" y="66" fill="#ff5c5c" font-size="7" font-family="monospace">−€20</text>
+    </g>
+    <g class="rv2">
+      <rect x="70" y="45" width="38" height="38" fill="rgba(255,92,92,0.08)" rx="4"/>
+      <text x="74" y="58" fill="#ff5c5c" font-size="7" font-family="monospace">Trade 2</text>
+      <text x="74" y="70" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">0.3 lot</text>
+      <text x="74" y="79" fill="#f5a623" font-size="6" font-family="monospace">3× groter!</text>
+      <line x1="108" y1="65" x2="128" y2="65" stroke="#ff5c5c" stroke-width="2"/>
+      <text x="112" y="60" fill="#ff5c5c" font-size="7" font-family="monospace">−€60</text>
+    </g>
+    <g class="rv3">
+      <rect x="130" y="30" width="50" height="52" fill="rgba(255,92,92,0.12)" rx="4"/>
+      <text x="135" y="44" fill="#ff5c5c" font-size="7" font-family="monospace">Trade 3</text>
+      <text x="135" y="58" fill="#ff5c5c" font-size="12" font-family="monospace" font-weight="bold">1.0 lot</text>
+      <text x="135" y="70" fill="#f5a623" font-size="6" font-family="monospace">10× groter!</text>
+      <text x="135" y="78" fill="#ff5c5c" font-size="7" font-family="monospace">EMOTIE</text>
+      <line x1="180" y1="55" x2="200" y2="55" stroke="#ff5c5c" stroke-width="2.5"/>
+      <text x="183" y="50" fill="#ff5c5c" font-size="7" font-family="monospace">−€200</text>
+    </g>
+    <g class="rv4">
+      <rect x="10" y="98" width="280" height="48" fill="rgba(255,92,92,0.06)" rx="6"/>
+      <text x="18" y="114" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">Totaal: −€280 in 3 trades!</text>
+      <text x="18" y="127" fill="#f5a623" font-size="8" font-family="monospace">Regel: stop na 2 verlieshandels per dag</text>
+      <text x="18" y="140" fill="#2ecc8a" font-size="8" font-family="monospace">Pauze nemen = de beste trade</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#ff5c5c" font-size="7" font-family="monospace">Verlies accepteren = kracht, niet zwakte</text>
+    </g>
+  </svg>`,
+
+  tradingplan: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes tp{from{opacity:0}to{opacity:1}}.tp0{opacity:0;animation:tp .4s ease .1s forwards}.tp1{opacity:0;animation:tp .4s ease .5s forwards}.tp2{opacity:0;animation:tp .3s ease .9s forwards}.tp3{opacity:0;animation:tp .3s ease 1.2s forwards}.tp4{opacity:0;animation:tp .3s ease 1.5s forwards}.tp5{opacity:0;animation:tp .3s ease 1.8s forwards}.tp6{opacity:0;animation:tp .5s ease 2.4s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="tp0"><text x="10" y="14" fill="#2ecc8a" font-size="9" font-family="monospace" font-weight="bold">Trading Plan — jouw regels</text></g>
+    <g class="tp1">
+      <rect x="10" y="20" width="280" height="10" fill="rgba(46,204,138,0.1)" rx="2"/>
+      <text x="15" y="28" fill="#2ecc8a" font-size="7" font-family="monospace">📋 Mijn Trading Plan</text>
+    </g>
+    <g class="tp2">
+      <rect x="10" y="33" width="12" height="10" fill="rgba(46,204,138,0.3)" rx="2"/>
+      <text x="14" y="41" fill="#2ecc8a" font-size="7" font-family="monospace">✓</text>
+      <text x="28" y="41" fill="#4f9eff" font-size="7" font-family="monospace">Instrument: EUR/USD, GBP/USD</text>
+    </g>
+    <g class="tp3">
+      <rect x="10" y="46" width="12" height="10" fill="rgba(46,204,138,0.3)" rx="2"/>
+      <text x="14" y="54" fill="#2ecc8a" font-size="7" font-family="monospace">✓</text>
+      <text x="28" y="54" fill="#4f9eff" font-size="7" font-family="monospace">Sessie: London (08–11u)</text>
+    </g>
+    <g class="tp4">
+      <rect x="10" y="59" width="12" height="10" fill="rgba(46,204,138,0.3)" rx="2"/>
+      <text x="14" y="67" fill="#2ecc8a" font-size="7" font-family="monospace">✓</text>
+      <text x="28" y="67" fill="#4f9eff" font-size="7" font-family="monospace">Entry: price action + S/R + HTF trend</text>
+    </g>
+    <g class="tp5">
+      <rect x="10" y="72" width="12" height="10" fill="rgba(46,204,138,0.3)" rx="2"/>
+      <text x="14" y="80" fill="#2ecc8a" font-size="7" font-family="monospace">✓</text>
+      <text x="28" y="80" fill="#4f9eff" font-size="7" font-family="monospace">Risico: max 1% per trade, stop na 3 losses</text>
+      <rect x="10" y="85" width="12" height="10" fill="rgba(46,204,138,0.3)" rx="2"/>
+      <text x="14" y="93" fill="#2ecc8a" font-size="7" font-family="monospace">✓</text>
+      <text x="28" y="93" fill="#4f9eff" font-size="7" font-family="monospace">R:R: minimum 1:2</text>
+    </g>
+    <g class="tp6">
+      <rect x="10" y="104" width="280" height="44" fill="rgba(46,204,138,0.06)" rx="6"/>
+      <text x="18" y="119" fill="#2ecc8a" font-size="8" font-family="monospace" font-weight="bold">Voordeel: beslissingen VOOR de trade</text>
+      <text x="18" y="131" fill="#4f9eff" font-size="8" font-family="monospace">Geen emotie midden in een beweging</text>
+      <text x="18" y="143" fill="#f5a623" font-size="7" font-family="monospace">Volg je plan → ook als het oncomfortabel voelt</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#2ecc8a" font-size="7" font-family="monospace">Een trader zonder plan is een gokker</text>
+    </g>
+  </svg>`,
+
+  // ── PRICE ACTION (animated versions) ──
+  supportresistance: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes sr{from{opacity:0}to{opacity:1}}.sr0{opacity:0;animation:sr .4s ease .1s forwards}.sr1{opacity:0;animation:sr .4s ease .5s forwards}.sr2{opacity:0;animation:sr .5s ease 1.1s forwards}.sr3{opacity:0;animation:sr .4s ease 1.8s forwards}.sr4{opacity:0;animation:sr .4s ease 2.4s forwards}.sr5{opacity:0;animation:sr .4s ease 3.0s forwards}.sr6{opacity:0;animation:sr .5s ease 3.7s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="sr0"><text x="10" y="14" fill="#4f9eff" font-size="9" font-family="monospace" font-weight="bold">Support &amp; Resistance</text></g>
+    <g class="sr1">
+      <line x1="10" y1="48" x2="285" y2="48" stroke="#ff5c5c" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <rect x="236" y="41" width="52" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="238" y="49" fill="#ff5c5c" font-size="7" font-family="monospace">Resistance</text>
+      <line x1="10" y1="118" x2="285" y2="118" stroke="#4f9eff" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <rect x="236" y="111" width="48" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="238" y="119" fill="#4f9eff" font-size="7" font-family="monospace">Support</text>
+    </g>
+    <g class="sr2">
+      <rect x="18" y="58" width="9" height="22" fill="#ff5c5c" rx="1"/><line x1="22" y1="55" x2="22" y2="82" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="33" y="68" width="9" height="24" fill="#ff5c5c" rx="1"/><line x1="37" y1="65" x2="37" y2="94" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="48" y="80" width="9" height="26" fill="#ff5c5c" rx="1"/><line x1="52" y1="77" x2="52" y2="108" stroke="#ff5c5c" stroke-width="1"/>
+    </g>
+    <g class="sr3">
+      <rect x="63" y="88" width="9" height="10" fill="#2ecc8a" rx="1"/>
+      <line x1="67" y1="84" x2="67" y2="120" stroke="#2ecc8a" stroke-width="1.5"/>
+      <text x="73" y="118" fill="#4f9eff" font-size="7" font-family="monospace">↑ Bounce</text>
+    </g>
+    <g class="sr4">
+      <rect x="85" y="72" width="9" height="28" fill="#2ecc8a" rx="1"/><line x1="89" y1="68" x2="89" y2="102" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="100" y="54" width="9" height="26" fill="#2ecc8a" rx="1"/><line x1="104" y1="50" x2="104" y2="82" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="115" y="42" width="9" height="14" fill="#ff5c5c" rx="1"/><line x1="119" y1="38" x2="119" y2="58" stroke="#ff5c5c" stroke-width="1"/>
+    </g>
+    <g class="sr5">
+      <rect x="130" y="52" width="9" height="22" fill="#ff5c5c" rx="1"/><line x1="134" y1="48" x2="134" y2="76" stroke="#ff5c5c" stroke-width="1.5"/>
+      <text x="140" y="47" fill="#ff5c5c" font-size="7" font-family="monospace">↓ Rejection</text>
+      <rect x="145" y="64" width="9" height="28" fill="#ff5c5c" rx="1"/><line x1="149" y1="60" x2="149" y2="94" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="160" y="80" width="9" height="28" fill="#ff5c5c" rx="1"/><line x1="164" y1="77" x2="164" y2="110" stroke="#ff5c5c" stroke-width="1"/>
+    </g>
+    <g class="sr6">
+      <rect x="175" y="88" width="9" height="10" fill="#2ecc8a" rx="1"/>
+      <line x1="179" y1="84" x2="179" y2="120" stroke="#2ecc8a" stroke-width="1.5"/>
+      <text x="185" y="118" fill="#4f9eff" font-size="7" font-family="monospace">↑ Bounce</text>
+      <rect x="194" y="70" width="9" height="30" fill="#2ecc8a" rx="1"/><line x1="198" y1="66" x2="198" y2="102" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="209" y="52" width="9" height="24" fill="#2ecc8a" rx="1"/><line x1="213" y1="48" x2="213" y2="78" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#4f9eff" font-size="7" font-family="monospace">Hoe vaker getest zonder doorbraak → hoe sterker het niveau</text>
+    </g>
+  </svg>`,
+
+  pinbar: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes pb{from{opacity:0}to{opacity:1}}.pb0{opacity:0;animation:pb .4s ease .1s forwards}.pb1{opacity:0;animation:pb .4s ease .5s forwards}.pb2{opacity:0;animation:pb .4s ease 1.0s forwards}.pb3{opacity:0;animation:pb .5s ease 1.7s forwards}.pb4{opacity:0;animation:pb .4s ease 2.4s forwards}.pb5{opacity:0;animation:pb .5s ease 3.1s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="pb0"><text x="10" y="14" fill="#2ecc8a" font-size="9" font-family="monospace" font-weight="bold">Pin Bar — prijsafwijzing</text></g>
+    <line x1="150" y1="18" x2="150" y2="152" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="20" y="26" fill="#2ecc8a" font-size="7" font-family="monospace">Bullish Pin Bar</text>
+    <text x="158" y="26" fill="#ff5c5c" font-size="7" font-family="monospace">Bearish Pin Bar</text>
+    <g class="pb1">
+      <rect x="20" y="72" width="9" height="22" fill="#ff5c5c" rx="1"/><line x1="24" y1="69" x2="24" y2="96" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="35" y="80" width="9" height="20" fill="#ff5c5c" rx="1"/><line x1="39" y1="77" x2="39" y2="102" stroke="#ff5c5c" stroke-width="1"/>
+      <line x1="10" y1="115" x2="135" y2="115" stroke="#4f9eff" stroke-width="1" stroke-dasharray="4,3"/>
+      <rect x="90" y="108" width="42" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="92" y="116" fill="#4f9eff" font-size="7" font-family="monospace">Support</text>
+    </g>
+    <g class="pb2">
+      <rect x="56" y="96" width="11" height="8" fill="#2ecc8a" rx="1"/>
+      <line x1="61" y1="92" x2="61" y2="116" stroke="#2ecc8a" stroke-width="2"/>
+      <line x1="61" y1="90" x2="61" y2="96" stroke="#2ecc8a" stroke-width="2"/>
+      <text x="54" y="88" fill="#4f9eff" font-size="8" font-family="monospace">Pin!</text>
+    </g>
+    <g class="pb3">
+      <text x="74" y="94" fill="#2ecc8a" font-size="8" font-family="monospace">↑ Entry</text>
+      <rect x="76" y="70" width="9" height="28" fill="#2ecc8a" rx="1"/><line x1="80" y1="66" x2="80" y2="100" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="91" y="54" width="9" height="24" fill="#2ecc8a" rx="1"/><line x1="95" y1="50" x2="95" y2="80" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="106" y="42" width="9" height="22" fill="#2ecc8a" rx="1"/><line x1="110" y1="38" x2="110" y2="66" stroke="#2ecc8a" stroke-width="1.5"/>
+    </g>
+    <g class="pb4">
+      <rect x="160" y="78" width="9" height="20" fill="#2ecc8a" rx="1"/><line x1="164" y1="75" x2="164" y2="100" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="175" y="70" width="9" height="22" fill="#2ecc8a" rx="1"/><line x1="179" y1="67" x2="179" y2="94" stroke="#2ecc8a" stroke-width="1"/>
+      <line x1="155" y1="48" x2="285" y2="48" stroke="#ff5c5c" stroke-width="1" stroke-dasharray="4,3"/>
+      <rect x="240" y="41" width="52" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="242" y="49" fill="#ff5c5c" font-size="7" font-family="monospace">Resistance</text>
+    </g>
+    <g class="pb5">
+      <rect x="196" y="46" width="11" height="8" fill="#ff5c5c" rx="1"/>
+      <line x1="201" y1="28" x2="201" y2="46" stroke="#ff5c5c" stroke-width="2"/>
+      <line x1="201" y1="54" x2="201" y2="58" stroke="#ff5c5c" stroke-width="2"/>
+      <text x="208" y="44" fill="#ff5c5c" font-size="8" font-family="monospace">Pin!</text>
+      <text x="208" y="56" fill="#ff5c5c" font-size="8" font-family="monospace">↓ Entry</text>
+      <rect x="215" y="58" width="9" height="28" fill="#ff5c5c" rx="1"/><line x1="219" y1="54" x2="219" y2="88" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="230" y="72" width="9" height="26" fill="#ff5c5c" rx="1"/><line x1="234" y1="68" x2="234" y2="100" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#2ecc8a" font-size="7" font-family="monospace">Lange wick = sterke afwijzing door de markt</text>
+    </g>
+  </svg>`,
+
+  engulfing: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes eg{from{opacity:0}to{opacity:1}}.eg0{opacity:0;animation:eg .4s ease .1s forwards}.eg1{opacity:0;animation:eg .4s ease .5s forwards}.eg2{opacity:0;animation:eg .5s ease 1.2s forwards}.eg3{opacity:0;animation:eg .4s ease 2.0s forwards}.eg4{opacity:0;animation:eg .5s ease 2.8s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="eg0"><text x="10" y="14" fill="#2ecc8a" font-size="9" font-family="monospace" font-weight="bold">Engulfing Candle — ommekeer signaal</text></g>
+    <line x1="150" y1="18" x2="150" y2="152" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="14" y="26" fill="#2ecc8a" font-size="7" font-family="monospace">Bullish Engulfing</text>
+    <text x="158" y="26" fill="#ff5c5c" font-size="7" font-family="monospace">Bearish Engulfing</text>
+    <g class="eg1">
+      <rect x="18" y="62" width="9" height="22" fill="#ff5c5c" rx="1"/><line x1="22" y1="59" x2="22" y2="86" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="33" y="70" width="9" height="24" fill="#ff5c5c" rx="1"/><line x1="37" y1="67" x2="37" y2="96" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="48" y="78" width="10" height="20" fill="#ff5c5c" rx="1"/><line x1="53" y1="75" x2="53" y2="100" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="158" y="78" width="9" height="22" fill="#2ecc8a" rx="1"/><line x1="162" y1="75" x2="162" y2="102" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="173" y="68" width="9" height="20" fill="#2ecc8a" rx="1"/><line x1="177" y1="65" x2="177" y2="90" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="188" y="60" width="10" height="18" fill="#2ecc8a" rx="1"/><line x1="193" y1="57" x2="193" y2="80" stroke="#2ecc8a" stroke-width="1"/>
+    </g>
+    <g class="eg2">
+      <rect x="65" y="68" width="12" height="20" fill="#ff5c5c" rx="1"/><line x1="71" y1="65" x2="71" y2="90" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="205" y="52" width="12" height="16" fill="#2ecc8a" rx="1"/><line x1="211" y1="49" x2="211" y2="70" stroke="#2ecc8a" stroke-width="1.5"/>
+    </g>
+    <g class="eg3">
+      <rect x="83" y="56" width="16" height="40" fill="#2ecc8a" rx="1"/><line x1="91" y1="52" x2="91" y2="98" stroke="#2ecc8a" stroke-width="2"/>
+      <rect x="64" y="54" width="46" height="44" fill="rgba(245,166,35,0.1)" rx="2"/>
+      <rect x="80" y="46" width="58" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="82" y="54" fill="#f5a623" font-size="7" font-family="monospace">← omsloten →</text>
+      <text x="82" y="110" fill="#2ecc8a" font-size="8" font-family="monospace">↑ Long signaal</text>
+      <rect x="220" y="38" width="16" height="42" fill="#ff5c5c" rx="1"/><line x1="228" y1="34" x2="228" y2="82" stroke="#ff5c5c" stroke-width="2"/>
+      <rect x="204" y="36" width="46" height="44" fill="rgba(245,166,35,0.1)" rx="2"/>
+      <rect x="204" y="28" width="58" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="206" y="36" fill="#f5a623" font-size="7" font-family="monospace">← omsloten →</text>
+      <text x="216" y="98" fill="#ff5c5c" font-size="8" font-family="monospace">↓ Short signaal</text>
+    </g>
+    <g class="eg4">
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Hoe groter de engulfing kaars t.o.v. vorige → hoe sterker signaal</text>
+    </g>
+  </svg>`,
+
+  breakretest: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes br{from{opacity:0}to{opacity:1}}.br0{opacity:0;animation:br .4s ease .1s forwards}.br1{opacity:0;animation:br .4s ease .5s forwards}.br2{opacity:0;animation:br .5s ease 1.1s forwards}.br3{opacity:0;animation:br .5s ease 1.9s forwards}.br4{opacity:0;animation:br .4s ease 2.7s forwards}.br5{opacity:0;animation:br .5s ease 3.4s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="br0"><text x="10" y="14" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">Break &amp; Retest</text></g>
+    <g class="br1">
+      <line x1="10" y1="88" x2="285" y2="88" stroke="#f5a623" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <rect x="225" y="80" width="62" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="227" y="88" fill="#f5a623" font-size="7" font-family="monospace">Res → Support</text>
+    </g>
+    <g class="br2">
+      <rect x="15" y="96" width="9" height="20" fill="#2ecc8a" rx="1"/><line x1="19" y1="93" x2="19" y2="118" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="30" y="92" width="9" height="18" fill="#ff5c5c" rx="1"/><line x1="34" y1="89" x2="34" y2="112" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="45" y="94" width="9" height="18" fill="#2ecc8a" rx="1"/><line x1="49" y1="91" x2="49" y2="114" stroke="#2ecc8a" stroke-width="1"/>
+    </g>
+    <g class="br3">
+      <rect x="62" y="56" width="13" height="34" fill="#2ecc8a" rx="1"/><line x1="68" y1="52" x2="68" y2="92" stroke="#2ecc8a" stroke-width="2.5"/>
+      <rect x="60" y="80" width="58" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="62" y="88" fill="#2ecc8a" font-size="8" font-family="monospace">Breakout! ↑</text>
+      <rect x="81" y="36" width="9" height="22" fill="#2ecc8a" rx="1"/><line x1="85" y1="32" x2="85" y2="60" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="96" y="24" width="9" height="20" fill="#2ecc8a" rx="1"/><line x1="100" y1="20" x2="100" y2="46" stroke="#2ecc8a" stroke-width="1"/>
+    </g>
+    <g class="br4">
+      <rect x="113" y="60" width="9" height="24" fill="#ff5c5c" rx="1"/><line x1="117" y1="56" x2="117" y2="86" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="128" y="72" width="9" height="18" fill="#ff5c5c" rx="1"/><line x1="132" y1="69" x2="132" y2="92" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="108" y="58" width="36" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="110" y="66" fill="#4f9eff" font-size="7" font-family="monospace">Retest...</text>
+    </g>
+    <g class="br5">
+      <rect x="143" y="78" width="10" height="8" fill="#2ecc8a" rx="1"/><line x1="148" y1="74" x2="148" y2="88" stroke="#2ecc8a" stroke-width="1.5"/>
+      <circle cx="148" cy="86" r="4" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+      <rect x="154" y="80" width="44" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="156" y="88" fill="#f5a623" font-size="7" font-family="monospace">Entry long!</text>
+      <rect x="163" y="56" width="9" height="26" fill="#2ecc8a" rx="1"/><line x1="167" y1="52" x2="167" y2="84" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="178" y="38" width="9" height="24" fill="#2ecc8a" rx="1"/><line x1="182" y1="34" x2="182" y2="64" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="193" y="24" width="9" height="20" fill="#2ecc8a" rx="1"/><line x1="197" y1="20" x2="197" y2="46" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Na de break keert prijs terug voor retest → lage-risico entry</text>
+    </g>
+  </svg>`,
+
+  higherlow: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes hl{from{opacity:0}to{opacity:1}}.hl0{opacity:0;animation:hl .4s ease .1s forwards}.hl1{opacity:0;animation:hl .4s ease .5s forwards}.hl2{opacity:0;animation:hl .4s ease 1.0s forwards}.hl3{opacity:0;animation:hl .4s ease 1.5s forwards}.hl4{opacity:0;animation:hl .4s ease 2.0s forwards}.hl5{opacity:0;animation:hl .5s ease 2.6s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="hl0"><text x="10" y="14" fill="#2ecc8a" font-size="9" font-family="monospace" font-weight="bold">Higher High / Higher Low — Uptrend</text></g>
+    <g class="hl1">
+      <circle cx="25" cy="128" r="3" fill="#4f9eff"/>
+      <line x1="25" y1="128" x2="65" y2="85" stroke="#2ecc8a" stroke-width="2"/>
+      <circle cx="65" cy="85" r="3" fill="#2ecc8a"/>
+      <rect x="56" y="78" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="58" y="86" fill="#2ecc8a" font-size="8" font-family="monospace">HH1</text>
+    </g>
+    <g class="hl2">
+      <line x1="65" y1="85" x2="95" y2="102" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="95" cy="102" r="3" fill="#4f9eff"/>
+      <rect x="85" y="108" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="87" y="116" fill="#4f9eff" font-size="8" font-family="monospace">HL1</text>
+    </g>
+    <g class="hl3">
+      <line x1="95" y1="102" x2="145" y2="58" stroke="#2ecc8a" stroke-width="2"/>
+      <circle cx="145" cy="58" r="3" fill="#2ecc8a"/>
+      <rect x="136" y="51" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="138" y="59" fill="#2ecc8a" font-size="8" font-family="monospace">HH2</text>
+    </g>
+    <g class="hl4">
+      <line x1="145" y1="58" x2="178" y2="76" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="178" cy="76" r="3" fill="#4f9eff"/>
+      <rect x="168" y="82" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="170" y="90" fill="#4f9eff" font-size="8" font-family="monospace">HL2</text>
+      <circle cx="95" cy="102" r="5" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+      <circle cx="178" cy="76" r="5" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+      <rect x="148" y="82" width="18" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="150" y="90" fill="#f5a623" font-size="6" font-family="monospace">Entry</text>
+    </g>
+    <g class="hl5">
+      <line x1="178" y1="76" x2="255" y2="34" stroke="#2ecc8a" stroke-width="2"/>
+      <circle cx="255" cy="34" r="3" fill="#2ecc8a"/>
+      <rect x="246" y="27" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="248" y="35" fill="#2ecc8a" font-size="8" font-family="monospace">HH3</text>
+      <rect x="10" y="138" width="280" height="14" fill="rgba(46,204,138,0.07)" rx="3"/>
+      <text x="15" y="148" fill="#2ecc8a" font-size="7" font-family="monospace">HH = Higher High (groene cirkel) · HL = Higher Low (blauwe cirkel)</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Koop bij HL — elke pullback is een long kans in uptrend</text>
+    </g>
+  </svg>`,
+
+  // ── ICT ANIMATED VERSIONS ──
+  orderblock: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes ob{from{opacity:0}to{opacity:1}}.ob0{opacity:0;animation:ob .4s ease .1s forwards}.ob1{opacity:0;animation:ob .4s ease .5s forwards}.ob2{opacity:0;animation:ob .5s ease 1.1s forwards}.ob3{opacity:0;animation:ob .5s ease 1.9s forwards}.ob4{opacity:0;animation:ob .4s ease 2.7s forwards}.ob5{opacity:0;animation:ob .5s ease 3.4s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="ob0"><text x="10" y="14" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">Order Block (OB)</text></g>
+    <g class="ob1">
+      <rect x="15" y="40" width="9" height="18" fill="#ff5c5c" rx="1"/><line x1="19" y1="37" x2="19" y2="60" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="30" y="50" width="9" height="20" fill="#ff5c5c" rx="1"/><line x1="34" y1="47" x2="34" y2="72" stroke="#ff5c5c" stroke-width="1"/>
+    </g>
+    <g class="ob2">
+      <rect x="46" y="58" width="13" height="26" fill="#ff5c5c" rx="1" stroke="#f5a623" stroke-width="1.5"/>
+      <line x1="52" y1="54" x2="52" y2="86" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="42" y="48" width="50" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="44" y="56" fill="#f5a623" font-size="7" font-family="monospace">OB = deze kaars</text>
+    </g>
+    <g class="ob3">
+      <rect x="46" y="58" width="150" height="26" fill="rgba(245,166,35,0.1)" rx="2"/>
+      <line x1="46" y1="58" x2="196" y2="58" stroke="#f5a623" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="46" y1="84" x2="196" y2="84" stroke="#f5a623" stroke-width="1" stroke-dasharray="4,3"/>
+      <rect x="65" y="30" width="13" height="30" fill="#ff5c5c" rx="1"/><line x1="71" y1="26" x2="71" y2="62" stroke="#ff5c5c" stroke-width="2"/>
+      <rect x="84" y="50" width="9" height="28" fill="#ff5c5c" rx="1"/><line x1="88" y1="47" x2="88" y2="80" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="99" y="68" width="9" height="26" fill="#ff5c5c" rx="1"/><line x1="103" y1="65" x2="103" y2="96" stroke="#ff5c5c" stroke-width="1"/>
+    </g>
+    <g class="ob4">
+      <rect x="118" y="80" width="9" height="22" fill="#2ecc8a" rx="1"/><line x1="122" y1="77" x2="122" y2="104" stroke="#2ecc8a" stroke-width="1"/>
+      <rect x="133" y="68" width="9" height="20" fill="#2ecc8a" rx="1"/><line x1="137" y1="65" x2="137" y2="90" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="148" y="60" width="9" height="10" fill="#ff5c5c" rx="1"/><line x1="152" y1="56" x2="152" y2="72" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="148" y="56" width="46" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="150" y="64" fill="#4f9eff" font-size="7" font-family="monospace">Retest OB!</text>
+    </g>
+    <g class="ob5">
+      <circle cx="152" cy="70" r="5" fill="none" stroke="#f5a623" stroke-width="2"/>
+      <rect x="160" y="64" width="56" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="162" y="72" fill="#f5a623" font-size="7" font-family="monospace">Short entry!</text>
+      <rect x="163" y="82" width="9" height="26" fill="#ff5c5c" rx="1"/><line x1="167" y1="78" x2="167" y2="110" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="178" y="96" width="9" height="26" fill="#ff5c5c" rx="1"/><line x1="182" y1="92" x2="182" y2="124" stroke="#ff5c5c" stroke-width="1"/>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">Laatste rode kaars vóór impulse = OB zone → retest = entry</text>
+    </g>
+  </svg>`,
+
+  bos: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes bs{from{opacity:0}to{opacity:1}}.bs0{opacity:0;animation:bs .4s ease .1s forwards}.bs1{opacity:0;animation:bs .4s ease .5s forwards}.bs2{opacity:0;animation:bs .4s ease 1.0s forwards}.bs3{opacity:0;animation:bs .5s ease 1.7s forwards}.bs4{opacity:0;animation:bs .4s ease 2.4s forwards}.bs5{opacity:0;animation:bs .5s ease 3.1s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="bs0"><text x="10" y="14" fill="#2ecc8a" font-size="9" font-family="monospace" font-weight="bold">Break of Structure (BOS)</text></g>
+    <g class="bs1">
+      <circle cx="22" cy="128" r="3" fill="#4f9eff"/>
+      <line x1="22" y1="128" x2="58" y2="92" stroke="#2ecc8a" stroke-width="2"/>
+      <circle cx="58" cy="92" r="3" fill="#2ecc8a"/>
+      <rect x="49" y="85" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="51" y="93" fill="#2ecc8a" font-size="8" font-family="monospace">HH1</text>
+    </g>
+    <g class="bs2">
+      <line x1="58" y1="92" x2="85" y2="108" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="85" cy="108" r="3" fill="#4f9eff"/>
+      <rect x="75" y="114" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="77" y="122" fill="#4f9eff" font-size="8" font-family="monospace">HL1</text>
+    </g>
+    <g class="bs3">
+      <line x1="58" y1="92" x2="240" y2="92" stroke="rgba(46,204,138,0.35)" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="85" y1="108" x2="120" y2="68" stroke="#2ecc8a" stroke-width="2"/>
+      <circle cx="120" cy="68" r="3" fill="#2ecc8a"/>
+      <rect x="104" y="61" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="106" y="69" fill="#2ecc8a" font-size="8" font-family="monospace">HH2</text>
+      <rect x="108" y="78" width="30" height="12" fill="rgba(46,204,138,0.2)" rx="3"/>
+      <text x="110" y="88" fill="#2ecc8a" font-size="8" font-family="monospace" font-weight="bold">BOS!</text>
+    </g>
+    <g class="bs4">
+      <line x1="120" y1="68" x2="152" y2="86" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="152" cy="86" r="4" fill="#f5a623"/>
+      <rect x="154" y="80" width="44" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="156" y="88" fill="#f5a623" font-size="7" font-family="monospace">Entry op HL!</text>
+      <circle cx="85" cy="108" r="5" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+      <circle cx="152" cy="86" r="5" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+    </g>
+    <g class="bs5">
+      <line x1="152" y1="86" x2="195" y2="46" stroke="#2ecc8a" stroke-width="2"/>
+      <circle cx="195" cy="46" r="3" fill="#2ecc8a"/>
+      <rect x="186" y="39" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="188" y="47" fill="#2ecc8a" font-size="8" font-family="monospace">HH3</text>
+      <rect x="186" y="56" width="30" height="12" fill="rgba(46,204,138,0.2)" rx="3"/>
+      <text x="188" y="66" fill="#2ecc8a" font-size="8" font-family="monospace" font-weight="bold">BOS!</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#2ecc8a" font-size="7" font-family="monospace">BOS = nieuw HH → trend gaat door → koop bij pullback HL</text>
+    </g>
+  </svg>`,
+
+  choch: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes cc{from{opacity:0}to{opacity:1}}.cc0{opacity:0;animation:cc .4s ease .1s forwards}.cc1{opacity:0;animation:cc .4s ease .5s forwards}.cc2{opacity:0;animation:cc .4s ease 1.0s forwards}.cc3{opacity:0;animation:cc .5s ease 1.7s forwards}.cc4{opacity:0;animation:cc .5s ease 2.5s forwards}.cc5{opacity:0;animation:cc .5s ease 3.3s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="cc0"><text x="10" y="14" fill="#f5a623" font-size="9" font-family="monospace" font-weight="bold">Change of Character (ChoCH)</text></g>
+    <g class="cc1">
+      <circle cx="20" cy="38" r="3" fill="#ff5c5c"/>
+      <rect x="12" y="30" width="26" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="14" y="38" fill="#ff5c5c" font-size="8" font-family="monospace">LH1</text>
+      <line x1="20" y1="38" x2="52" y2="75" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="52" cy="75" r="3" fill="#4f9eff"/>
+      <rect x="42" y="80" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="44" y="88" fill="#4f9eff" font-size="8" font-family="monospace">LL1</text>
+    </g>
+    <g class="cc2">
+      <line x1="52" y1="75" x2="82" y2="52" stroke="#2ecc8a" stroke-width="1.5"/>
+      <circle cx="82" cy="52" r="3" fill="#ff5c5c"/>
+      <rect x="74" y="44" width="26" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="76" y="52" fill="#ff5c5c" font-size="8" font-family="monospace">LH2</text>
+      <line x1="82" y1="52" x2="115" y2="92" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="115" cy="92" r="3" fill="#4f9eff"/>
+      <rect x="105" y="98" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="107" y="106" fill="#4f9eff" font-size="8" font-family="monospace">LL2</text>
+    </g>
+    <g class="cc3">
+      <line x1="82" y1="52" x2="260" y2="52" stroke="#f5a623" stroke-width="1" stroke-dasharray="4,3"/>
+      <rect x="225" y="44" width="40" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="227" y="52" fill="#f5a623" font-size="7" font-family="monospace">LH niveau</text>
+    </g>
+    <g class="cc4">
+      <line x1="115" y1="92" x2="152" y2="44" stroke="#2ecc8a" stroke-width="2.5"/>
+      <circle cx="152" cy="44" r="5" fill="#f5a623"/>
+      <rect x="154" y="36" width="46" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="156" y="44" fill="#f5a623" font-size="7" font-family="monospace" font-weight="bold">ChoCH!</text>
+      <text x="156" y="55" fill="#f5a623" font-size="6" font-family="monospace">breekt LH2!</text>
+    </g>
+    <g class="cc5">
+      <line x1="152" y1="44" x2="182" y2="64" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="182" cy="64" r="3" fill="#4f9eff"/>
+      <rect x="184" y="58" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="186" y="66" fill="#4f9eff" font-size="8" font-family="monospace">HL</text>
+      <circle cx="182" cy="64" r="5" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+      <line x1="182" y1="64" x2="230" y2="28" stroke="#2ecc8a" stroke-width="2"/>
+      <circle cx="230" cy="28" r="3" fill="#2ecc8a"/>
+      <rect x="232" y="22" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="234" y="30" fill="#2ecc8a" font-size="8" font-family="monospace">HH</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">ChoCH breekt LH → nieuwe uptrend start → entry op HL</text>
+    </g>
+  </svg>`,
+
+  premiumdiscount: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes pd{from{opacity:0}to{opacity:1}}.pd0{opacity:0;animation:pd .4s ease .1s forwards}.pd1{opacity:0;animation:pd .5s ease .5s forwards}.pd2{opacity:0;animation:pd .5s ease 1.2s forwards}.pd3{opacity:0;animation:pd .5s ease 2.0s forwards}.pd4{opacity:0;animation:pd .5s ease 2.8s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="pd0"><text x="10" y="14" fill="#4f9eff" font-size="9" font-family="monospace" font-weight="bold">Premium &amp; Discount Zones</text></g>
+    <g class="pd1">
+      <line x1="15" y1="32" x2="220" y2="32" stroke="#2ecc8a" stroke-width="1.5"/>
+      <rect x="222" y="26" width="72" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="224" y="34" fill="#2ecc8a" font-size="7" font-family="monospace">Swing High 100%</text>
+      <line x1="15" y1="122" x2="220" y2="122" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="222" y="116" width="70" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="224" y="124" fill="#ff5c5c" font-size="7" font-family="monospace">Swing Low   0%</text>
+    </g>
+    <g class="pd2">
+      <line x1="15" y1="77" x2="220" y2="77" stroke="#f5a623" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <rect x="222" y="71" width="70" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="224" y="79" fill="#f5a623" font-size="7" font-family="monospace">EQ Midpoint 50%</text>
+      <rect x="15" y="32" width="205" height="45" fill="rgba(255,92,92,0.07)" rx="0"/>
+      <text x="22" y="58" fill="#ff5c5c" font-size="10" font-family="monospace" font-weight="bold">PREMIUM</text>
+      <text x="22" y="70" fill="#ff5c5c" font-size="7" font-family="monospace">→ Zoek shorts</text>
+      <rect x="15" y="77" width="205" height="45" fill="rgba(46,204,138,0.07)" rx="0"/>
+      <text x="22" y="100" fill="#2ecc8a" font-size="10" font-family="monospace" font-weight="bold">DISCOUNT</text>
+      <text x="22" y="112" fill="#2ecc8a" font-size="7" font-family="monospace">→ Zoek longs</text>
+    </g>
+    <g class="pd3">
+      <polyline points="235,32 240,48 234,40 238,65 232,55 236,77 230,92 238,108 226,100 230,122" fill="none" stroke="#4f9eff" stroke-width="1.5"/>
+      <circle cx="236" cy="77" r="4" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+      <circle cx="230" cy="92" r="4" fill="#2ecc8a" opacity="0.8"/>
+    </g>
+    <g class="pd4">
+      <rect x="240" y="86" width="50" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="242" y="94" fill="#2ecc8a" font-size="8" font-family="monospace" font-weight="bold">Long!</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#4f9eff" font-size="7" font-family="monospace">Koop goedkoop (discount) · Verkoop duur (premium)</text>
+    </g>
+  </svg>`,
+
+  inducement: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes id{from{opacity:0}to{opacity:1}}.id0{opacity:0;animation:id .4s ease .1s forwards}.id1{opacity:0;animation:id .4s ease .5s forwards}.id2{opacity:0;animation:id .5s ease 1.1s forwards}.id3{opacity:0;animation:id .5s ease 1.9s forwards}.id4{opacity:0;animation:id .5s ease 2.8s forwards}.id5{opacity:0;animation:id .5s ease 3.6s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="id0"><text x="10" y="14" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">Inducement (IDM) — valse pullback</text></g>
+    <g class="id1">
+      <line x1="15" y1="128" x2="55" y2="88" stroke="#2ecc8a" stroke-width="2"/>
+      <circle cx="55" cy="88" r="3" fill="#2ecc8a"/>
+      <rect x="46" y="81" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="48" y="89" fill="#2ecc8a" font-size="8" font-family="monospace">HH1</text>
+    </g>
+    <g class="id2">
+      <line x1="55" y1="88" x2="85" y2="105" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="85" cy="105" r="4" fill="#f5a623"/>
+      <rect x="74" y="110" width="26" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="76" y="118" fill="#f5a623" font-size="8" font-family="monospace">IDM</text>
+      <line x1="85" y1="105" x2="220" y2="105" stroke="#f5a623" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+    </g>
+    <g class="id3">
+      <line x1="85" y1="105" x2="115" y2="82" stroke="#2ecc8a" stroke-width="1.5"/>
+      <circle cx="115" cy="82" r="3" fill="#2ecc8a"/>
+      <line x1="115" y1="82" x2="136" y2="108" stroke="#ff5c5c" stroke-width="2"/>
+      <circle cx="136" cy="108" r="4" fill="#ff5c5c"/>
+      <rect x="138" y="110" width="64" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="140" y="118" fill="#ff5c5c" font-size="7" font-family="monospace">SWEEP IDM!</text>
+    </g>
+    <g class="id4">
+      <line x1="136" y1="108" x2="175" y2="66" stroke="#2ecc8a" stroke-width="2.5"/>
+      <circle cx="175" cy="66" r="3" fill="#2ecc8a"/>
+      <rect x="166" y="59" width="28" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="168" y="67" fill="#2ecc8a" font-size="8" font-family="monospace">HH2</text>
+      <rect x="130" y="76" width="30" height="12" fill="rgba(46,204,138,0.2)" rx="3"/>
+      <text x="132" y="86" fill="#2ecc8a" font-size="8" font-family="monospace" font-weight="bold">BOS!</text>
+    </g>
+    <g class="id5">
+      <line x1="175" y1="66" x2="200" y2="82" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="200" cy="82" r="4" fill="none" stroke="#f5a623" stroke-width="1.5"/>
+      <rect x="202" y="76" width="56" height="10" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="204" y="84" fill="#f5a623" font-size="7" font-family="monospace">Entry long!</text>
+      <line x1="200" y1="82" x2="245" y2="44" stroke="#2ecc8a" stroke-width="2"/>
+      <circle cx="245" cy="44" r="3" fill="#2ecc8a"/>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#f5a623" font-size="7" font-family="monospace">IDM sweep → BOS → entry mét de trend op HL</text>
+    </g>
+  </svg>`,
+
+  stoploss: `<svg viewBox="0 0 300 175" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:175px;"><style>@keyframes sl{from{opacity:0}to{opacity:1}}.sl0{opacity:0;animation:sl .4s ease .1s forwards}.sl1{opacity:0;animation:sl .4s ease .5s forwards}.sl2{opacity:0;animation:sl .4s ease 1.0s forwards}.sl3{opacity:0;animation:sl .5s ease 1.6s forwards}.sl4{opacity:0;animation:sl .4s ease 2.4s forwards}.sl5{opacity:0;animation:sl .5s ease 3.1s forwards}</style>
+    <rect width="300" height="175" fill="#0d0f14" rx="8"/>
+    <g class="sl0"><text x="10" y="14" fill="#ff5c5c" font-size="9" font-family="monospace" font-weight="bold">Stop-loss — bescherm je kapitaal</text></g>
+    <line x1="150" y1="20" x2="150" y2="152" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="30" y="26" fill="#2ecc8a" font-size="7" font-family="monospace">MET stop-loss</text>
+    <text x="165" y="26" fill="#ff5c5c" font-size="7" font-family="monospace">ZONDER stop-loss</text>
+    <g class="sl1">
+      <rect x="30" y="62" width="10" height="22" fill="#2ecc8a" rx="1"/><line x1="35" y1="59" x2="35" y2="86" stroke="#2ecc8a" stroke-width="1.2"/>
+      <rect x="47" y="58" width="10" height="20" fill="#2ecc8a" rx="1"/><line x1="52" y1="55" x2="52" y2="80" stroke="#2ecc8a" stroke-width="1.2"/>
+      <rect x="165" y="62" width="10" height="22" fill="#2ecc8a" rx="1"/><line x1="170" y1="59" x2="170" y2="86" stroke="#2ecc8a" stroke-width="1.2"/>
+      <rect x="182" y="58" width="10" height="20" fill="#2ecc8a" rx="1"/><line x1="187" y1="55" x2="187" y2="80" stroke="#2ecc8a" stroke-width="1.2"/>
+    </g>
+    <g class="sl2">
+      <line x1="20" y1="100" x2="140" y2="100" stroke="#ff5c5c" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <rect x="22" y="93" width="16" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="24" y="102" fill="#ff5c5c" font-size="7" font-family="monospace">SL</text>
+    </g>
+    <g class="sl3">
+      <rect x="64" y="88" width="10" height="24" fill="#ff5c5c" rx="1"/><line x1="69" y1="84" x2="69" y2="114" stroke="#ff5c5c" stroke-width="1.5"/>
+      <circle cx="69" cy="100" r="4" fill="#f5a623" opacity="0.8"/>
+      <rect x="76" y="96" width="56" height="11" fill="rgba(13,15,20,0.9)" rx="2"/>
+      <text x="78" y="105" fill="#f5a623" font-size="7" font-family="monospace">→ Gestopt! −€40</text>
+      <rect x="64" y="116" width="65" height="22" fill="rgba(46,204,138,0.08)" rx="4"/>
+      <text x="68" y="127" fill="#2ecc8a" font-size="7" font-family="monospace">Kapitaal veilig!</text>
+      <text x="68" y="134" fill="#2ecc8a" font-size="6" font-family="monospace">Volgende trade ok</text>
+    </g>
+    <g class="sl4">
+      <rect x="199" y="88" width="10" height="24" fill="#ff5c5c" rx="1"/><line x1="204" y1="84" x2="204" y2="114" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="216" y="100" width="10" height="30" fill="#ff5c5c" rx="1"/><line x1="221" y1="96" x2="221" y2="132" stroke="#ff5c5c" stroke-width="1.5"/>
+      <rect x="233" y="108" width="10" height="36" fill="#ff5c5c" rx="1"/><line x1="238" y1="104" x2="238" y2="146" stroke="#ff5c5c" stroke-width="2"/>
+    </g>
+    <g class="sl5">
+      <rect x="199" y="120" width="65" height="22" fill="rgba(255,92,92,0.1)" rx="4"/>
+      <text x="203" y="131" fill="#ff5c5c" font-size="7" font-family="monospace">−€200 en groeit!</text>
+      <text x="203" y="139" fill="#ff5c5c" font-size="6" font-family="monospace">Account beschadigd</text>
+      <rect x="5" y="157" width="292" height="14" fill="#0d0f14"/>
+      <text x="6" y="168" fill="#ff5c5c" font-size="7" font-family="monospace">Stop-loss = verplicht bij elke trade — altijd instellen</text>
+    </g>
+  </svg>`,
 };
 
 function openLearnModal(itemId) {
