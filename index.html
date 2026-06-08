@@ -503,6 +503,15 @@
   .img-lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94); z-index: 500; align-items: center; justify-content: center; cursor: zoom-out; }
   .img-lightbox.show { display: flex; }
   .img-lightbox img { max-width: 96vw; max-height: 92vh; border-radius: 8px; object-fit: contain; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+  /* Chart lightbox */
+  .chart-zoom-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:700; align-items:center; justify-content:center; padding:20px; cursor:zoom-out; }
+  .chart-zoom-overlay.show { display:flex; }
+  .chart-zoom-box { width:100%; max-width:860px; background:#0d0f14; border-radius:14px; padding:20px; box-shadow:0 16px 60px rgba(0,0,0,0.7); cursor:default; position:relative; }
+  .chart-zoom-box svg { width:100% !important; height:auto !important; min-height:320px; }
+  /* Chart container in modal */
+  #learnChartContainer { cursor:zoom-in; transition:opacity 0.15s; }
+  #learnChartContainer:hover { opacity:0.88; }
+  #learnChartContainer svg { width:100% !important; height:auto !important; min-height:200px; }
 
   .event-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--border); background: var(--surface2); }
   .event-time { color: var(--muted); font-size: 11px; min-width: 48px; }
@@ -3877,7 +3886,7 @@ function openLightbox(tradeId){
   $('imgLightbox').classList.add('show');
 }
 function closeLightbox(){ $('imgLightbox').classList.remove('show'); }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeLightbox(); closeEditModal(); } });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeLightbox(); closeEditModal(); closeChartLightbox(); closeLearnModal(); } });
 
 // ---- EDIT MODAL ----
 let editImageBase64 = null;
@@ -5473,6 +5482,21 @@ const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split(
 <!-- IMAGE LIGHTBOX -->
 <div class="img-lightbox" id="imgLightbox" onclick="closeLightbox()">
   <img id="imgLightboxSrc" src="" alt="Trade screenshot">
+</div>
+
+<!-- CHART ZOOM LIGHTBOX -->
+<div class="chart-zoom-overlay" id="chartZoomOverlay" onclick="closeChartLightbox()">
+  <div class="chart-zoom-box" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <span id="chartZoomTitle" style="font-family:var(--font-head);font-weight:800;font-size:14px;color:var(--text);"></span>
+      <div style="display:flex;gap:8px;">
+        <button id="chartZoomReplay" style="display:none;padding:5px 12px;border-radius:7px;border:1px solid var(--accent);background:rgba(79,158,255,0.1);color:var(--accent);cursor:pointer;font-family:var(--font-head);font-weight:700;font-size:11px;">▶ Replay</button>
+        <button onclick="closeChartLightbox()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:16px;padding:4px 10px;line-height:1;">✕</button>
+      </div>
+    </div>
+    <div id="chartZoomContent"></div>
+    <div style="margin-top:10px;text-align:center;font-size:10px;color:var(--muted);">Klik buiten de chart om te sluiten · ESC om te sluiten</div>
+  </div>
 </div>
 
 <!-- CONFIRM MODAL -->
@@ -8024,7 +8048,10 @@ function openLearnModal(itemId) {
     </div>
 
     <!-- Chart -->
-    ${ch ? `<div id="learnChartContainer" style="padding:16px 24px 0;">${ch}</div>` : ''}
+    ${ch ? `<div id="learnChartContainer" onclick="openChartLightbox('${item.id}','${d.term}')" title="Klik om te vergroten" style="padding:16px 24px 0;position:relative;">
+      ${ch}
+      <div style="position:absolute;bottom:24px;right:32px;background:rgba(13,15,20,0.75);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:9px;color:var(--muted);font-family:var(--font-head);pointer-events:none;letter-spacing:.4px;">🔍 klik om te vergroten</div>
+    </div>` : ''}
 
     <!-- Body -->
     <div style="padding:16px 24px 0;font-size:13px;color:var(--text);line-height:1.9;">
@@ -8050,9 +8077,51 @@ function openLearnModal(itemId) {
 function replayLearnAnim(){
   const c = $('learnChartContainer');
   if(!c) return;
-  const html = c.innerHTML;
-  c.innerHTML = '';
-  requestAnimationFrame(() => { c.innerHTML = html; });
+  // Bewaar alleen de SVG, niet de badge
+  const svg = c.querySelector('svg');
+  if(!svg) return;
+  const html = svg.outerHTML;
+  const svgContainer = svg.parentElement || c;
+  svgContainer.innerHTML = '';
+  requestAnimationFrame(() => { svgContainer.innerHTML = html; });
+}
+
+function openChartLightbox(itemId, title){
+  const animChart  = ANIMATED_CHARTS[itemId]  || '';
+  const staticChart = STRATEGY_CHARTS[itemId] || '';
+  const ch = animChart || staticChart;
+  if(!ch) return;
+
+  const overlay = $('chartZoomOverlay');
+  const content = $('chartZoomContent');
+  const titleEl = $('chartZoomTitle');
+  const replayBtn = $('chartZoomReplay');
+
+  if(!overlay || !content) return;
+
+  titleEl.textContent = title || '';
+  content.innerHTML = ch;
+
+  // Replay knop alleen voor geanimeerde charts
+  if(animChart){
+    replayBtn.style.display = 'inline-block';
+    replayBtn.onclick = () => {
+      const html = animChart;
+      content.innerHTML = '';
+      requestAnimationFrame(() => { content.innerHTML = html; });
+    };
+  } else {
+    replayBtn.style.display = 'none';
+  }
+
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeChartLightbox(){
+  const overlay = $('chartZoomOverlay');
+  if(overlay) overlay.classList.remove('show');
+  document.body.style.overflow = '';
 }
 
 function closeLearnModal(){
