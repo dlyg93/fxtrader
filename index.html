@@ -2037,15 +2037,6 @@
           </div>
         </div>
 
-        <div class="card" style="background:rgba(79,158,255,0.04);border-color:rgba(79,158,255,0.2);">
-          <div class="card-title" style="color:var(--accent)"><div class="dot" style="background:var(--accent)"></div>Aanvullende ideeën voor jouw tool</div>
-          <div class="idea-grid">
-            <div class="idea-card"><h4 style="color:var(--green)">Streak tracker</h4><p>Bijhouden hoeveel dagen op rij je winstgevend bent en je langste discipline streak.</p></div>
-            <div class="idea-card"><h4 style="color:var(--amber)">News countdown</h4><p>Live afteller naar het volgende hoge impact event met automatische blokkade.</p></div>
-            <div class="idea-card"><h4 style="color:var(--purple)">Patroon bibliotheek</h4><p>Visueel overzicht van price action patronen met uitleg en voorbeelden.</p></div>
-            <div class="idea-card"><h4 style="color:var(--accent)">Weekreview wizard</h4><p>Gestructureerde vragen elke vrijdag om je week te evalueren en bij te leren.</p></div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -5402,6 +5393,28 @@ const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split(
         </div>
       </div>
 
+      <!-- AANVULLENDE IDEEËN -->
+      <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+        <div onclick="toggleIdeaList()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:4px 0;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;"></span>
+            <span style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--text);">Aanvullende ideeën voor deze tool</span>
+          </div>
+          <span id="ideaListToggleIcon" style="color:var(--muted);font-size:12px;font-family:var(--font-head);transition:transform 0.2s;">▾</span>
+        </div>
+        <div id="ideaListBody" style="display:none;margin-top:12px;">
+          <div class="idea-grid">
+            <div class="idea-card"><h4 style="color:var(--green)">Streak tracker</h4><p>Bijhouden hoeveel dagen op rij je winstgevend bent en je langste discipline streak.</p></div>
+            <div class="idea-card"><h4 style="color:var(--amber)">News countdown</h4><p>Live afteller naar het volgende hoge impact event met automatische blokkade.</p></div>
+            <div class="idea-card"><h4 style="color:var(--purple)">Patroon bibliotheek</h4><p>Visueel overzicht van price action patronen met uitleg en voorbeelden.</p></div>
+            <div class="idea-card"><h4 style="color:var(--accent)">Weekreview wizard</h4><p>Gestructureerde vragen elke vrijdag om je week te evalueren en bij te leren.</p></div>
+            <div class="idea-card"><h4 style="color:var(--purple)">AI markt scanner</h4><p>✓ Geïmplementeerd — dagelijkse bias, key levels en nieuwsimpact via Claude.</p></div>
+            <div class="idea-card"><h4 style="color:var(--purple)">AI weekreview</h4><p>✓ Geïmplementeerd — terugkerende patronen in wins/losses via Claude.</p></div>
+            <div class="idea-card"><h4 style="color:var(--purple)">Patroon scanner</h4><p>✓ Geïmplementeerd — Claude herkent candlestick en chart patronen op je chart.</p></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -5526,6 +5539,15 @@ function openSettings(){
     renderAccountsList();
   }
 }
+function toggleIdeaList(){
+  const body = $('ideaListBody');
+  const icon = $('ideaListToggleIcon');
+  if(!body) return;
+  const open = getComputedStyle(body).display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if(icon) icon.style.transform = open ? '' : 'rotate(180deg)';
+}
+
 function closeSettings(){
   const m=$('settingsModal');
   if(m){ m.style.display='none'; document.body.style.overflow=''; }
