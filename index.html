@@ -1322,6 +1322,30 @@
     <div class="monthly-grid" id="statsMonthly"></div>
   </div>
 
+  <!-- AI WEEKREVIEW -->
+  <div class="card" style="border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.03);">
+    <div class="card-title" style="justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;"><div class="dot" style="background:var(--purple)"></div>🧠 AI Weekreview</div>
+      <select id="weekReviewPeriod" style="padding:4px 10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--font-head);font-weight:700;font-size:11px;cursor:pointer;" onclick="event.stopPropagation()">
+        <option value="7">Afgelopen 7 dagen</option>
+        <option value="14">Afgelopen 14 dagen</option>
+        <option value="30">Afgelopen 30 dagen</option>
+        <option value="0">Alle trades</option>
+      </select>
+    </div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;">
+      Claude analyseert al je trades uit de geselecteerde periode en zoekt terugkerende patronen in je wins en losses — dingen die jij zelf moeilijk objectief ziet.
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="runWeekReview()" id="weekReviewBtn" style="background:var(--purple);border-color:var(--purple);">🧠 Review starten</button>
+    </div>
+    <div class="ai-loading" id="weekReviewLoading" style="display:none;margin-top:12px;">
+      <div class="spinner" style="border-top-color:var(--purple);"></div>
+      <span>Claude analyseert je trades...</span>
+    </div>
+    <div id="weekReviewResult" style="display:none;margin-top:16px;border-top:1px solid var(--border);padding-top:16px;"></div>
+  </div>
+
 </div>
 
 <!-- ===== TAB 4: JOURNAL ===== -->
@@ -1491,6 +1515,77 @@
 
 <!-- ===== TAB 5: AI TRADE ANALYSE ===== -->
 <div class="page" id="page-analyse">
+
+  <!-- Mode toggle -->
+  <div class="tf-tabs" style="margin-bottom:16px;">
+    <button class="tf-btn active" onclick="setAnalyseMode('setup',this)">📋 Setup Analyse</button>
+    <button class="tf-btn" onclick="setAnalyseMode('pattern',this)" style="border-color:var(--purple);color:var(--purple);">🔍 Patroon Scanner</button>
+  </div>
+
+  <!-- ── PATROON SCANNER ── -->
+  <div id="analyseMode-pattern" style="display:none;">
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-title"><div class="dot" style="background:var(--purple)"></div>🔍 Patroon Scanner</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;">
+            Upload een chart screenshot — Claude identificeert automatisch alle zichtbare patronen: candlestick formaties, chart patronen, trend structuur en indicator signalen.
+          </div>
+          <div class="ai-dropzone" id="patternDropzone">
+            <input type="file" accept="image/*" id="patternFile" onchange="handlePatternImage(event)">
+            <div id="patternDropzoneText">
+              <div style="font-size:32px;margin-bottom:8px;opacity:0.4">+</div>
+              <div style="font-family:var(--font-head);font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px">Sleep je chart hier</div>
+              <div style="font-size:11px;color:var(--muted)">PNG, JPG, WebP — H1, H4 of Daily werkt het best</div>
+            </div>
+            <img id="patternPreview" class="ai-preview">
+          </div>
+          <div style="margin-top:14px;" class="field">
+            <label>Timeframe &amp; paar (optioneel)</label>
+            <input type="text" id="patternContext" placeholder="bv: EUR/USD H1 — zoek bullish setup" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-mono);font-size:13px;">
+          </div>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <button class="btn btn-primary" onclick="runPatternScan()" id="patternScanBtn" style="background:var(--purple);border-color:var(--purple);">🔍 Patronen identificeren</button>
+            <button class="btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);" onclick="clearPatternScan()">Reset</button>
+          </div>
+          <div class="ai-loading" id="patternLoading" style="display:none;margin-top:12px;">
+            <div class="spinner" style="border-top-color:var(--purple);"></div>
+            <span>Claude scant de chart op patronen...</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" id="patternResultCard" style="display:none;">
+          <div class="card-title"><div class="dot" style="background:var(--purple)"></div>Gevonden patronen</div>
+          <div id="patternResultContent"></div>
+        </div>
+        <div class="card" id="patternPlaceholderCard">
+          <div class="card-title"><div class="dot" style="background:var(--muted)"></div>Wat herkent de scanner?</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="padding:11px 13px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--purple);">
+              <div style="font-family:var(--font-head);font-weight:700;font-size:11px;color:var(--purple);margin-bottom:3px;">🕯 Candlestick patronen</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">Pin bar, engulfing, doji, hammer, morning/evening star, harami, inside bar...</div>
+            </div>
+            <div style="padding:11px 13px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--accent);">
+              <div style="font-family:var(--font-head);font-weight:700;font-size:11px;color:var(--accent);margin-bottom:3px;">📐 Chart patronen</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">Head & shoulders, double top/bottom, wedge, triangle, flag, channel...</div>
+            </div>
+            <div style="padding:11px 13px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--green);">
+              <div style="font-family:var(--font-head);font-weight:700;font-size:11px;color:var(--green);margin-bottom:3px;">📊 Trend structuur</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">HH/HL, LH/LL, trendbreaks, retracements, support/resistance zones.</div>
+            </div>
+            <div style="padding:11px 13px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--amber);">
+              <div style="font-family:var(--font-head);font-weight:700;font-size:11px;color:var(--amber);margin-bottom:3px;">📈 Indicator signalen</div>
+              <div style="font-size:12px;color:var(--muted);line-height:1.5;">EMA crossovers, RSI divergentie, overbought/oversold — als zichtbaar op chart.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SETUP ANALYSE (bestaand) ── -->
+  <div id="analyseMode-setup">
   <div class="grid-2">
     <div>
       <div class="card">
@@ -1590,6 +1685,7 @@
       </div>
     </div>
   </div>
+  </div> <!-- end analyseMode-setup -->
 </div>
 
 <!-- ===== TAB 6: MARKT ANALYSE ===== -->
@@ -2968,6 +3064,12 @@ function compressAndSetJournalImage(file, prefix){
         $('jDropzoneText').style.display = 'none';
         $('jImgName').textContent = file.name;
         $('jClearImg').style.display = 'inline';
+      } else if(prefix === 'pattern'){
+        patternImageBase64 = compressed;
+        const prev = $('patternPreview');
+        if(prev){ prev.src = compressed; prev.style.display = 'block'; }
+        const dzt = $('patternDropzoneText');
+        if(dzt) dzt.style.display = 'none';
       } else {
         editImageBase64 = compressed;
         const prev = $('ePreview');
@@ -4641,14 +4743,7 @@ TOON: Professioneel maar direct. Wees eerlijk als de marktstructuur onduidelijk 
 }
 
 function renderScanResult(text, pair, price, date){
-  // Render markdown-achtige structuur naar HTML
-  let html = text
-    .replace(/^## (.+)$/gm, '<h4 style="font-family:var(--font-head);font-weight:800;font-size:13px;color:var(--text);margin:18px 0 8px;display:flex;align-items:center;gap:6px;">$1</h4>')
-    .replace(/\*\*([^*]+)\*\*/g, '<strong style="color:var(--text)">$1</strong>')
-    .replace(/^- (.+)$/gm, '<div style="padding:5px 0 5px 12px;border-left:2px solid var(--border);margin:3px 0;font-size:12px;color:var(--text);line-height:1.6;">$1</div>')
-    .replace(/\n\n/g, '<br>')
-    .replace(/\n/g, '<br>');
-
+  let html = renderMarkdownResult(text);
   return `
     <div style="padding:10px 12px;background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.25);border-radius:8px;margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
       <span style="font-family:var(--font-head);font-weight:800;font-size:15px;color:var(--purple);">${pair}</span>
@@ -4667,6 +4762,261 @@ function clearScanResult(){
   if(ph) ph.style.display = 'block';
   if($('scanCurrentPrice')) $('scanCurrentPrice').value = '';
   if($('scanContext')) $('scanContext').value = '';
+}
+
+// ================================================================
+// ANALYSE MODE TOGGLE
+// ================================================================
+function setAnalyseMode(mode, btn){
+  document.querySelectorAll('#page-analyse .tf-tabs .tf-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  ['setup','pattern'].forEach(m=>{
+    const el = $('analyseMode-'+m);
+    if(el) el.style.display = m===mode ? 'block' : 'none';
+  });
+}
+
+// ================================================================
+// PATROON SCANNER
+// ================================================================
+let patternImageBase64 = null;
+
+function handlePatternImage(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  compressAndSetJournalImage(file, 'pattern');
+}
+
+function clearPatternScan(){
+  patternImageBase64 = null;
+  const prev = $('patternPreview');
+  if(prev){ prev.src=''; prev.style.display='none'; }
+  if($('patternDropzoneText')) $('patternDropzoneText').style.display='block';
+  if($('patternFile')) $('patternFile').value='';
+  if($('patternContext')) $('patternContext').value='';
+  if($('patternResultCard')) $('patternResultCard').style.display='none';
+  if($('patternPlaceholderCard')) $('patternPlaceholderCard').style.display='block';
+}
+
+async function runPatternScan(){
+  const apiKey = $('anthropicApiKey')?.value.trim() || localStorage.getItem('fxAnthropicKey') || '';
+  if(!apiKey){ alert('Voer eerst je Anthropic API sleutel in via het "Setup & Backup" tabblad.'); return; }
+  if(!patternImageBase64){ alert('Upload eerst een chart screenshot.'); return; }
+
+  const ctx = $('patternContext')?.value.trim() || '';
+  const btn = $('patternScanBtn');
+  const loading = $('patternLoading');
+
+  btn.disabled = true;
+  if(loading) loading.style.display = 'flex';
+
+  const systemPrompt = `Je bent een expert technisch analist gespecialiseerd in het herkennen van candlestick- en chart patronen. Je analyseert een chart screenshot en geeft een gestructureerd overzicht van ALLE zichtbare patronen. Je spreekt in het Nederlands.
+
+STRUCTUUR (gebruik exact deze koppen):
+
+## 🕯 Candlestick Patronen
+Som elk zichtbaar candlestick patroon op. Per patroon:
+- **Naam patroon** (locatie op chart) — Bullish/Bearish — Betrouwbaarheid: Hoog/Matig/Laag
+  Korte uitleg wat dit patroon betekent in deze context.
+
+Als er geen duidelijke candlestick patronen zijn: vermeld dat.
+
+## 📐 Chart Patronen
+Beschrijf bredere chart patronen die je ziet (double top/bottom, H&S, wedge, triangle, flag, channel, etc.). Als geen: vermeld dat.
+
+## 📊 Trend Structuur
+Beschrijf de zichtbare trendstructuur: uptrend/downtrend/ranging, HH/HL of LH/LL patroon, eventuele trendbreaks.
+
+## 📈 Indicator Signalen
+Beschrijf zichtbare indicator signalen (EMA crossover, RSI divergentie/overbought/oversold, etc.). Als geen indicators zichtbaar: vermeld dat.
+
+## 🎯 Bias & Potentiële Setup
+Geef op basis van alle gevonden patronen:
+- **Bias**: Bullish / Bearish / Neutraal
+- **Sterkste signaal**: welk patroon geeft het duidelijkste signaal
+- **Potentiële entry zone**: waar zou je op letten
+- **Invalidatie**: wanneer klopt de analyse niet meer
+
+## ⚠️ Kanttekeningen
+Wees eerlijk over onzekerheden. Welke patronen zijn minder duidelijk? Wat ontbreekt er om een hogekwaliteitssetup te hebben?
+
+TOON: Concreet, eerlijk, geen overdrijving. Als een patroon twijfelachtig is, zeg dat. Betrouwbaarheid is belangrijker dan indruk maken.`;
+
+  const userContent = [
+    { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: patternImageBase64.split(',')[1] || patternImageBase64 } },
+    { type: 'text', text: `Analyseer deze chart op patronen.${ctx ? '\nExtra context: ' + ctx : ''}` }
+  ];
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1600,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userContent }]
+      })
+    });
+
+    if(!resp.ok){ const e = await resp.json(); throw new Error(e?.error?.message || resp.status); }
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || '';
+
+    if(loading) loading.style.display = 'none';
+    btn.disabled = false;
+
+    const rc = $('patternResultCard'), ph = $('patternPlaceholderCard');
+    if(ph) ph.style.display = 'none';
+    if(rc) rc.style.display = 'block';
+
+    $('patternResultContent').innerHTML = renderMarkdownResult(text);
+
+  } catch(err) {
+    if(loading) loading.style.display = 'none';
+    btn.disabled = false;
+    const rc = $('patternResultCard');
+    if(rc){ rc.style.display='block'; $('patternResultContent').innerHTML = `<div style="color:var(--red);font-size:13px;padding:10px;">❌ Fout: ${err.message}</div>`; }
+  }
+}
+
+// ================================================================
+// AI WEEKREVIEW
+// ================================================================
+async function runWeekReview(){
+  const apiKey = $('anthropicApiKey')?.value.trim() || localStorage.getItem('fxAnthropicKey') || '';
+  if(!apiKey){ alert('Voer eerst je Anthropic API sleutel in via het "Setup & Backup" tabblad.'); return; }
+
+  const days = parseInt($('weekReviewPeriod')?.value) || 7;
+  const cutoff = days === 0 ? null : new Date(Date.now() - days * 86400000);
+  const subset = cutoff
+    ? trades.filter(t => t.date && new Date(t.date) >= cutoff)
+    : [...trades];
+
+  if(!subset.length){
+    alert('Geen trades gevonden in deze periode. Voeg eerst trades toe aan je journal.');
+    return;
+  }
+
+  const btn = $('weekReviewBtn');
+  const loading = $('weekReviewLoading');
+  const result = $('weekReviewResult');
+
+  btn.disabled = true;
+  if(loading) loading.style.display = 'flex';
+  if(result) result.style.display = 'none';
+
+  const tradesSummary = subset.map((t,i) => {
+    const parts = [
+      `Trade ${i+1}: ${t.date||'?'} — ${t.pair||'?'} ${(t.dir||'').toUpperCase()} — ${(t.result||'?').toUpperCase()}`,
+      t.pnl != null ? `P&L: €${t.pnl}` : null,
+      t.rr ? `R:R: ${t.rr}` : null,
+      t.entry ? `Entry: ${t.entry}` : null,
+      t.sl ? `SL: ${t.sl}` : null,
+      t.tp ? `TP: ${t.tp}` : null,
+      t.lot ? `Lot: ${t.lot}` : null,
+      t.edge_match ? `Edge: ${t.edge_match}` : null,
+      t.edge_conf ? `Vertrouwen: ${t.edge_conf}` : null,
+      t.notes ? `Notities: "${t.notes}"` : null,
+    ].filter(Boolean);
+    return parts.join(' | ');
+  }).join('\n');
+
+  const wins = subset.filter(t=>t.result==='win').length;
+  const losses = subset.filter(t=>t.result==='loss').length;
+  const be = subset.filter(t=>t.result==='be').length;
+  const totalPnl = subset.reduce((s,t)=>s+(t.pnl||0),0);
+  const label = days === 0 ? 'alle trades' : `afgelopen ${days} dagen`;
+
+  const systemPrompt = `Je bent een eerlijke, directe forex trading coach die een trader helpt te groeien. Je analyseert een reeks trades en geeft een diepgaande, objectieve weekreview. Je spreekt in het Nederlands. Je bent niet sycofantisch — als er problemen zijn, benoem je ze direct maar constructief.
+
+STRUCTUUR (gebruik exact deze koppen):
+
+## 📊 Overzicht
+Geef een kort statistisch overzicht van de periode: winrate, P&L trend, gemiddeld R:R.
+
+## ✅ Wat goed gaat
+Identificeer 2-4 concrete sterke punten op basis van de trades. Wees specifiek — verwijs naar concrete trades of patronen.
+
+## ⚠️ Terugkerende problemen
+Dit is het belangrijkste onderdeel. Zoek actief naar:
+- Paren waar je consistent verliest
+- Tijdstippen of sessies met slechte resultaten
+- Trades buiten je edge (edge_match = no/partial)
+- Overtrading patronen (te veel trades op één dag)
+- R:R schendingen (te kleine wins t.o.v. verliezen)
+- Emotionele patronen zichtbaar in de notities
+Wees direct. Als je iets problematisch ziet, benoem het met voorbeelden.
+
+## 🎯 Top 3 verbeterpunten
+Geef exact 3 concrete, actionable verbeterpunten. Niet vaag ("trade beter") maar specifiek ("Vermijd GBP/USD op maandag — 3 van je 4 Monday-losses zijn op dit paar").
+
+## 💡 Focus voor volgende week
+Één duidelijke focus voor de komende periode. Eén ding, niet tien.
+
+## 🧠 Psychologie check
+Wat zie je in de notities en patronen over de mentale staat van de trader? Zijn er signalen van revenge trading, FOMO of gebrek aan discipline?
+
+TOON: Eerlijk als een goede coach — soms oncomfortabel maar altijd constructief en respectvol.`;
+
+  const userMsg = `Review periode: ${label}
+Aantal trades: ${subset.length} (${wins} wins, ${losses} losses, ${be} BE)
+Totale P&L: €${totalPnl.toFixed(2)}
+
+TRADES:
+${tradesSummary}`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1800,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMsg }]
+      })
+    });
+
+    if(!resp.ok){ const e = await resp.json(); throw new Error(e?.error?.message || resp.status); }
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || '';
+
+    if(loading) loading.style.display = 'none';
+    btn.disabled = false;
+    if(result){
+      result.style.display = 'block';
+      result.innerHTML = `
+        <div style="padding:10px 12px;background:rgba(167,139,250,0.07);border:1px solid rgba(167,139,250,0.25);border-radius:8px;margin-bottom:14px;font-size:12px;color:var(--muted);">
+          📅 Review van <strong style="color:var(--text)">${subset.length} trades</strong> — ${label} — P&L: <strong style="color:${totalPnl>=0?'var(--green)':'var(--red)'}">€${totalPnl.toFixed(2)}</strong>
+        </div>
+        <div style="font-size:12px;color:var(--text);line-height:1.8;">${renderMarkdownResult(text)}</div>`;
+    }
+  } catch(err) {
+    if(loading) loading.style.display = 'none';
+    btn.disabled = false;
+    if(result){ result.style.display='block'; result.innerHTML=`<div style="color:var(--red);font-size:13px;">❌ Fout: ${err.message}</div>`; }
+  }
+}
+
+// Gedeelde markdown renderer
+function renderMarkdownResult(text){
+  return text
+    .replace(/^## (.+)$/gm, '<h4 style="font-family:var(--font-head);font-weight:800;font-size:13px;color:var(--text);margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border);">$1</h4>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong style="color:var(--text)">$1</strong>')
+    .replace(/^- (.+)$/gm, '<div style="padding:5px 0 5px 12px;border-left:2px solid var(--border);margin:3px 0;font-size:12px;color:var(--text);line-height:1.6;">$1</div>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
 }
 
 function fmt(v){
