@@ -902,6 +902,55 @@
     <button class="tf-btn" onclick="setLearnCat('strategies',this)" data-cat="strategies">Strategieën</button>
     <button class="tf-btn" onclick="setLearnCat('psychology',this)" data-cat="psychology">Psychologie</button>
     <button class="tf-btn" onclick="setLearnCat('candlesticks',this)" data-cat="candlesticks">🕯 Candlesticks</button>
+    <button class="tf-btn" onclick="setLearnCat('ict',this)" data-cat="ict" style="border-color:var(--amber);color:var(--amber);">⚡ ICT / SMC</button>
+    <button class="tf-btn" onclick="startQuiz()" id="quizTabBtn" style="border-color:var(--green);color:var(--green);">🎯 Quiz</button>
+  </div>
+
+  <!-- QUIZ SECTIE -->
+  <div id="learnQuizSection" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+      <div>
+        <div style="font-family:var(--font-head);font-weight:800;font-size:16px;color:var(--text);">🎯 Kennis Quiz</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;">Test je trading kennis — raad het begrip op basis van de omschrijving</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <select id="quizCatFilter" style="padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--font-head);font-weight:700;font-size:11px;" onchange="startQuiz()">
+          <option value="all">Alle categorieën</option>
+          <option value="basics">Basis</option>
+          <option value="priceaction">Price Action</option>
+          <option value="ict">ICT / SMC</option>
+          <option value="riskmanagement">Risk Management</option>
+          <option value="indicators">Indicatoren</option>
+          <option value="strategies">Strategieën</option>
+          <option value="psychology">Psychologie</option>
+        </select>
+        <button onclick="startQuiz()" style="padding:6px 14px;border-radius:7px;border:1px solid var(--green);background:rgba(46,204,138,0.1);color:var(--green);cursor:pointer;font-family:var(--font-head);font-weight:700;font-size:11px;">↺ Nieuwe vraag</button>
+        <button onclick="closeQuiz()" style="padding:6px 14px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;font-size:11px;">✕ Sluiten</button>
+      </div>
+    </div>
+
+    <!-- Score balk -->
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+      <div style="padding:8px 16px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);text-align:center;min-width:80px;">
+        <div style="font-family:var(--font-head);font-weight:800;font-size:18px;color:var(--green);" id="quizScore">0</div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;">CORRECT</div>
+      </div>
+      <div style="padding:8px 16px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);text-align:center;min-width:80px;">
+        <div style="font-family:var(--font-head);font-weight:800;font-size:18px;color:var(--red);" id="quizWrong">0</div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;">FOUT</div>
+      </div>
+      <div style="padding:8px 16px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);text-align:center;min-width:80px;">
+        <div style="font-family:var(--font-head);font-weight:800;font-size:18px;color:var(--accent);" id="quizStreak">0</div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;">STREAK 🔥</div>
+      </div>
+      <div style="padding:8px 16px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);text-align:center;min-width:80px;">
+        <div style="font-family:var(--font-head);font-weight:800;font-size:18px;color:var(--purple);" id="quizBest">0</div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;">BEST STREAK</div>
+      </div>
+    </div>
+
+    <!-- Vraagkaart -->
+    <div id="quizCard" style="background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:24px;"></div>
   </div>
 
   <!-- Kaarten grid -->
@@ -6792,6 +6841,64 @@ const LEARN_DATA = [
       body:'After a loss, the brain wants to undo the pain quickly. This leads to oversized positions, ignoring setup criteria and emotional decisions. Revenge trading almost always worsens losses.\n\nRules:\n• Stop after 2-3 losing trades in one day\n• Always take a break after a loss\n• Write in your journal why the trade was bad',
       example:'Loss of €100 on EUR/USD → immediately take 3× larger lot on next trade to recover → loss of €300.' }
   },
+  // ── ICT / SMART MONEY ──
+  { id:'fvg', cat:'ict',
+    NL:{ term:'Fair Value Gap (FVG)', short:'Imbalance van 3 kaarsen waar prijs later terugkeert om te "vullen".',
+      body:'Een Fair Value Gap (ook: imbalance) ontstaat wanneer de wick van kaars 1 en de wick van kaars 3 elkaar NIET overlappen. De lege ruimte daartussen = de FVG.\n\nBullish FVG: ontstaat bij een sterke stijging — de bodem van kaars 3 ligt boven de top van kaars 1.\nBearish FVG: ontstaat bij een sterke daling — de top van kaars 3 ligt onder de bodem van kaars 1.\n\nWaarom werkt het?\nMarktmakers laten bij sterke impulsbewegingen onvervulde orders achter in die zone. Prijs keert vaak terug om die orders te "vullen" voor de beweging verder gaat.\n\nEntry strategie:\n1. Identificeer FVG na een sterke impulsbeweging\n2. Wacht tot prijs de FVG hertest\n3. Entry bij 50% van de FVG (equilibrium) of aan de rand\n4. SL net voorbij de FVG, TP bij volgende liquidity\n\nBelangrijk: FVGs in de richting van de hogere tijdsframe trend zijn het sterkst.',
+      example:'EUR/USD maakt een sterke bullish impuls: kaars 1 sluit op 1.0840, kaars 3 opent op 1.0860 → FVG = 1.0840–1.0860. Prijs keert terug naar 1.0850 → long entry, SL 1.0835, TP 1.0920.' },
+    EN:{ term:'Fair Value Gap (FVG)', short:'3-candle imbalance where price tends to return to "fill" the gap.',
+      body:'A Fair Value Gap (also: imbalance) occurs when the wick of candle 1 and the wick of candle 3 do NOT overlap. The empty space between them = the FVG.\n\nBullish FVG: occurs during a strong rally — the low of candle 3 is above the high of candle 1.\nBearish FVG: occurs during a strong drop — the high of candle 3 is below the low of candle 1.\n\nWhy does it work?\nMarket makers leave unfilled orders in that zone during strong impulse moves. Price often returns to "fill" those orders before continuing.\n\nEntry strategy:\n1. Identify FVG after a strong impulse move\n2. Wait for price to retest the FVG\n3. Entry at 50% of the FVG (equilibrium) or at the edge\n4. SL just beyond the FVG, TP at next liquidity\n\nImportant: FVGs aligned with the higher timeframe trend are the strongest.',
+      example:'EUR/USD makes a strong bullish impulse: candle 1 closes at 1.0840, candle 3 opens at 1.0860 → FVG = 1.0840–1.0860. Price returns to 1.0850 → long entry, SL 1.0835, TP 1.0920.' }
+  },
+  { id:'orderblock', cat:'ict',
+    NL:{ term:'Order Block (OB)', short:'De laatste tegengestelde kaars vóór een sterke impulsbeweging — zone met institutionele orders.',
+      body:'Een Order Block is de laatste bearish kaars vóór een sterke bullish impuls (bullish OB), of de laatste bullish kaars vóór een sterke bearish impuls (bearish OB).\n\nWaarom? Grote spelers (banken, instituten) plaatsen hun orders in batches. Ze kopen/verkopen niet alles op één prijs — ze laten orders achter in die kaars-zone. Wanneer prijs terugkeert, worden die orders opnieuw geactiveerd.\n\nBullish Order Block:\n→ Zoek de laatste rode kaars vóór een sterke stijging\n→ De body van die kaars = de OB zone\n→ Wanneer prijs terugkomt → potentiële long\n\nBearish Order Block:\n→ Laatste groene kaars vóór sterke daling\n→ Entry short bij retest\n\nCombineer met FVG voor hogere trefkans. Sterkst op H4/Daily in de richting van de HTF trend.',
+      example:'Daily chart: laatste rode kaars vóór een +200 pip rally heeft body 1.0810–1.0840 → dit is de bullish OB. Bij retest van 1.0820–1.0840 → long entry met SL onder 1.0805.' },
+    EN:{ term:'Order Block (OB)', short:'Last opposing candle before a strong impulse move — zone with institutional orders.',
+      body:'An Order Block is the last bearish candle before a strong bullish impulse (bullish OB), or the last bullish candle before a strong bearish impulse (bearish OB).\n\nWhy? Large players (banks, institutions) place their orders in batches. They do not buy/sell everything at one price — they leave orders behind in that candle zone. When price returns, those orders get activated again.\n\nBullish Order Block:\n→ Find the last red candle before a strong rally\n→ The body of that candle = the OB zone\n→ When price returns → potential long\n\nBearish Order Block:\n→ Last green candle before strong drop\n→ Short entry on retest\n\nCombine with FVG for higher hit rate. Strongest on H4/Daily in the direction of the HTF trend.',
+      example:'Daily chart: last red candle before a +200 pip rally has body 1.0810–1.0840 → this is the bullish OB. On retest of 1.0820–1.0840 → long entry with SL below 1.0805.' }
+  },
+  { id:'liquiditysweep', cat:'ict',
+    NL:{ term:'Liquidity Sweep / Stop Hunt', short:'Prijs neemt bewust stops weg boven/onder een level voor de echte beweging begint.',
+      body:'Institutionele spelers weten waar retailtraders hun stops zetten: net boven een swing high, net onder een swing low, boven/onder ronde nummers.\n\nEen liquidity sweep werkt zo:\n1. Prijs beweegt NAAR die stop-zone (neemt de liquiditeit weg)\n2. Retailtraders worden gestopt of raken in de fout\n3. Prijs keert OM en gaat de andere kant op\n\nVoorbeelden van liquidity zones:\n• Equal highs/lows (meerdere tops/bodems op hetzelfde niveau)\n• Swing highs en swing lows\n• Ronde nummers (1.1000, 1.0900)\n• Previous day high/low\n\nHoe traderen:\n→ Wacht op de sweep (prijs neemt het niveau mee)\n→ Zoek bevestiging dat prijs keert (pin bar, engulfing, doji)\n→ Entry IN de richting van de sweep, TP ver',
+      example:'EUR/USD heeft een duidelijk swing high op 1.0920. Prijs stijgt kort tot 1.0928 (sweep), daarna bearish engulfing → short entry 1.0915, SL 1.0932, TP 1.0850.' },
+    EN:{ term:'Liquidity Sweep / Stop Hunt', short:'Price deliberately takes out stops above/below a level before the real move begins.',
+      body:'Institutional players know where retail traders place their stops: just above a swing high, just below a swing low, above/below round numbers.\n\nA liquidity sweep works like this:\n1. Price moves TOWARD that stop zone (takes out the liquidity)\n2. Retail traders get stopped out or enter the wrong direction\n3. Price REVERSES and moves the other way\n\nExamples of liquidity zones:\n• Equal highs/lows (multiple tops/bottoms at the same level)\n• Swing highs and swing lows\n• Round numbers (1.1000, 1.0900)\n• Previous day high/low\n\nHow to trade:\n→ Wait for the sweep (price takes out the level)\n→ Look for reversal confirmation (pin bar, engulfing, doji)\n→ Entry IN the direction of the sweep, wide TP',
+      example:'EUR/USD has a clear swing high at 1.0920. Price briefly rises to 1.0928 (sweep), then bearish engulfing → short entry 1.0915, SL 1.0932, TP 1.0850.' }
+  },
+  { id:'bos', cat:'ict',
+    NL:{ term:'Break of Structure (BOS)', short:'Bevestiging van trendcontinuatie — prijs breekt een vorig swing high/low.',
+      body:'Een Break of Structure (BOS) bevestigt dat de huidige trend intact is.\n\nIn een uptrend:\n→ Elke keer dat prijs een nieuw Higher High maakt = BOS bullish\n→ Bevestigt dat de trend doorgaat\n→ Je zoekt longs na de BOS, bij de eerste pullback\n\nIn een downtrend:\n→ Elke keer dat prijs een nieuw Lower Low maakt = BOS bearish\n→ Je zoekt shorts na de BOS\n\nVerschil met ChoCH:\n• BOS = zelfde richting als de trend (continuatie)\n• ChoCH = TEGENGESTELD aan de trend (mogelijke ommekeer)\n\nGebruik BOS om te bevestigen dat je met de trend tradet. Combineer met Order Blocks of FVGs voor precieze entry.',
+      example:'EUR/USD uptrend: vorig HH op 1.0950. Prijs breekt 1.0950 → BOS bullish. Pullback naar OB/FVG → long entry mét de trend.' },
+    EN:{ term:'Break of Structure (BOS)', short:'Trend continuation confirmation — price breaks a previous swing high/low.',
+      body:'A Break of Structure (BOS) confirms the current trend is intact.\n\nIn an uptrend:\n→ Each time price makes a new Higher High = bullish BOS\n→ Confirms the trend continues\n→ Look for longs after the BOS, on the first pullback\n\nIn a downtrend:\n→ Each time price makes a new Lower Low = bearish BOS\n→ Look for shorts after the BOS\n\nDifference with ChoCH:\n• BOS = same direction as trend (continuation)\n• ChoCH = OPPOSITE to the trend (possible reversal)\n\nUse BOS to confirm you are trading with the trend. Combine with Order Blocks or FVGs for precise entries.',
+      example:'EUR/USD uptrend: previous HH at 1.0950. Price breaks 1.0950 → bullish BOS. Pullback to OB/FVG → long entry with the trend.' }
+  },
+  { id:'choch', cat:'ict',
+    NL:{ term:'Change of Character (ChoCH)', short:'Eerste teken van trendommekeer — prijs breekt in tegengestelde richting.',
+      body:'Een Change of Character (ChoCH) is het eerste signaal dat een trend aan het keren is.\n\nIn een downtrend (bearish structuur):\n→ Prijs maakt Lower Lows en Lower Highs\n→ Als prijs plotseling een vorig Lower High breekt = ChoCH\n→ Signaleert: de bearish structuur is gebroken, mogelijk reversal\n\nIn een uptrend:\n→ Als prijs een vorig Higher Low breekt = ChoCH bearish\n\nChoCH vs BOS:\n• BOS = zelfde richting (trend gaat door)\n• ChoCH = andere richting (trend keert mogelijk)\n\nNa een ChoCH:\n1. Ga niet direct in de tegengestelde richting\n2. Wacht op een pullback en nieuw BOS in de nieuwe richting\n3. Dan pas entry — lager risico\n\nChoCH is alleen geldig als het een SIGNIFICANT swing breekt.',
+      example:'GBP/USD downtrend. Prijs maakt LL en LH. Dan breekt prijs het laatste LH op 1.2650 → ChoCH. Pullback naar OB rond 1.2640 → long entry, target 1.2750.' },
+    EN:{ term:'Change of Character (ChoCH)', short:'First sign of trend reversal — price breaks in the opposite direction.',
+      body:'A Change of Character (ChoCH) is the first signal that a trend is reversing.\n\nIn a downtrend (bearish structure):\n→ Price makes Lower Lows and Lower Highs\n→ If price suddenly breaks a previous Lower High = ChoCH\n→ Signals: the bearish structure is broken, possible reversal\n\nIn an uptrend:\n→ If price breaks a previous Higher Low = bearish ChoCH\n\nChoCH vs BOS:\n• BOS = same direction (trend continues)\n• ChoCH = opposite direction (trend possibly reversing)\n\nAfter a ChoCH:\n1. Do not immediately trade the opposite direction\n2. Wait for a pullback and new BOS in the new direction\n3. Then entry — lower risk\n\nChoCH is only valid if it breaks a SIGNIFICANT swing.',
+      example:'GBP/USD downtrend. Price makes LL and LH. Then price breaks the last LH at 1.2650 → ChoCH. Pullback to OB around 1.2640 → long entry, target 1.2750.' }
+  },
+  { id:'premiumdiscount', cat:'ict',
+    NL:{ term:'Premium & Discount Zones', short:'Koop in de discount (onder 50%), verkoop in de premium (boven 50%) van een range.',
+      body:'In ICT-analyse wordt elke range (van swing low naar swing high) opgedeeld:\n• 50% niveau = equilibrium (evenwicht)\n• Boven 50% = Premium zone (duur)\n• Onder 50% = Discount zone (goedkoop)\n\nLogica:\n→ Grote spelers kopen in de discount (goedkoop) en verkopen in de premium\n→ Als retailtrader wil je dezelfde logica volgen\n→ Long entries zoeken in de discount (onder 50%)\n→ Short entries zoeken in de premium (boven 50%)\n\nHoe berekenen:\n1. Markeer de relevante swing low en swing high\n2. Bereken het 50% niveau\n3. Is prijs onder 50%? → discount → zoek longs\n4. Is prijs boven 50%? → premium → zoek shorts\n\nCombineer met OB en FVG die in de discount/premium zone liggen voor sterke confluences.',
+      example:'EUR/USD range: swing low 1.0800, swing high 1.0960. 50% = 1.0880. Prijs pullback naar 1.0840 (discount zone) en raakt bullish OB → long entry.' },
+    EN:{ term:'Premium & Discount Zones', short:'Buy in the discount (below 50%), sell in the premium (above 50%) of a range.',
+      body:'In ICT analysis, every range (from swing low to swing high) is divided:\n• 50% level = equilibrium\n• Above 50% = Premium zone (expensive)\n• Below 50% = Discount zone (cheap)\n\nLogic:\n→ Large players buy in the discount (cheap) and sell in the premium\n→ As a retail trader, follow the same logic\n→ Look for long entries in the discount (below 50%)\n→ Look for short entries in the premium (above 50%)\n\nHow to calculate:\n1. Mark the relevant swing low and swing high\n2. Calculate the 50% level\n3. Is price below 50%? → discount → look for longs\n4. Is price above 50%? → premium → look for shorts\n\nCombine with OBs and FVGs that lie in the discount/premium zone for strong confluences.',
+      example:'EUR/USD range: swing low 1.0800, swing high 1.0960. 50% = 1.0880. Price pullback to 1.0840 (discount zone) hits bullish OB → long entry.' }
+  },
+  { id:'inducement', cat:'ict',
+    NL:{ term:'Inducement (IDM)', short:'Valse liquiditeitszone die grote spelers creëren om kleinere traders in de foute richting te lokken.',
+      body:'Inducement is een bewust gecreëerde "valse" swing die liquiditeit opbouwt voordat de echte beweging begint.\n\nHoe werkt het:\n1. In een uptrend maakt prijs een kleine pullback → vormt een "lage" swing low\n2. Retailtraders plaatsen stops onder die swing low\n3. Prijs sweept die swing low (neemt de stops weg)\n4. Dan gaat prijs verder omhoog — de eigenlijke richting\n\nIDM herkennen:\n→ Een swing die "uitlokt" maar geen echte structuurbreuk is\n→ Gevolgd door een liquidity sweep\n→ Daarna BOS in de oorspronkelijke richting\n\nPraktisch gebruik:\n→ Na een IDM-sweep en ChoCH in de oorspronkelijke richting → entry\n→ Hoge probabiliteit omdat het "dom geld" al gestopt is',
+      example:'EUR/USD uptrend. Kleine pullback creëert swing low 1.0850 (IDM). Prijs daalt kort naar 1.0845 (sweep), daarna bullish ChoCH + BOS → long entry 1.0862, SL 1.0842, TP 1.0930.' },
+    EN:{ term:'Inducement (IDM)', short:'False liquidity zone that large players create to lure smaller traders in the wrong direction.',
+      body:'Inducement is a deliberately created "false" swing that builds liquidity before the real move begins.\n\nHow it works:\n1. In an uptrend, price makes a small pullback → forms a "low" swing low\n2. Retail traders place stops below that swing low\n3. Price sweeps that swing low (takes out the stops)\n4. Then price continues higher — the actual direction\n\nRecognizing IDM:\n→ A swing that "lures" but is not a real structural break\n→ Followed by a liquidity sweep\n→ Then BOS in the original direction\n\nPractical use:\n→ After an IDM sweep and ChoCH in the original direction → entry\n→ High probability because "dumb money" has already been stopped out',
+      example:'EUR/USD uptrend. Small pullback creates swing low 1.0850 (IDM). Price briefly drops to 1.0845 (sweep), then bullish ChoCH + BOS → long entry 1.0862, SL 1.0842, TP 1.0930.' }
+  },
+
   { id:'tradingplan', cat:'psychology',
     NL:{ term:'Trading Plan', short:'Schriftelijke regels die bepalen wanneer en hoe je tradet.',
       body:'Een trading plan bevat:\n• Welke instrumenten je tradet\n• Welke sessies (tijden)\n• Entry criteria (minimaal 2 van 3 confluences)\n• SL en TP regels\n• Max risico per trade en per dag\n• Regels voor het stoppen (streak van 3 losses)\n\nVoordeel: je neemt beslissingen vooraf, niet midden in een trade onder druk.',
@@ -6805,17 +6912,150 @@ const LEARN_DATA = [
 // Kleuren per categorie
 const CAT_COLORS = {
   basics:'var(--accent)', priceaction:'var(--green)', riskmanagement:'var(--red)',
-  indicators:'var(--purple)', strategies:'var(--amber)', psychology:'var(--muted)'
+  indicators:'var(--purple)', strategies:'var(--amber)', psychology:'var(--muted)',
+  ict:'var(--amber)'
 };
 const CAT_ICONS = {
   basics:'📖', priceaction:'📊', riskmanagement:'🛡️',
-  indicators:'📈', strategies:'🎯', psychology:'🧠'
+  indicators:'📈', strategies:'🎯', psychology:'🧠',
+  ict:'⚡'
 };
+
+// ================================================================
+// QUIZ
+// ================================================================
+let quizScore = 0, quizWrong = 0, quizStreak = 0, quizBest = 0;
+let quizAnswered = false;
+
+function startQuiz() {
+  // Toon quiz sectie, verberg grid
+  const section = $('learnQuizSection');
+  const grid = $('learnGrid');
+  const noRes = $('learnNoResults');
+  if(grid) grid.style.display = 'none';
+  if(noRes) noRes.style.display = 'none';
+  if(section) section.style.display = 'block';
+
+  // Markeer quiz knop actief
+  document.querySelectorAll('#learnCatTabs .tf-btn').forEach(b => b.classList.remove('active'));
+  const qBtn = $('quizTabBtn');
+  if(qBtn) qBtn.classList.add('active');
+
+  quizAnswered = false;
+  renderQuizQuestion();
+}
+
+function closeQuiz() {
+  const section = $('learnQuizSection');
+  if(section) section.style.display = 'none';
+  // Herstel grid
+  setLearnCat(currentLearnCat, document.querySelector(`#learnCatTabs .tf-btn[data-cat="${currentLearnCat}"]`) || document.querySelector('#learnCatTabs .tf-btn'));
+}
+
+function renderQuizQuestion() {
+  const cat = $('quizCatFilter')?.value || 'all';
+  const l = currentLang;
+  const pool = LEARN_DATA.filter(i => (cat === 'all' || i.cat === cat) && (i[l] || i['NL']));
+
+  if(pool.length < 4) {
+    $('quizCard').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:20px;text-align:center;">Niet genoeg begrippen in deze categorie voor een quiz. Kies "Alle categorieën".</div>';
+    return;
+  }
+
+  // Kies willekeurige vraag
+  const correct = pool[Math.floor(Math.random() * pool.length)];
+  const d = correct[l] || correct['NL'];
+
+  // Kies 3 willekeurige foute antwoorden
+  const others = pool.filter(i => i.id !== correct.id);
+  const shuffled = others.sort(() => Math.random() - 0.5).slice(0, 3);
+  const allOptions = [correct, ...shuffled].sort(() => Math.random() - 0.5);
+
+  const col = CAT_COLORS[correct.cat] || 'var(--accent)';
+  const icon = CAT_ICONS[correct.cat] || '●';
+
+  $('quizCard').innerHTML = `
+    <div style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">${icon} ${correct.cat.toUpperCase()} — Welk begrip past bij deze omschrijving?</div>
+    <div style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px;padding:16px;background:var(--surface2);border-radius:10px;border-left:3px solid ${col};">
+      "${d.short}"
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;" id="quizOptions">
+      ${allOptions.map((opt, i) => {
+        const od = opt[l] || opt['NL'];
+        return `<button onclick="checkQuizAnswer('${opt.id}','${correct.id}')"
+          id="quizOpt-${opt.id}"
+          style="padding:12px 16px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;text-align:left;font-size:13px;font-family:var(--font-head);font-weight:700;transition:all 0.15s;">
+          <span style="color:var(--muted);margin-right:8px;">${['A','B','C','D'][i]}.</span>${od.term}
+        </button>`;
+      }).join('')}
+    </div>
+    <div id="quizFeedback" style="display:none;margin-top:16px;padding:14px 16px;border-radius:10px;"></div>
+    <div id="quizNextBtn" style="display:none;margin-top:12px;text-align:right;">
+      <button onclick="renderQuizQuestion()" style="padding:10px 22px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:var(--font-head);font-weight:700;font-size:13px;">Volgende vraag →</button>
+    </div>
+  `;
+}
+
+function checkQuizAnswer(selectedId, correctId) {
+  if(quizAnswered) return;
+  quizAnswered = true;
+
+  const l = currentLang;
+  const correctItem = LEARN_DATA.find(i => i.id === correctId);
+  const d = correctItem?.[l] || correctItem?.['NL'];
+  const isCorrect = selectedId === correctId;
+
+  if(isCorrect) {
+    quizScore++;
+    quizStreak++;
+    if(quizStreak > quizBest) quizBest = quizStreak;
+  } else {
+    quizWrong++;
+    quizStreak = 0;
+  }
+
+  // Update score display
+  if($('quizScore')) $('quizScore').textContent = quizScore;
+  if($('quizWrong')) $('quizWrong').textContent = quizWrong;
+  if($('quizStreak')) $('quizStreak').textContent = quizStreak;
+  if($('quizBest')) $('quizBest').textContent = quizBest;
+
+  // Kleur knoppen
+  document.querySelectorAll('#quizOptions button').forEach(btn => {
+    btn.style.cursor = 'default';
+    btn.onclick = null;
+  });
+  const correctBtn = $(`quizOpt-${correctId}`);
+  if(correctBtn) { correctBtn.style.background = 'rgba(46,204,138,0.15)'; correctBtn.style.borderColor = 'var(--green)'; correctBtn.style.color = 'var(--green)'; }
+  if(!isCorrect) {
+    const wrongBtn = $(`quizOpt-${selectedId}`);
+    if(wrongBtn) { wrongBtn.style.background = 'rgba(255,92,92,0.15)'; wrongBtn.style.borderColor = 'var(--red)'; wrongBtn.style.color = 'var(--red)'; }
+  }
+
+  // Feedback
+  const fb = $('quizFeedback');
+  if(fb) {
+    fb.style.display = 'block';
+    fb.style.background = isCorrect ? 'rgba(46,204,138,0.08)' : 'rgba(255,92,92,0.08)';
+    fb.style.border = `1px solid ${isCorrect ? 'rgba(46,204,138,0.3)' : 'rgba(255,92,92,0.3)'}`;
+    fb.innerHTML = isCorrect
+      ? `<div style="color:var(--green);font-family:var(--font-head);font-weight:700;font-size:13px;margin-bottom:4px;">✓ Correct! ${quizStreak > 1 ? '🔥 ' + quizStreak + ' op rij!' : ''}</div>
+         <div style="font-size:12px;color:var(--muted);line-height:1.6;">${d?.short || ''}</div>`
+      : `<div style="color:var(--red);font-family:var(--font-head);font-weight:700;font-size:13px;margin-bottom:4px;">✕ Fout — het juiste antwoord was: <span style="color:var(--text)">${d?.term || correctId}</span></div>
+         <div style="font-size:12px;color:var(--muted);line-height:1.6;">${d?.short || ''}</div>`;
+  }
+  if($('quizNextBtn')) $('quizNextBtn').style.display = 'block';
+}
 
 function setLearnCat(cat, btn) {
   currentLearnCat = cat;
   document.querySelectorAll('#learnCatTabs .tf-btn').forEach(b => b.classList.remove('active'));
   if(btn) btn.classList.add('active');
+  // Verberg quiz sectie
+  const qs = $('learnQuizSection');
+  if(qs) qs.style.display = 'none';
+  const grid = $('learnGrid');
+  if(grid) grid.style.display = 'grid';
   renderLearnCards(cat, $('learnSearch')?.value || '');
 }
 
