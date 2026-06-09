@@ -1254,7 +1254,9 @@ function renderAccountsList(){
 
       // Bouw parameter rijen met toggle
       const mkRow = (label, valuePct, targetPct, color, inverted, detailHtml, rowId) => {
-        const rawFill = targetPct > 0 ? Math.min(100, Math.abs(valuePct) / targetPct * 100) : 0;
+        // inverted = verliesbalk: enkel negatieve waarden tellen mee (winst = 0% fill)
+        const lossPct = inverted ? Math.max(0, -valuePct) : Math.max(0, valuePct);
+        const rawFill = targetPct > 0 ? Math.min(100, lossPct / targetPct * 100) : 0;
         const fillColor = inverted
           ? (rawFill >= 100 ? 'var(--red)' : rawFill >= 75 ? 'var(--amber)' : 'var(--green)')
           : (rawFill >= 100 ? 'var(--green)' : color);
