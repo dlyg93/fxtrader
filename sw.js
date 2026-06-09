@@ -1,7 +1,10 @@
-const CACHE = 'dollyfx-v3';
+const CACHE = 'dollyfx-v4';
 const ASSETS = [
   '/fxtrader/',
   '/fxtrader/index.html',
+  '/fxtrader/styles.css',
+  '/fxtrader/app.js',
+  '/fxtrader/app2.js',
   '/fxtrader/manifest.json',
   '/fxtrader/icons/icon-192.png',
   '/fxtrader/icons/icon-512.png'
