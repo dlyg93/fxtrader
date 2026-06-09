@@ -1226,7 +1226,10 @@ function renderAccountsList(){
       challengeHtml = `<div style="margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(0,0,0,0.15);border:1px solid var(--border);">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
           <span style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🏆 Prop Challenge</span>
-          <span style="font-size:10px;font-family:var(--font-head);font-weight:700;color:${statusColor};">${statusLabel}</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:10px;font-family:var(--font-head);font-weight:700;color:${statusColor};">${statusLabel}</span>
+            <button onclick="editPropChallenge('${acc.id}')" style="padding:2px 8px;font-size:10px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;" title="Instellingen aanpassen">✏️ Bewerk</button>
+          </div>
         </div>
         ${profitBar}${lossBar}${dailyBar}${daysBar}
       </div>`;
@@ -1253,7 +1256,8 @@ function renderAccountsList(){
           ${isBreached
             ? `<button onclick="unbreachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;">Herstel</button>`
             : `${!isActive?`<button onclick="switchAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--accent);background:rgba(79,158,255,0.1);color:var(--accent);cursor:pointer;font-family:var(--font-head);font-weight:700;">Activeer</button>`:''}
-               <button onclick="breachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid rgba(255,92,92,0.4);background:rgba(255,92,92,0.08);color:var(--red);cursor:pointer;font-family:var(--font-head);font-weight:700;">Gebreacht</button>`
+               <button onclick="breachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid rgba(255,92,92,0.4);background:rgba(255,92,92,0.08);color:var(--red);cursor:pointer;font-family:var(--font-head);font-weight:700;">Gebreacht</button>
+               ${!acc.propChallenge?`<button onclick="editPropChallenge('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid rgba(167,139,250,0.4);background:rgba(167,139,250,0.08);color:var(--purple);cursor:pointer;font-family:var(--font-head);font-weight:700;">🏆 Challenge</button>`:''}`
           }
           <button onclick="deleteAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕</button>
         </div>
@@ -1261,6 +1265,86 @@ function renderAccountsList(){
       ${challengeHtml}
     </div>`;
   }).join('');
+}
+
+function editPropChallenge(accId){
+  const acc = fxAccounts.find(a => a.id === accId);
+  if(!acc) return;
+  const pc = acc.propChallenge || {};
+
+  // Verwijder eventueel bestaande edit-modal
+  const existing = $('propEditOverlay');
+  if(existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'propEditOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,11,16,0.85);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:24px;width:100%;max-width:440px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div style="font-family:var(--font-head);font-weight:800;font-size:15px;">🏆 Challenge — ${acc.name}</div>
+        <button onclick="$('propEditOverlay').remove()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">×</button>
+      </div>
+      <div style="background:rgba(79,158,255,0.05);border:1px solid rgba(79,158,255,0.2);border-radius:8px;padding:12px;margin-bottom:14px;">
+        <div style="font-size:10px;color:var(--accent);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Challenge parameters</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div>
+            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Profit Target (%)</label>
+            <input type="number" id="peTarget" value="${pc.profitTarget||''}" placeholder="bv. 10" step="0.5" min="0"
+              style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:13px;">
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Max totaal verlies (%)</label>
+            <input type="number" id="peMaxLoss" value="${pc.maxLoss||''}" placeholder="bv. 10" step="0.5" min="0"
+              style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:13px;">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Max dagelijks verlies (%)</label>
+            <input type="number" id="peDailyLoss" value="${pc.dailyLoss||''}" placeholder="bv. 5" step="0.5" min="0"
+              style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:13px;">
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Min. trading days</label>
+            <input type="number" id="peMinDays" value="${pc.minDays||''}" placeholder="bv. 4" step="1" min="0"
+              style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:13px;">
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+        ${acc.propChallenge ? `<button onclick="removePropChallenge('${accId}')" style="padding:9px 14px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;border:1px solid rgba(255,92,92,0.4);background:rgba(255,92,92,0.07);color:var(--red);margin-right:auto;">Challenge verwijderen</button>` : ''}
+        <button onclick="$('propEditOverlay').remove()" style="padding:9px 16px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--muted);">Annuleren</button>
+        <button onclick="savePropChallenge('${accId}')" style="padding:9px 18px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;border:none;background:var(--accent);color:#fff;">Opslaan</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+}
+
+function savePropChallenge(accId){
+  const acc = fxAccounts.find(a => a.id === accId);
+  if(!acc) return;
+  const profitTarget = parseFloat($('peTarget')?.value)   || 0;
+  const maxLoss      = parseFloat($('peMaxLoss')?.value)  || 0;
+  const dailyLoss    = parseFloat($('peDailyLoss')?.value)|| 0;
+  const minDays      = parseInt($('peMinDays')?.value)    || 0;
+  acc.propChallenge = {
+    profitTarget, maxLoss, dailyLoss, minDays,
+    startDate: acc.propChallenge?.startDate || new Date().toISOString().split('T')[0]
+  };
+  saveAccounts();
+  $('propEditOverlay')?.remove();
+  renderAccountsList();
+}
+
+function removePropChallenge(accId){
+  const acc = fxAccounts.find(a => a.id === accId);
+  if(!acc) return;
+  acc.propChallenge = null;
+  saveAccounts();
+  $('propEditOverlay')?.remove();
+  renderAccountsList();
 }
 
 function renderAccountSelects(){
