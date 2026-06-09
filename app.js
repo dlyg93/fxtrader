@@ -1043,11 +1043,15 @@ function addAccount(){
   const acc = {
     id: 'acc_'+Date.now(), name, desc, initialSize: size, createdAt: new Date().toISOString(),
     propChallenge: isProp ? {
-      profitTarget: parseFloat($('accProfitTarget')?.value) || 0,
-      maxLoss:      parseFloat($('accMaxLoss')?.value)      || 0,
-      dailyLoss:    parseFloat($('accDailyLoss')?.value)    || 0,
-      minDays:      parseInt($('accMinDays')?.value)        || 0,
-      startDate:    new Date().toISOString().split('T')[0]
+      phases: [{
+        name: 'Fase 1',
+        profitTarget: parseFloat($('accProfitTarget')?.value) || 0,
+        maxLoss:      parseFloat($('accMaxLoss')?.value)      || 0,
+        dailyLoss:    parseFloat($('accDailyLoss')?.value)    || 0,
+        minDays:      parseInt($('accMinDays')?.value)        || 0,
+      }],
+      currentPhase: 0,
+      phaseStartDates: [new Date().toISOString().split('T')[0]]
     } : null
   };
   fxAccounts.push(acc);
@@ -1118,68 +1122,93 @@ function getAccountBalance(accId){
   return { initial: acc.initialSize, pnl, current: acc.initialSize + pnl, trades: accTrades.length };
 }
 
-function getPropChallengeStatus(accId){
-  const acc = fxAccounts.find(a => a.id === accId);
-  if(!acc || !acc.propChallenge) return null;
-  const pc = acc.propChallenge;
-  const initial = acc.initialSize || 1;
-  const closedTrades = trades.filter(t => t.accountId === accId && t.result !== 'open');
+// Zet oud single-phase formaat om naar nieuw phases-formaat
+function normalizePropChallenge(raw){
+  if(!raw) return null;
+  if(raw.phases) return raw; // al nieuw formaat
+  // Oud formaat: { profitTarget, maxLoss, dailyLoss, minDays, startDate }
+  return {
+    phases: [{ name: 'Fase 1', profitTarget: raw.profitTarget||0, maxLoss: raw.maxLoss||0, dailyLoss: raw.dailyLoss||0, minDays: raw.minDays||0 }],
+    currentPhase: 0,
+    phaseStartDates: [raw.startDate || new Date().toISOString().split('T')[0]]
+  };
+}
 
-  // Totale P&L
+function calcPhaseStatus(phase, phaseTrades, initial){
+  const closedTrades = phaseTrades.filter(t => t.result !== 'open');
   const totalPnl = closedTrades.reduce((s,t) => s + (t.pnl||0), 0);
   const profitPct = (totalPnl / initial) * 100;
-  const winTrades = closedTrades.filter(t => (t.pnl||0) > 0);
+  const winTrades  = closedTrades.filter(t => (t.pnl||0) > 0);
   const lossTrades = closedTrades.filter(t => (t.pnl||0) < 0);
-  const winTotal = winTrades.reduce((s,t) => s + (t.pnl||0), 0);
-  const lossTotal = lossTrades.reduce((s,t) => s + (t.pnl||0), 0);
-  const top3Losers = [...closedTrades].sort((a,b) => (a.pnl||0)-(b.pnl||0)).slice(0,3);
+  const winTotal   = winTrades.reduce((s,t)  => s + (t.pnl||0), 0);
+  const lossTotal  = lossTrades.reduce((s,t) => s + (t.pnl||0), 0);
+  const top3Losers  = [...closedTrades].sort((a,b) => (a.pnl||0)-(b.pnl||0)).slice(0,3);
   const top3Winners = [...closedTrades].sort((a,b) => (b.pnl||0)-(a.pnl||0)).slice(0,3);
 
-  // Max totaal verlies
-  const totalLossPct = profitPct;
-  const totalLossBreached = pc.maxLoss > 0 && totalLossPct <= -pc.maxLoss;
-
-  // Dagelijkse P&L map
-  const dayMap = {};
-  const dayTradesMap = {};
+  const dayMap = {}, dayTradesMap = {};
   closedTrades.forEach(t => {
-    const d = (t.date||'').slice(0,10);
-    if(!d) return;
-    dayMap[d] = (dayMap[d] || 0) + (t.pnl||0);
+    const d = (t.date||'').slice(0,10); if(!d) return;
+    dayMap[d] = (dayMap[d]||0) + (t.pnl||0);
     if(!dayTradesMap[d]) dayTradesMap[d] = [];
     dayTradesMap[d].push(t);
   });
-
-  // Slechtste dag
   const dayEntries = Object.entries(dayMap).sort((a,b) => a[1]-b[1]);
-  const worstDayPnl = dayEntries.length ? dayEntries[0][1] : 0;
+  const worstDayPnl  = dayEntries.length ? dayEntries[0][1] : 0;
   const worstDayDate = dayEntries.length ? dayEntries[0][0] : null;
-  const worstDayPct = (worstDayPnl / initial) * 100;
+  const worstDayPct  = (worstDayPnl / initial) * 100;
   const worstDayTrades = worstDayDate ? dayTradesMap[worstDayDate] : [];
-  const dailyLossBreached = pc.dailyLoss > 0 && worstDayPct <= -pc.dailyLoss;
-
-  // Trading days gesorteerd
-  const tradingDaysList = dayEntries.sort((a,b) => a[0].localeCompare(b[0]))
-    .map(([date, pnl]) => ({ date, pnl, pct: (pnl/initial)*100, count: dayTradesMap[date].length }));
+  const tradingDaysList = [...dayEntries].sort((a,b) => a[0].localeCompare(b[0]))
+    .map(([date, pnl]) => ({ date, pnl, pct:(pnl/initial)*100, count: dayTradesMap[date].length }));
   const tradingDays = tradingDaysList.length;
 
-  // Status
-  const isBreached = totalLossBreached || dailyLossBreached;
-  const targetReached = pc.profitTarget > 0 && profitPct >= pc.profitTarget;
-  const daysOk = pc.minDays === 0 || tradingDays >= pc.minDays;
-  const isPassed = !isBreached && targetReached && daysOk;
-  const isPassing = !isBreached && !isPassed;
+  const totalLossBreached = phase.maxLoss   > 0 && profitPct       <= -phase.maxLoss;
+  const dailyLossBreached = phase.dailyLoss > 0 && worstDayPct     <= -phase.dailyLoss;
+  const isBreached        = totalLossBreached || dailyLossBreached;
+  const targetReached     = phase.profitTarget === 0 || profitPct  >= phase.profitTarget;
+  const daysOk            = phase.minDays === 0 || tradingDays      >= phase.minDays;
+  const isPassed          = !isBreached && targetReached && daysOk;
 
   return {
-    profitPct, totalLossPct, totalLossBreached,
+    profitPct, totalLossPct: profitPct, totalLossBreached,
     worstDayPct, worstDayDate, worstDayTrades, dailyLossBreached,
     tradingDays, tradingDaysList,
     winTrades, lossTrades, winTotal, lossTotal,
-    top3Losers, top3Winners,
-    totalPnl, closedTrades,
-    isBreached, isPassed, isPassing,
-    pc, initial
+    top3Losers, top3Winners, totalPnl, closedTrades,
+    isBreached, isPassed, phase, initial
   };
+}
+
+function getPropChallengeStatus(accId){
+  const acc = fxAccounts.find(a => a.id === accId);
+  if(!acc || !acc.propChallenge) return null;
+
+  // Normaliseer naar nieuw formaat (backward compat)
+  const pc = normalizePropChallenge(acc.propChallenge);
+  // Sla genormaliseerde versie terug op als het oud formaat was
+  if(!acc.propChallenge.phases){ acc.propChallenge = pc; saveAccounts(); }
+
+  const initial = acc.initialSize || 1;
+  const allClosed = trades.filter(t => t.accountId === accId && t.result !== 'open');
+  const ci = Math.min(pc.currentPhase || 0, pc.phases.length - 1);
+
+  // Filter trades per fase op datum
+  const phaseStatuses = pc.phases.map((phase, i) => {
+    const start = pc.phaseStartDates?.[i] || null;
+    const end   = pc.phaseStartDates?.[i+1] || null;
+    const phaseTrades = allClosed.filter(t => {
+      const d = (t.date||'').slice(0,10);
+      if(!d) return false;
+      if(start && d < start) return false;
+      if(end   && d >= end)  return false;
+      return true;
+    });
+    return calcPhaseStatus(phase, phaseTrades, initial);
+  });
+
+  const current = phaseStatuses[ci];
+  const isLastPhase = ci === pc.phases.length - 1;
+
+  return { pc, ci, isLastPhase, phaseStatuses, current, initial };
 }
 
 
@@ -1203,101 +1232,150 @@ function renderAccountsList(){
     // Prop challenge status badge & blok
     let challengeHtml = '';
     if(cs){
-      const statusColor = cs.isBreached ? 'var(--red)' : cs.isPassed ? 'var(--green)' : 'var(--amber)';
-      const statusLabel = cs.isBreached ? '❌ CHALLENGE GEFAALD' : cs.isPassed ? '✅ CHALLENGE GESLAAGD' : '🔄 IN PROGRESS';
-      const pc = cs.pc;
+      const { pc, ci, isLastPhase, phaseStatuses, current } = cs;
+      const fmt    = (v) => { const n=v??0; return (n>=0?'+':'')+n.toFixed(2); };
+      const fmtPct = (v) => { const n=v??0; return (n>=0?'+':'')+n.toFixed(2)+'%'; };
+      const fmtDate = (d) => d ? d.slice(5).replace('-','/') : '—';
 
-      // Helper: detail rijen (veilig voor null/undefined)
-      const fmt = (pnl) => { const v = pnl ?? 0; return (v>=0?'+':'')+v.toFixed(2); };
-      const fmtPct = (p) => { const v = p ?? 0; return (v>=0?'+':'')+v.toFixed(2)+'%'; };
-      const fmtDate = (d) => d ? d.slice(5).replace('-','/') : '—'; // MM/DD
+      // Fase dots navigatie
+      const phaseDots = pc.phases.map((ph, i) => {
+        const st = phaseStatuses[i];
+        const isCurrent = i === ci;
+        const color = isCurrent ? 'var(--accent)' : st.isPassed ? 'var(--green)' : st.isBreached ? 'var(--red)' : 'var(--border2)';
+        const icon  = isCurrent ? '●' : st.isPassed ? '✓' : st.isBreached ? '✕' : '○';
+        return `<span title="${ph.name}" style="font-size:13px;color:${color};font-weight:700;">${icon}</span>`;
+      }).join(' ');
 
-      // Detail: profit target
-      const profitDetail = pc.profitTarget > 0 ? `
-        <div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.8;padding:8px 10px;background:var(--bg);border-radius:6px;">
-          <div>📊 <strong style="color:var(--text)">Berekening:</strong> totale P&amp;L van alle gesloten trades op dit account gedeeld door startkapitaal</div>
-          <div>💰 Startkapitaal: <strong style="color:var(--text)">€${cs.initial.toLocaleString()}</strong></div>
-          <div>✅ Winsten: <strong style="color:var(--green)">${cs.winTrades.length} trades · ${fmt(cs.winTotal)}</strong></div>
-          <div>❌ Verliezen: <strong style="color:var(--red)">${cs.lossTrades.length} trades · ${fmt(cs.lossTotal)}</strong></div>
-          <div>📈 Netto P&amp;L: <strong style="color:${cs.totalPnl>=0?'var(--green)':'var(--red)'}">${fmt(cs.totalPnl)} (${fmtPct(cs.profitPct)})</strong></div>
-          ${cs.top3Winners.length ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">🏅 Top winnaars: ${cs.top3Winners.map(t=>`<span style="color:var(--green)">${t.pair||'?'} ${fmt(t.pnl)}</span>`).join(' · ')}</div>` : ''}
-        </div>` : '';
+      // Status huidige fase
+      const statusColor = current.isBreached ? 'var(--red)' : current.isPassed ? 'var(--green)' : 'var(--amber)';
+      const statusLabel = current.isBreached ? '❌ GEFAALD' : current.isPassed ? '✅ GESLAAGD' : '🔄 BEZIG';
+      const phase = pc.phases[ci];
+      const startDate = pc.phaseStartDates?.[ci] || '—';
 
-      // Detail: max totaal verlies
-      const lossDetail = pc.maxLoss > 0 ? `
-        <div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.8;padding:8px 10px;background:var(--bg);border-radius:6px;">
-          <div>📊 <strong style="color:var(--text)">Berekening:</strong> som van alle gesloten trades / startkapitaal. Limiet = -${pc.maxLoss}%</div>
-          <div>💰 Startkapitaal: <strong style="color:var(--text)">€${cs.initial.toLocaleString()}</strong></div>
-          <div>📉 Huidige netto P&amp;L: <strong style="color:${cs.totalPnl>=0?'var(--green)':'var(--red)'}">${fmt(cs.totalPnl)} (${fmtPct(cs.totalLossPct)})</strong></div>
-          <div>🚨 Limiet bij: <strong style="color:var(--red)">-€${(cs.initial * pc.maxLoss/100).toFixed(2)} (-${pc.maxLoss}%)</strong></div>
-          <div>📦 Nog ruimte: <strong style="color:var(--text)">€${Math.max(0, cs.initial*pc.maxLoss/100 + cs.totalPnl).toFixed(2)}</strong></div>
-          ${cs.top3Losers.filter(t=>(t.pnl||0)<0).length ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">💀 Grootste verliezers: ${cs.top3Losers.filter(t=>(t.pnl||0)<0).map(t=>`<span style="color:var(--red)">${t.pair||'?'} ${fmt(t.pnl)}</span>`).join(' · ')}</div>` : ''}
-        </div>` : '';
-
-      // Detail: max dagelijks verlies
-      const dailyDetail = pc.dailyLoss > 0 ? `
-        <div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.8;padding:8px 10px;background:var(--bg);border-radius:6px;">
-          <div>📊 <strong style="color:var(--text)">Berekening:</strong> slechtste kalenderdag (som P&amp;L van alle trades die dag). Limiet = -${pc.dailyLoss}%</div>
-          ${cs.worstDayDate ? `<div>📅 Slechtste dag: <strong style="color:var(--red)">${cs.worstDayDate} · ${fmt(cs.worstDayPnl)} (${fmtPct(cs.worstDayPct)})</strong></div>
-          <div style="padding-left:10px;">${cs.worstDayTrades.map(t=>`<span style="color:${(t.pnl||0)>=0?'var(--green)':'var(--red)'}">${t.pair||'?'} ${fmt(t.pnl||0)}</span>`).join(' · ')}</div>` : '<div>Nog geen trades.</div>'}
-          <div>🚨 Dagelijkse limiet: <strong style="color:var(--red)">-€${(cs.initial * pc.dailyLoss/100).toFixed(2)} (-${pc.dailyLoss}%)</strong></div>
-          ${cs.tradingDaysList.length > 1 ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">Alle dagen: ${cs.tradingDaysList.map(d=>`<span style="color:${d.pnl>=0?'var(--green)':'var(--red)'}">${fmtDate(d.date)} ${fmt(d.pnl)}</span>`).join(' · ')}</div>` : ''}
-        </div>` : '';
-
-      // Detail: trading days
-      const daysDetail = pc.minDays > 0 ? `
-        <div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.8;padding:8px 10px;background:var(--bg);border-radius:6px;">
-          <div>📊 <strong style="color:var(--text)">Berekening:</strong> aantal unieke kalenderdagen met minstens 1 gesloten trade op dit account</div>
-          <div>📅 Trading days: <strong style="color:var(--text)">${cs.tradingDays}</strong> / min. vereist: <strong style="color:var(--text)">${pc.minDays}</strong></div>
-          ${cs.tradingDaysList.length ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">${cs.tradingDaysList.map(d=>`<span style="color:var(--muted)">${d.date} <span style="color:${d.pnl>=0?'var(--green)':'var(--red)'}">${fmt(d.pnl)}</span> (${d.count}t)</span>`).join('<br>')}</div>` : ''}
-        </div>` : '';
-
-      // Bouw parameter rijen met toggle
-      const mkRow = (label, valuePct, targetPct, color, inverted, detailHtml, rowId) => {
-        // inverted = verliesbalk: enkel negatieve waarden tellen mee (winst = 0% fill)
-        const lossPct = inverted ? Math.max(0, -valuePct) : Math.max(0, valuePct);
+      // Helper: parameter balk met detail toggle
+      const mkRow = (label, valuePct, targetPct, color, inverted, detail, rowId) => {
+        const lossPct = inverted ? Math.max(0, -(valuePct??0)) : Math.max(0, valuePct??0);
         const rawFill = targetPct > 0 ? Math.min(100, lossPct / targetPct * 100) : 0;
-        const fillColor = inverted
-          ? (rawFill >= 100 ? 'var(--red)' : rawFill >= 75 ? 'var(--amber)' : 'var(--green)')
-          : (rawFill >= 100 ? 'var(--green)' : color);
-        const valStr = valuePct >= 0 ? `+${valuePct.toFixed(1)}%` : `${valuePct.toFixed(1)}%`;
-        const targetStr = inverted ? `-${targetPct}%` : `+${targetPct}%`;
-        return `<div style="margin-bottom:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);margin-bottom:3px;cursor:pointer;" onclick="(function(el){el.style.display=el.style.display==='none'?'block':'none';})(document.getElementById('${rowId}'))">
-            <span style="font-family:var(--font-head);font-weight:700;">${label} <span style="opacity:0.5;font-weight:400;">ℹ</span></span>
-            <span style="color:${fillColor};font-weight:700;">${valStr} <span style="color:var(--muted);font-weight:400;">/ ${targetStr}</span></span>
+        const fc = inverted
+          ? (rawFill>=100?'var(--red)':rawFill>=75?'var(--amber)':'var(--green)')
+          : (rawFill>=100?'var(--green)':color);
+        const vStr = (valuePct??0)>=0 ? `+${(valuePct??0).toFixed(1)}%` : `${(valuePct??0).toFixed(1)}%`;
+        const tStr = inverted ? `-${targetPct}%` : `+${targetPct}%`;
+        return `<div style="margin-bottom:7px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);margin-bottom:3px;cursor:pointer;"
+            onclick="(function(el){el.style.display=el.style.display==='none'?'block':'none';})(document.getElementById('${rowId}'))">
+            <span style="font-family:var(--font-head);font-weight:700;">${label} <span style="opacity:0.4;">ℹ</span></span>
+            <span style="color:${fc};font-weight:700;">${vStr} <span style="color:var(--muted);font-weight:400;">/ ${tStr}</span></span>
           </div>
-          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-            <div style="height:100%;width:${rawFill}%;background:${fillColor};border-radius:3px;transition:width .4s;"></div>
+          <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${rawFill}%;background:${fc};border-radius:3px;transition:width .4s;"></div>
           </div>
-          <div id="${rowId}" style="display:none;">${detailHtml}</div>
+          <div id="${rowId}" style="display:none;margin-top:5px;font-size:11px;color:var(--muted);line-height:1.8;padding:7px 9px;background:var(--bg);border-radius:6px;">${detail}</div>
         </div>`;
       };
 
-      const profitRow = pc.profitTarget > 0 ? mkRow('Profit Target', cs.profitPct, pc.profitTarget, 'var(--green)', false, profitDetail, `pd_pt_${acc.id}`) : '';
-      const lossRow   = pc.maxLoss > 0      ? mkRow('Max Totaal Verlies', cs.totalLossPct, pc.maxLoss, 'var(--red)', true, lossDetail, `pd_ml_${acc.id}`) : '';
-      const dailyRow  = pc.dailyLoss > 0    ? mkRow('Slechtste Dag', cs.worstDayPct, pc.dailyLoss, 'var(--amber)', true, dailyDetail, `pd_dl_${acc.id}`) : '';
-      const daysRow   = pc.minDays > 0 ? `<div style="margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);margin-bottom:3px;cursor:pointer;" onclick="(function(el){el.style.display=el.style.display==='none'?'block':'none';})(document.getElementById('pd_td_${acc.id}'))">
-          <span style="font-family:var(--font-head);font-weight:700;">Trading Days <span style="opacity:0.5;font-weight:400;">ℹ</span></span>
-          <span style="color:${cs.tradingDays>=pc.minDays?'var(--green)':'var(--muted)'};font-weight:700;">${cs.tradingDays} <span style="color:var(--muted);font-weight:400;">/ min. ${pc.minDays}</span></span>
+      // Detail teksten
+      const profitDetail = `
+        💰 Startkapitaal: <strong style="color:var(--text)">€${current.initial.toLocaleString()}</strong><br>
+        ✅ Winsten: <strong style="color:var(--green)">${current.winTrades.length}t · ${fmt(current.winTotal)}</strong> &nbsp;
+        ❌ Verliezen: <strong style="color:var(--red)">${current.lossTrades.length}t · ${fmt(current.lossTotal)}</strong><br>
+        📈 Netto: <strong style="color:${current.totalPnl>=0?'var(--green)':'var(--red)'}">${fmt(current.totalPnl)} (${fmtPct(current.profitPct)})</strong>
+        ${current.top3Winners.length?`<br>🏅 Top: ${current.top3Winners.map(t=>`<span style="color:var(--green)">${t.pair||'?'} ${fmt(t.pnl)}</span>`).join(' · ')}`:''}`;
+
+      const lossDetail = `
+        💰 Startkapitaal: <strong style="color:var(--text)">€${current.initial.toLocaleString()}</strong><br>
+        📉 Netto P&L: <strong style="color:${current.totalPnl>=0?'var(--green)':'var(--red)'}">${fmt(current.totalPnl)} (${fmtPct(current.totalLossPct)})</strong><br>
+        🚨 Limiet: <strong style="color:var(--red)">-€${(current.initial*phase.maxLoss/100).toFixed(2)} (-${phase.maxLoss}%)</strong> &nbsp;
+        📦 Ruimte: <strong style="color:var(--text)">€${Math.max(0, current.initial*phase.maxLoss/100+current.totalPnl).toFixed(2)}</strong>
+        ${current.top3Losers.filter(t=>(t.pnl||0)<0).length?`<br>💀 Verliezers: ${current.top3Losers.filter(t=>(t.pnl||0)<0).map(t=>`<span style="color:var(--red)">${t.pair||'?'} ${fmt(t.pnl)}</span>`).join(' · ')}`:''}`;
+
+      const dailyDetail = `
+        📅 Slechtste dag: ${current.worstDayDate
+          ? `<strong style="color:var(--red)">${current.worstDayDate} · ${fmt(current.worstDayPnl)} (${fmtPct(current.worstDayPct)})</strong><br>
+             &nbsp;&nbsp;${current.worstDayTrades.map(t=>`<span style="color:${(t.pnl||0)>=0?'var(--green)':'var(--red)'}">${t.pair||'?'} ${fmt(t.pnl||0)}</span>`).join(' · ')}`
+          : 'Nog geen trades.'}<br>
+        🚨 Limiet: <strong style="color:var(--red)">-€${(current.initial*phase.dailyLoss/100).toFixed(2)} (-${phase.dailyLoss}%)</strong>
+        ${current.tradingDaysList.length>1?`<br>Alle dagen: ${current.tradingDaysList.map(d=>`<span style="color:${d.pnl>=0?'var(--green)':'var(--red)'}">${fmtDate(d.date)} ${fmt(d.pnl)}</span>`).join(' · ')}`:''}`;
+
+      const daysDetail = `
+        📊 Unieke kalenderdagen met ≥1 gesloten trade in deze fase<br>
+        📅 <strong style="color:var(--text)">${current.tradingDays}</strong> days / vereist: <strong style="color:var(--text)">${phase.minDays}</strong>
+        ${current.tradingDaysList.length?`<br>${current.tradingDaysList.map(d=>`<span style="color:var(--muted)">${d.date} <span style="color:${d.pnl>=0?'var(--green)':'var(--red)'}">${fmt(d.pnl)}</span>(${d.count}t)</span>`).join(' ')}`:''}`;
+
+      const profitRow = phase.profitTarget > 0
+        ? mkRow('Profit Target',      current.profitPct,   phase.profitTarget, 'var(--green)', false, profitDetail, `pd_pt_${acc.id}`) : '';
+      const lossRow   = phase.maxLoss > 0
+        ? mkRow('Max Totaal Verlies', current.totalLossPct, phase.maxLoss,      'var(--red)',   true,  lossDetail,   `pd_ml_${acc.id}`) : '';
+      const dailyRow  = phase.dailyLoss > 0
+        ? mkRow('Slechtste Dag',      current.worstDayPct, phase.dailyLoss,    'var(--amber)', true,  dailyDetail,  `pd_dl_${acc.id}`) : '';
+      const daysRow   = phase.minDays > 0 ? mkRow(
+        'Trading Days',
+        (current.tradingDays / phase.minDays * 100) - 100 < 0 ? (current.tradingDays / phase.minDays * 100) - 100 : 0,
+        0, 'var(--green)', false, daysDetail, `pd_td_${acc.id}`) : '';
+
+      // Trading days apart renderen (geen % logica)
+      const daysRowHtml = phase.minDays > 0 ? `<div style="margin-bottom:7px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);margin-bottom:3px;cursor:pointer;"
+          onclick="(function(el){el.style.display=el.style.display==='none'?'block':'none';})(document.getElementById('pd_td_${acc.id}'))">
+          <span style="font-family:var(--font-head);font-weight:700;">Trading Days <span style="opacity:0.4;">ℹ</span></span>
+          <span style="color:${current.tradingDays>=phase.minDays?'var(--green)':'var(--muted)'};font-weight:700;">
+            ${current.tradingDays} <span style="color:var(--muted);font-weight:400;">/ min. ${phase.minDays}</span>
+          </span>
         </div>
-        <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-          <div style="height:100%;width:${Math.min(100,cs.tradingDays/pc.minDays*100)}%;background:${cs.tradingDays>=pc.minDays?'var(--green)':'var(--muted)'};border-radius:3px;transition:width .4s;"></div>
+        <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${Math.min(100,phase.minDays>0?current.tradingDays/phase.minDays*100:0)}%;background:${current.tradingDays>=phase.minDays?'var(--green)':'var(--muted)'};border-radius:3px;transition:width .4s;"></div>
         </div>
-        <div id="pd_td_${acc.id}" style="display:none;">${daysDetail}</div>
+        <div id="pd_td_${acc.id}" style="display:none;margin-top:5px;font-size:11px;color:var(--muted);line-height:1.8;padding:7px 9px;background:var(--bg);border-radius:6px;">${daysDetail}</div>
       </div>` : '';
 
+      // Voltooide fases samenvatting
+      const completedHtml = phaseStatuses.map((st, i) => {
+        if(i >= ci) return '';
+        const ph = pc.phases[i];
+        const clr = st.isBreached ? 'var(--red)' : 'var(--green)';
+        const ico = st.isBreached ? '✕' : '✓';
+        return `<div style="display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted);padding:3px 0;border-bottom:1px solid var(--border);">
+          <span style="color:${clr};font-weight:700;">${ico}</span>
+          <span style="font-family:var(--font-head);font-weight:700;color:var(--text);">${ph.name}</span>
+          <span>${ph.profitTarget?`T:+${ph.profitTarget}%`:''} ${ph.maxLoss?`ML:-${ph.maxLoss}%`:''} ${ph.dailyLoss?`DL:-${ph.dailyLoss}%`:''}</span>
+          <span style="margin-left:auto;color:${clr};font-weight:700;">${fmt(st.totalPnl)} (${fmtPct(st.profitPct)})</span>
+        </div>`;
+      }).join('');
+
+      // Knop naar volgende fase / herstarten
+      const actionBtn = current.isPassed && !isLastPhase
+        ? `<button onclick="advancePhase('${acc.id}')" style="width:100%;margin-top:10px;padding:8px;border-radius:7px;border:none;background:var(--green);color:#0d0f14;font-family:var(--font-head);font-weight:800;font-size:12px;cursor:pointer;">
+            ✅ Naar ${pc.phases[ci+1]?.name || 'volgende fase'} →
+           </button>`
+        : current.isPassed && isLastPhase
+        ? `<div style="margin-top:8px;padding:8px 12px;border-radius:7px;background:rgba(46,204,138,0.1);border:1px solid rgba(46,204,138,0.3);text-align:center;font-family:var(--font-head);font-weight:800;font-size:12px;color:var(--green);">
+            🏆 CHALLENGE VOLLEDIG GESLAAGD!
+           </div>`
+        : current.isBreached
+        ? `<button onclick="resetPhase('${acc.id}')" style="width:100%;margin-top:10px;padding:8px;border-radius:7px;border:1px solid rgba(255,92,92,0.4);background:rgba(255,92,92,0.08);color:var(--red);font-family:var(--font-head);font-weight:700;font-size:11px;cursor:pointer;">
+            🔄 Fase herstarten (nieuwe startdatum)
+           </button>`
+        : '';
+
       challengeHtml = `<div style="margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(0,0,0,0.15);border:1px solid var(--border);">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🏆 Prop Challenge</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
           <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:10px;font-family:var(--font-head);font-weight:700;color:${statusColor};">${statusLabel}</span>
-            <button onclick="editPropChallenge('${acc.id}')" style="padding:2px 8px;font-size:10px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;" title="Instellingen aanpassen">✏️ Bewerk</button>
+            <span style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🏆 Prop Challenge</span>
+            <span style="font-size:11px;letter-spacing:3px;">${phaseDots}</span>
           </div>
+          <button onclick="editPropChallenge('${acc.id}')" style="padding:2px 8px;font-size:10px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;">✏️ Bewerk</button>
         </div>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:8px;font-style:italic;">Klik op een parameter voor de details</div>
-        ${profitRow}${lossRow}${dailyRow}${daysRow}
+        ${completedHtml ? `<div style="margin-bottom:8px;">${completedHtml}</div>` : ''}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-family:var(--font-head);font-weight:800;font-size:12px;color:var(--text);">
+            ${phase.name}
+            <span style="font-size:10px;color:var(--muted);font-weight:400;margin-left:4px;">Fase ${ci+1}/${pc.phases.length} · vanaf ${startDate}</span>
+          </span>
+          <span style="font-size:10px;font-family:var(--font-head);font-weight:700;color:${statusColor};">${statusLabel}</span>
+        </div>
+        <div style="font-size:9px;color:var(--muted);margin-bottom:6px;font-style:italic;">Klik op een parameter voor details</div>
+        ${profitRow}${lossRow}${dailyRow}${daysRowHtml}
+        ${actionBtn}
       </div>`;
     }
 
@@ -1333,71 +1411,123 @@ function renderAccountsList(){
   }).join('');
 }
 
+function _phaseRowHtml(phase, i, startDate){
+  const inpStyle = 'width:100%;padding:6px 8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;';
+  const lblStyle = 'font-size:9px;color:var(--muted);display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px;';
+  return `<div class="pe-phase-row" data-phase-idx="${i}" style="background:rgba(79,158,255,0.04);border:1px solid rgba(79,158,255,0.15);border-radius:8px;padding:10px 12px;margin-bottom:8px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <span style="font-size:10px;color:var(--accent);font-family:var(--font-head);font-weight:700;">FASE ${i+1}</span>
+      <button onclick="removePePhase(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0 2px;" title="Fase verwijderen">✕</button>
+    </div>
+    <div style="margin-bottom:8px;">
+      <label style="${lblStyle}">Naam fase</label>
+      <input class="pe-phase-name" type="text" value="${phase.name||`Fase ${i+1}`}" placeholder="bv. Challenge" style="${inpStyle}">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+      <div><label style="${lblStyle}">Profit Target (%)</label>
+        <input class="pe-phase-target" type="number" value="${phase.profitTarget||''}" placeholder="bv. 10" step="0.5" min="0" style="${inpStyle}">
+      </div>
+      <div><label style="${lblStyle}">Max totaal verlies (%)</label>
+        <input class="pe-phase-maxloss" type="number" value="${phase.maxLoss||''}" placeholder="bv. 10" step="0.5" min="0" style="${inpStyle}">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;">
+      <div><label style="${lblStyle}">Max dagelijks verlies (%)</label>
+        <input class="pe-phase-dailyloss" type="number" value="${phase.dailyLoss||''}" placeholder="bv. 5" step="0.5" min="0" style="${inpStyle}">
+      </div>
+      <div><label style="${lblStyle}">Min. trading days</label>
+        <input class="pe-phase-mindays" type="number" value="${phase.minDays||''}" placeholder="bv. 4" step="1" min="0" style="${inpStyle}">
+      </div>
+    </div>
+    <div><label style="${lblStyle}">Startdatum fase</label>
+      <input class="pe-phase-startdate" type="date" value="${startDate||''}" style="${inpStyle}">
+    </div>
+  </div>`;
+}
+
 function editPropChallenge(accId){
   const acc = fxAccounts.find(a => a.id === accId);
   if(!acc) return;
-  const pc = acc.propChallenge || {};
-
-  // Verwijder eventueel bestaande edit-modal
   const existing = $('propEditOverlay');
   if(existing) existing.remove();
 
+  // Normaliseer naar nieuw formaat
+  const pc = normalizePropChallenge(acc.propChallenge || {
+    phases:[{name:'Fase 1',profitTarget:0,maxLoss:0,dailyLoss:0,minDays:0}],
+    currentPhase:0, phaseStartDates:[new Date().toISOString().split('T')[0]]
+  });
+
+  const phasesHtml = pc.phases.map((ph, i) => _phaseRowHtml(ph, i, pc.phaseStartDates?.[i]||'')).join('');
+
   const overlay = document.createElement('div');
   overlay.id = 'propEditOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,11,16,0.85);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,11,16,0.85);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;';
   overlay.innerHTML = `
-    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:24px;width:100%;max-width:440px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:20px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div style="font-family:var(--font-head);font-weight:800;font-size:15px;">🏆 Challenge — ${acc.name}</div>
-        <button onclick="$('propEditOverlay').remove()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">×</button>
+        <button onclick="$('propEditOverlay').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;">×</button>
       </div>
-      <div style="background:rgba(79,158,255,0.05);border:1px solid rgba(79,158,255,0.2);border-radius:8px;padding:12px;margin-bottom:14px;">
-        <div style="font-size:10px;color:var(--accent);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Challenge parameters</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-          <div>
-            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Profit Target (%)</label>
-            <input type="number" id="peTarget" value="${pc.profitTarget||''}" placeholder="bv. 10" step="0.5" min="0"
-              style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:13px;">
-          </div>
-          <div>
-            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Max totaal verlies (%)</label>
-            <input type="number" id="peMaxLoss" value="${pc.maxLoss||''}" placeholder="bv. 10" step="0.5" min="0"
-              style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:13px;">
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div>
-            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Max dagelijks verlies (%)</label>
-            <input type="number" id="peDailyLoss" value="${pc.dailyLoss||''}" placeholder="bv. 5" step="0.5" min="0"
-              style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:13px;">
-          </div>
-          <div>
-            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Min. trading days</label>
-            <input type="number" id="peMinDays" value="${pc.minDays||''}" placeholder="bv. 4" step="1" min="0"
-              style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:13px;">
-          </div>
-        </div>
-      </div>
+      <div id="pePhasesContainer">${phasesHtml}</div>
+      <button onclick="addPePhase()" style="width:100%;padding:8px;border-radius:7px;border:1px dashed var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;font-size:11px;margin-bottom:14px;">+ Fase toevoegen</button>
       <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
-        ${acc.propChallenge ? `<button onclick="removePropChallenge('${accId}')" style="padding:9px 14px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;border:1px solid rgba(255,92,92,0.4);background:rgba(255,92,92,0.07);color:var(--red);margin-right:auto;">Challenge verwijderen</button>` : ''}
-        <button onclick="$('propEditOverlay').remove()" style="padding:9px 16px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--muted);">Annuleren</button>
-        <button onclick="savePropChallenge('${accId}')" style="padding:9px 18px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;border:none;background:var(--accent);color:#fff;">Opslaan</button>
+        ${acc.propChallenge?`<button onclick="removePropChallenge('${accId}')" style="padding:8px 12px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:11px;cursor:pointer;border:1px solid rgba(255,92,92,0.4);background:rgba(255,92,92,0.07);color:var(--red);margin-right:auto;">Verwijderen</button>`:''}
+        <button onclick="$('propEditOverlay').remove()" style="padding:8px 14px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:11px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--muted);">Annuleren</button>
+        <button onclick="savePropChallenge('${accId}')" style="padding:8px 18px;border-radius:7px;font-family:var(--font-head);font-weight:700;font-size:12px;cursor:pointer;border:none;background:var(--accent);color:#fff;">Opslaan</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
   overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
 }
 
+function addPePhase(){
+  const container = document.getElementById('pePhasesContainer');
+  if(!container) return;
+  const existing = container.querySelectorAll('.pe-phase-row');
+  const i = existing.length;
+  const div = document.createElement('div');
+  div.innerHTML = _phaseRowHtml({name:`Fase ${i+1}`,profitTarget:'',maxLoss:'',dailyLoss:'',minDays:''}, i, '');
+  container.appendChild(div.firstElementChild);
+}
+
+function removePePhase(idx){
+  const container = document.getElementById('pePhasesContainer');
+  if(!container) return;
+  const rows = container.querySelectorAll('.pe-phase-row');
+  if(rows.length <= 1){ alert('Je hebt minstens 1 fase nodig.'); return; }
+  rows[idx]?.remove();
+  // Hernum de fase-labels
+  container.querySelectorAll('.pe-phase-row').forEach((row, i) => {
+    row.setAttribute('data-phase-idx', i);
+    const label = row.querySelector('span[style*="color:var(--accent)"]');
+    if(label) label.textContent = `FASE ${i+1}`;
+    const rmBtn = row.querySelector('button');
+    if(rmBtn) rmBtn.setAttribute('onclick', `removePePhase(${i})`);
+  });
+}
+
 function savePropChallenge(accId){
   const acc = fxAccounts.find(a => a.id === accId);
   if(!acc) return;
-  const profitTarget = parseFloat($('peTarget')?.value)   || 0;
-  const maxLoss      = parseFloat($('peMaxLoss')?.value)  || 0;
-  const dailyLoss    = parseFloat($('peDailyLoss')?.value)|| 0;
-  const minDays      = parseInt($('peMinDays')?.value)    || 0;
+  const container = document.getElementById('pePhasesContainer');
+  if(!container) return;
+  const rows = container.querySelectorAll('.pe-phase-row');
+  const phases = [], phaseStartDates = [];
+  rows.forEach(row => {
+    phases.push({
+      name:        row.querySelector('.pe-phase-name')?.value.trim()    || `Fase ${phases.length+1}`,
+      profitTarget:parseFloat(row.querySelector('.pe-phase-target')?.value)   || 0,
+      maxLoss:     parseFloat(row.querySelector('.pe-phase-maxloss')?.value)  || 0,
+      dailyLoss:   parseFloat(row.querySelector('.pe-phase-dailyloss')?.value)|| 0,
+      minDays:     parseInt(row.querySelector('.pe-phase-mindays')?.value)    || 0,
+    });
+    phaseStartDates.push(row.querySelector('.pe-phase-startdate')?.value || null);
+  });
+  const existing = normalizePropChallenge(acc.propChallenge);
   acc.propChallenge = {
-    profitTarget, maxLoss, dailyLoss, minDays,
-    startDate: acc.propChallenge?.startDate || new Date().toISOString().split('T')[0]
+    phases,
+    currentPhase: Math.min(existing?.currentPhase||0, phases.length-1),
+    phaseStartDates
   };
   saveAccounts();
   $('propEditOverlay')?.remove();
@@ -1411,6 +1541,34 @@ function removePropChallenge(accId){
   saveAccounts();
   $('propEditOverlay')?.remove();
   renderAccountsList();
+}
+
+function advancePhase(accId){
+  const acc = fxAccounts.find(a => a.id === accId);
+  if(!acc || !acc.propChallenge) return;
+  const pc = normalizePropChallenge(acc.propChallenge);
+  const next = (pc.currentPhase||0) + 1;
+  if(next >= pc.phases.length) return;
+  pc.currentPhase = next;
+  if(!pc.phaseStartDates) pc.phaseStartDates = [];
+  pc.phaseStartDates[next] = new Date().toISOString().split('T')[0];
+  acc.propChallenge = pc;
+  saveAccounts();
+  renderAccountsList();
+}
+
+function resetPhase(accId){
+  showConfirm('Huidige fase herstarten? De startdatum wordt vandaag. Trades vóór vandaag tellen niet meer mee voor deze fase.', () => {
+    const acc = fxAccounts.find(a => a.id === accId);
+    if(!acc || !acc.propChallenge) return;
+    const pc = normalizePropChallenge(acc.propChallenge);
+    const ci = pc.currentPhase||0;
+    if(!pc.phaseStartDates) pc.phaseStartDates = [];
+    pc.phaseStartDates[ci] = new Date().toISOString().split('T')[0];
+    acc.propChallenge = pc;
+    saveAccounts();
+    renderAccountsList();
+  }, 'Fase herstarten', 'Ja, herstart fase');
 }
 
 function renderAccountSelects(){
