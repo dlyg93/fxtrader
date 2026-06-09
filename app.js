@@ -1128,25 +1128,40 @@ function getPropChallengeStatus(accId){
   // Totale P&L
   const totalPnl = closedTrades.reduce((s,t) => s + (t.pnl||0), 0);
   const profitPct = (totalPnl / initial) * 100;
+  const winTrades = closedTrades.filter(t => (t.pnl||0) > 0);
+  const lossTrades = closedTrades.filter(t => (t.pnl||0) < 0);
+  const winTotal = winTrades.reduce((s,t) => s + (t.pnl||0), 0);
+  const lossTotal = lossTrades.reduce((s,t) => s + (t.pnl||0), 0);
+  const top3Losers = [...closedTrades].sort((a,b) => (a.pnl||0)-(b.pnl||0)).slice(0,3);
+  const top3Winners = [...closedTrades].sort((a,b) => (b.pnl||0)-(a.pnl||0)).slice(0,3);
 
-  // Max totaal verlies check
-  const totalLossPct = (totalPnl / initial) * 100; // negatief als verlies
+  // Max totaal verlies
+  const totalLossPct = profitPct;
   const totalLossBreached = pc.maxLoss > 0 && totalLossPct <= -pc.maxLoss;
 
-  // Max dagelijks verlies: slechtste dag
+  // Dagelijkse P&L map
   const dayMap = {};
+  const dayTradesMap = {};
   closedTrades.forEach(t => {
     const d = (t.date||'').slice(0,10);
     if(!d) return;
     dayMap[d] = (dayMap[d] || 0) + (t.pnl||0);
+    if(!dayTradesMap[d]) dayTradesMap[d] = [];
+    dayTradesMap[d].push(t);
   });
-  const dayPnls = Object.values(dayMap);
-  const worstDayPnl = dayPnls.length ? Math.min(...dayPnls) : 0;
+
+  // Slechtste dag
+  const dayEntries = Object.entries(dayMap).sort((a,b) => a[1]-b[1]);
+  const worstDayPnl = dayEntries.length ? dayEntries[0][1] : 0;
+  const worstDayDate = dayEntries.length ? dayEntries[0][0] : null;
   const worstDayPct = (worstDayPnl / initial) * 100;
+  const worstDayTrades = worstDayDate ? dayTradesMap[worstDayDate] : [];
   const dailyLossBreached = pc.dailyLoss > 0 && worstDayPct <= -pc.dailyLoss;
 
-  // Aantal trading days (dagen met minstens 1 closed trade)
-  const tradingDays = Object.keys(dayMap).length;
+  // Trading days gesorteerd
+  const tradingDaysList = dayEntries.sort((a,b) => a[0].localeCompare(b[0]))
+    .map(([date, pnl]) => ({ date, pnl, pct: (pnl/initial)*100, count: dayTradesMap[date].length }));
+  const tradingDays = tradingDaysList.length;
 
   // Status
   const isBreached = totalLossBreached || dailyLossBreached;
@@ -1157,30 +1172,16 @@ function getPropChallengeStatus(accId){
 
   return {
     profitPct, totalLossPct, totalLossBreached,
-    worstDayPct, dailyLossBreached,
-    tradingDays, isBreached, isPassed, isPassing,
+    worstDayPct, worstDayDate, worstDayTrades, dailyLossBreached,
+    tradingDays, tradingDaysList,
+    winTrades, lossTrades, winTotal, lossTotal,
+    top3Losers, top3Winners,
+    totalPnl, closedTrades,
+    isBreached, isPassed, isPassing,
     pc, initial
   };
 }
 
-function _propBar(label, valuePct, targetPct, color, inverted){
-  // inverted = true: bar vult rood naarmate je dichter bij de limiet komt
-  const rawFill = targetPct > 0 ? Math.min(100, Math.abs(valuePct) / targetPct * 100) : 0;
-  const fillColor = inverted
-    ? (rawFill >= 100 ? 'var(--red)' : rawFill >= 75 ? 'var(--amber)' : 'var(--green)')
-    : (rawFill >= 100 ? 'var(--green)' : color);
-  const valStr = valuePct >= 0 ? `+${valuePct.toFixed(1)}%` : `${valuePct.toFixed(1)}%`;
-  const targetStr = inverted ? `-${targetPct}%` : `+${targetPct}%`;
-  return `<div style="margin-bottom:7px;">
-    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:3px;">
-      <span style="font-family:var(--font-head);font-weight:700;">${label}</span>
-      <span style="color:${fillColor};font-weight:700;">${valStr} <span style="color:var(--muted);font-weight:400;">/ ${targetStr}</span></span>
-    </div>
-    <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-      <div style="height:100%;width:${rawFill}%;background:${fillColor};border-radius:3px;transition:width .4s;"></div>
-    </div>
-  </div>`;
-}
 
 function renderAccountsList(){
   const el = $('accountsList');
@@ -1206,32 +1207,95 @@ function renderAccountsList(){
       const statusLabel = cs.isBreached ? '❌ CHALLENGE GEFAALD' : cs.isPassed ? '✅ CHALLENGE GESLAAGD' : '🔄 IN PROGRESS';
       const pc = cs.pc;
 
-      const profitBar = pc.profitTarget > 0
-        ? _propBar('Profit Target', cs.profitPct, pc.profitTarget, 'var(--green)', false) : '';
-      const lossBar = pc.maxLoss > 0
-        ? _propBar('Max Totaal Verlies', cs.totalLossPct, pc.maxLoss, 'var(--red)', true) : '';
-      const dailyBar = pc.dailyLoss > 0
-        ? _propBar('Slechtste Dag', cs.worstDayPct, pc.dailyLoss, 'var(--amber)', true) : '';
-      const daysColor = cs.tradingDays >= pc.minDays ? 'var(--green)' : 'var(--muted)';
-      const daysBar = pc.minDays > 0 ? `<div style="margin-bottom:7px;">
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:3px;">
-          <span style="font-family:var(--font-head);font-weight:700;">Trading Days</span>
-          <span style="color:${daysColor};font-weight:700;">${cs.tradingDays} <span style="color:var(--muted);font-weight:400;">/ min. ${pc.minDays}</span></span>
+      // Helper: detail rijen
+      const fmt = (pnl) => (pnl>=0?'+':'')+pnl.toFixed(2);
+      const fmtPct = (p) => (p>=0?'+':'')+p.toFixed(2)+'%';
+      const fmtDate = (d) => d ? d.slice(5).replace('-','/') : '—'; // MM/DD
+
+      // Detail: profit target
+      const profitDetail = pc.profitTarget > 0 ? `
+        <div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.8;padding:8px 10px;background:var(--bg);border-radius:6px;">
+          <div>📊 <strong style="color:var(--text)">Berekening:</strong> totale P&amp;L van alle gesloten trades op dit account gedeeld door startkapitaal</div>
+          <div>💰 Startkapitaal: <strong style="color:var(--text)">€${cs.initial.toLocaleString()}</strong></div>
+          <div>✅ Winsten: <strong style="color:var(--green)">${cs.winTrades.length} trades · ${fmt(cs.winTotal)}</strong></div>
+          <div>❌ Verliezen: <strong style="color:var(--red)">${cs.lossTrades.length} trades · ${fmt(cs.lossTotal)}</strong></div>
+          <div>📈 Netto P&amp;L: <strong style="color:${cs.totalPnl>=0?'var(--green)':'var(--red)'}">${fmt(cs.totalPnl)} (${fmtPct(cs.profitPct)})</strong></div>
+          ${cs.top3Winners.length ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">🏅 Top winnaars: ${cs.top3Winners.map(t=>`<span style="color:var(--green)">${t.pair||'?'} ${fmt(t.pnl)}</span>`).join(' · ')}</div>` : ''}
+        </div>` : '';
+
+      // Detail: max totaal verlies
+      const lossDetail = pc.maxLoss > 0 ? `
+        <div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.8;padding:8px 10px;background:var(--bg);border-radius:6px;">
+          <div>📊 <strong style="color:var(--text)">Berekening:</strong> som van alle gesloten trades / startkapitaal. Limiet = -${pc.maxLoss}%</div>
+          <div>💰 Startkapitaal: <strong style="color:var(--text)">€${cs.initial.toLocaleString()}</strong></div>
+          <div>📉 Huidige netto P&amp;L: <strong style="color:${cs.totalPnl>=0?'var(--green)':'var(--red)'}">${fmt(cs.totalPnl)} (${fmtPct(cs.totalLossPct)})</strong></div>
+          <div>🚨 Limiet bij: <strong style="color:var(--red)">-€${(cs.initial * pc.maxLoss/100).toFixed(2)} (-${pc.maxLoss}%)</strong></div>
+          <div>📦 Nog ruimte: <strong style="color:var(--text)">€${Math.max(0, cs.initial*pc.maxLoss/100 + cs.totalPnl).toFixed(2)}</strong></div>
+          ${cs.top3Losers.filter(t=>(t.pnl||0)<0).length ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">💀 Grootste verliezers: ${cs.top3Losers.filter(t=>(t.pnl||0)<0).map(t=>`<span style="color:var(--red)">${t.pair||'?'} ${fmt(t.pnl)}</span>`).join(' · ')}</div>` : ''}
+        </div>` : '';
+
+      // Detail: max dagelijks verlies
+      const dailyDetail = pc.dailyLoss > 0 ? `
+        <div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.8;padding:8px 10px;background:var(--bg);border-radius:6px;">
+          <div>📊 <strong style="color:var(--text)">Berekening:</strong> slechtste kalenderdag (som P&amp;L van alle trades die dag). Limiet = -${pc.dailyLoss}%</div>
+          ${cs.worstDayDate ? `<div>📅 Slechtste dag: <strong style="color:var(--red)">${cs.worstDayDate} · ${fmt(cs.worstDayPnl)} (${fmtPct(cs.worstDayPct)})</strong></div>
+          <div style="padding-left:10px;">${cs.worstDayTrades.map(t=>`<span style="color:${(t.pnl||0)>=0?'var(--green)':'var(--red)'}">${t.pair||'?'} ${fmt(t.pnl||0)}</span>`).join(' · ')}</div>` : '<div>Nog geen trades.</div>'}
+          <div>🚨 Dagelijkse limiet: <strong style="color:var(--red)">-€${(cs.initial * pc.dailyLoss/100).toFixed(2)} (-${pc.dailyLoss}%)</strong></div>
+          ${cs.tradingDaysList.length > 1 ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">Alle dagen: ${cs.tradingDaysList.map(d=>`<span style="color:${d.pnl>=0?'var(--green)':'var(--red)'}">${fmtDate(d.date)} ${fmt(d.pnl)}</span>`).join(' · ')}</div>` : ''}
+        </div>` : '';
+
+      // Detail: trading days
+      const daysDetail = pc.minDays > 0 ? `
+        <div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.8;padding:8px 10px;background:var(--bg);border-radius:6px;">
+          <div>📊 <strong style="color:var(--text)">Berekening:</strong> aantal unieke kalenderdagen met minstens 1 gesloten trade op dit account</div>
+          <div>📅 Trading days: <strong style="color:var(--text)">${cs.tradingDays}</strong> / min. vereist: <strong style="color:var(--text)">${pc.minDays}</strong></div>
+          ${cs.tradingDaysList.length ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);">${cs.tradingDaysList.map(d=>`<span style="color:var(--muted)">${d.date} <span style="color:${d.pnl>=0?'var(--green)':'var(--red)'}">${fmt(d.pnl)}</span> (${d.count}t)</span>`).join('<br>')}</div>` : ''}
+        </div>` : '';
+
+      // Bouw parameter rijen met toggle
+      const mkRow = (label, valuePct, targetPct, color, inverted, detailHtml, rowId) => {
+        const rawFill = targetPct > 0 ? Math.min(100, Math.abs(valuePct) / targetPct * 100) : 0;
+        const fillColor = inverted
+          ? (rawFill >= 100 ? 'var(--red)' : rawFill >= 75 ? 'var(--amber)' : 'var(--green)')
+          : (rawFill >= 100 ? 'var(--green)' : color);
+        const valStr = valuePct >= 0 ? `+${valuePct.toFixed(1)}%` : `${valuePct.toFixed(1)}%`;
+        const targetStr = inverted ? `-${targetPct}%` : `+${targetPct}%`;
+        return `<div style="margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);margin-bottom:3px;cursor:pointer;" onclick="(function(el){el.style.display=el.style.display==='none'?'block':'none';})(document.getElementById('${rowId}'))">
+            <span style="font-family:var(--font-head);font-weight:700;">${label} <span style="opacity:0.5;font-weight:400;">ℹ</span></span>
+            <span style="color:${fillColor};font-weight:700;">${valStr} <span style="color:var(--muted);font-weight:400;">/ ${targetStr}</span></span>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${rawFill}%;background:${fillColor};border-radius:3px;transition:width .4s;"></div>
+          </div>
+          <div id="${rowId}" style="display:none;">${detailHtml}</div>
+        </div>`;
+      };
+
+      const profitRow = pc.profitTarget > 0 ? mkRow('Profit Target', cs.profitPct, pc.profitTarget, 'var(--green)', false, profitDetail, `pd_pt_${acc.id}`) : '';
+      const lossRow   = pc.maxLoss > 0      ? mkRow('Max Totaal Verlies', cs.totalLossPct, pc.maxLoss, 'var(--red)', true, lossDetail, `pd_ml_${acc.id}`) : '';
+      const dailyRow  = pc.dailyLoss > 0    ? mkRow('Slechtste Dag', cs.worstDayPct, pc.dailyLoss, 'var(--amber)', true, dailyDetail, `pd_dl_${acc.id}`) : '';
+      const daysRow   = pc.minDays > 0 ? `<div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);margin-bottom:3px;cursor:pointer;" onclick="(function(el){el.style.display=el.style.display==='none'?'block':'none';})(document.getElementById('pd_td_${acc.id}'))">
+          <span style="font-family:var(--font-head);font-weight:700;">Trading Days <span style="opacity:0.5;font-weight:400;">ℹ</span></span>
+          <span style="color:${cs.tradingDays>=pc.minDays?'var(--green)':'var(--muted)'};font-weight:700;">${cs.tradingDays} <span style="color:var(--muted);font-weight:400;">/ min. ${pc.minDays}</span></span>
         </div>
         <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-          <div style="height:100%;width:${Math.min(100,cs.tradingDays/pc.minDays*100)}%;background:${daysColor};border-radius:3px;transition:width .4s;"></div>
+          <div style="height:100%;width:${Math.min(100,cs.tradingDays/pc.minDays*100)}%;background:${cs.tradingDays>=pc.minDays?'var(--green)':'var(--muted)'};border-radius:3px;transition:width .4s;"></div>
         </div>
+        <div id="pd_td_${acc.id}" style="display:none;">${daysDetail}</div>
       </div>` : '';
 
       challengeHtml = `<div style="margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(0,0,0,0.15);border:1px solid var(--border);">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <span style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🏆 Prop Challenge</span>
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:10px;font-family:var(--font-head);font-weight:700;color:${statusColor};">${statusLabel}</span>
             <button onclick="editPropChallenge('${acc.id}')" style="padding:2px 8px;font-size:10px;border-radius:5px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;" title="Instellingen aanpassen">✏️ Bewerk</button>
           </div>
         </div>
-        ${profitBar}${lossBar}${dailyBar}${daysBar}
+        <div style="font-size:10px;color:var(--muted);margin-bottom:8px;font-style:italic;">Klik op een parameter voor de details</div>
+        ${profitRow}${lossRow}${dailyRow}${daysRow}
       </div>`;
     }
 
