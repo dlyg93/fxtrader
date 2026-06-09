@@ -4125,12 +4125,16 @@ function renderHeatmap(t){
     const count = data?.trades?.length || 0;
     const bg = hasTrades ? dayColor(pnl) : 'var(--surface2)';
     const pnlText = hasTrades ? `${pnl>=0?'+':''}€${Math.abs(pnl)<100?pnl.toFixed(1):pnl.toFixed(0)}` : '';
-    const pnlColor = pnl>=0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.9)';
+    const textColor = 'rgba(255,255,255,0.95)';
+    const numColor  = hasTrades ? 'rgba(255,255,255,0.9)' : 'var(--muted)';
     const onclick = hasTrades ? `onclick="showHeatmapDay('${dateStr}')"` : '';
     cells += `<div class="heatmap-day ${hasTrades?'has-trades':''} ${isToday?'today':''}"
       style="background:${bg};" ${onclick} title="${dateStr}${hasTrades?`: ${count} trade(s), P&L: €${pnl.toFixed(2)}`:''}">
-      <span class="heatmap-day-num" style="color:${hasTrades?'rgba(255,255,255,0.8)':'var(--muted)'}">${day}</span>
-      ${hasTrades?`<span class="heatmap-day-pnl" style="color:${pnlColor}">${pnlText}</span>`:''}
+      <span class="heatmap-day-num" style="color:${numColor}">${day}</span>
+      ${hasTrades ? `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+        <span class="heatmap-day-pnl" style="color:${textColor}">${pnlText}</span>
+        <span class="heatmap-day-count">${count}t</span>
+      </div>` : ''}
     </div>`;
   }
 
