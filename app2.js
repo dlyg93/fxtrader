@@ -4055,6 +4055,219 @@ function renderStats(){
       </div>`;
     }).join('') || '<div class="no-data-msg">Geen data</div>';
   }
+
+  renderHeatmap(t);
+  renderMoodStats(t);
+}
+
+// ================================================================
+// PERFORMANCE HEATMAP
+// ================================================================
+let heatmapDate = new Date();
+
+function changeHeatmapMonth(delta){
+  heatmapDate = new Date(heatmapDate.getFullYear(), heatmapDate.getMonth() + delta, 1);
+  renderHeatmap(trades.filter(t => t.result !== 'open'));
+}
+
+function renderHeatmap(t){
+  const el = $('statsHeatmap');
+  if(!el) return;
+
+  const yr  = heatmapDate.getFullYear();
+  const mo  = heatmapDate.getMonth(); // 0-based
+  const monthNames = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+  const dowLabels  = ['Ma','Di','Wo','Do','Vr','Za','Zo'];
+
+  // Bouw dagmap voor deze maand
+  const dayMap = {};
+  t.forEach(trade => {
+    const d = (trade.date||'').slice(0,10);
+    if(!d) return;
+    const td = new Date(d);
+    if(td.getFullYear()===yr && td.getMonth()===mo){
+      if(!dayMap[d]) dayMap[d] = { pnl:0, trades:[] };
+      dayMap[d].pnl += (trade.pnl||0);
+      dayMap[d].trades.push(trade);
+    }
+  });
+
+  // Max abs P&L voor kleurintensiteit
+  const pnlVals = Object.values(dayMap).map(d => Math.abs(d.pnl));
+  const maxPnl  = pnlVals.length ? Math.max(...pnlVals, 1) : 1;
+
+  const todayStr = new Date().toISOString().slice(0,10);
+  const daysInMonth = new Date(yr, mo+1, 0).getDate();
+  const firstDow = (new Date(yr, mo, 1).getDay() + 6) % 7; // Ma=0
+
+  // Kleur helper
+  const dayColor = (pnl) => {
+    const intensity = Math.min(0.9, 0.15 + (Math.abs(pnl)/maxPnl)*0.75);
+    return pnl > 0
+      ? `rgba(46,204,138,${intensity})`
+      : pnl < 0
+      ? `rgba(255,92,92,${intensity})`
+      : 'var(--surface2)';
+  };
+
+  // Bouw grid cellen
+  const dowRow = dowLabels.map(d => `<div class="heatmap-dow">${d}</div>`).join('');
+  let cells = '';
+  // Lege cellen voor eerste week
+  for(let i=0; i<firstDow; i++) cells += `<div class="heatmap-day empty"></div>`;
+
+  for(let day=1; day<=daysInMonth; day++){
+    const dateStr = `${yr}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const data    = dayMap[dateStr];
+    const isToday = dateStr === todayStr;
+    const hasTrades = !!data;
+    const pnl = data?.pnl || 0;
+    const count = data?.trades?.length || 0;
+    const bg = hasTrades ? dayColor(pnl) : 'var(--surface2)';
+    const pnlText = hasTrades ? `${pnl>=0?'+':''}€${Math.abs(pnl)<100?pnl.toFixed(1):pnl.toFixed(0)}` : '';
+    const pnlColor = pnl>=0 ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.9)';
+    const onclick = hasTrades ? `onclick="showHeatmapDay('${dateStr}')"` : '';
+    cells += `<div class="heatmap-day ${hasTrades?'has-trades':''} ${isToday?'today':''}"
+      style="background:${bg};" ${onclick} title="${dateStr}${hasTrades?`: ${count} trade(s), P&L: €${pnl.toFixed(2)}`:''}">
+      <span class="heatmap-day-num" style="color:${hasTrades?'rgba(255,255,255,0.8)':'var(--muted)'}">${day}</span>
+      ${hasTrades?`<span class="heatmap-day-pnl" style="color:${pnlColor}">${pnlText}</span>`:''}
+    </div>`;
+  }
+
+  // Week totalen (rechts naast elke rij)
+  const totalPnl = Object.values(dayMap).reduce((s,d)=>s+d.pnl,0);
+  const tradeDays = Object.keys(dayMap).length;
+  const greenDays = Object.values(dayMap).filter(d=>d.pnl>0).length;
+  const redDays   = Object.values(dayMap).filter(d=>d.pnl<0).length;
+
+  el.innerHTML = `
+    <div class="heatmap-nav">
+      <button class="heatmap-nav-btn" onclick="changeHeatmapMonth(-1)">← Vorige</button>
+      <span class="heatmap-month-label">${monthNames[mo]} ${yr}</span>
+      <button class="heatmap-nav-btn" onclick="changeHeatmapMonth(1)">Volgende →</button>
+    </div>
+    <div class="heatmap-grid">${dowRow}${cells}</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:var(--muted);font-family:var(--font-head);font-weight:700;">
+      <span>Totaal: <span style="color:${totalPnl>=0?'var(--green)':'var(--red)'}">${totalPnl>=0?'+':''}€${totalPnl.toFixed(2)}</span></span>
+      <span>Trading days: <strong style="color:var(--text)">${tradeDays}</strong></span>
+      <span>🟢 <strong style="color:var(--green)">${greenDays}</strong></span>
+      <span>🔴 <strong style="color:var(--red)">${redDays}</strong></span>
+    </div>
+    <div class="heatmap-legend">
+      <span>Intensiteit:</span>
+      <div class="heatmap-legend-cell" style="background:rgba(255,92,92,0.9)"></div><span>Groot verlies</span>
+      <div class="heatmap-legend-cell" style="background:rgba(255,92,92,0.3)"></div><span>Klein verlies</span>
+      <div class="heatmap-legend-cell" style="background:var(--surface2);border:1px solid var(--border)"></div><span>Geen trades</span>
+      <div class="heatmap-legend-cell" style="background:rgba(46,204,138,0.3)"></div><span>Kleine winst</span>
+      <div class="heatmap-legend-cell" style="background:rgba(46,204,138,0.9)"></div><span>Grote winst</span>
+    </div>`;
+}
+
+function showHeatmapDay(dateStr){
+  const dayTrades = trades.filter(t => t.date?.slice(0,10) === dateStr);
+  if(!dayTrades.length) return;
+  const existing = document.getElementById('heatmapDayOverlay');
+  if(existing) existing.remove();
+  const totalPnl = dayTrades.reduce((s,t)=>(s+(t.pnl||0)),0);
+  const overlay = document.createElement('div');
+  overlay.id = 'heatmapDayOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,11,16,0.85);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;';
+  const moodIcons = {rustig:'😌',gefocust:'🎯',gespannen:'😤',fomo:'😰',vermoeid:'😴',revenge:'🔄'};
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:20px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div>
+          <div style="font-family:var(--font-head);font-weight:800;font-size:15px;">${dateStr}</div>
+          <div style="font-size:12px;color:${totalPnl>=0?'var(--green)':'var(--red)'};">
+            ${dayTrades.length} trade${dayTrades.length>1?'s':''} · ${totalPnl>=0?'+':''}€${totalPnl.toFixed(2)}
+          </div>
+        </div>
+        <button onclick="document.getElementById('heatmapDayOverlay').remove()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">×</button>
+      </div>
+      ${dayTrades.map(t => `
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+            <span style="font-family:var(--font-head);font-weight:700;">${t.pair}</span>
+            <span style="font-size:10px;padding:2px 7px;border-radius:5px;font-family:var(--font-head);font-weight:700;background:${t.dir==='long'?'rgba(46,204,138,0.15)':'rgba(255,92,92,0.15)'};color:${t.dir==='long'?'var(--green)':'var(--red)'};">${t.dir.toUpperCase()}</span>
+            <span style="font-size:10px;padding:2px 7px;border-radius:5px;font-family:var(--font-head);font-weight:700;background:${t.result==='win'?'rgba(46,204,138,0.15)':t.result==='loss'?'rgba(255,92,92,0.15)':'rgba(122,128,153,0.15)'};color:${t.result==='win'?'var(--green)':t.result==='loss'?'var(--red)':'var(--muted)'};">${t.result.toUpperCase()}</span>
+            <span style="color:${(t.pnl||0)>=0?'var(--green)':'var(--red)'};font-weight:700;">${(t.pnl||0)>=0?'+':''}€${(t.pnl||0).toFixed(2)}</span>
+            ${t.mood?`<span style="font-size:11px;">${moodIcons[t.mood]||''} ${t.mood}</span>`:''}
+          </div>
+          ${t.notes?`<div style="font-size:11px;color:var(--muted);font-style:italic;">"${t.notes}"</div>`:''}
+        </div>`).join('')}
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
+}
+
+// ================================================================
+// PSYCHOLOGIE STATS
+// ================================================================
+function renderMoodStats(t){
+  const el = $('statsMood');
+  if(!el) return;
+  const moodTrades = t.filter(x => x.mood);
+  if(!moodTrades.length){
+    el.innerHTML = '<div class="no-data-msg">Log je mindset bij trades om correlaties te zien</div>';
+    return;
+  }
+  const moodDefs = [
+    { key:'rustig',    emoji:'😌', label:'Rustig',    color:'var(--green)' },
+    { key:'gefocust',  emoji:'🎯', label:'Gefocust',  color:'var(--accent)' },
+    { key:'gespannen', emoji:'😤', label:'Gespannen', color:'var(--amber)' },
+    { key:'fomo',      emoji:'😰', label:'FOMO',      color:'var(--red)' },
+    { key:'vermoeid',  emoji:'😴', label:'Vermoeid',  color:'var(--muted)' },
+    { key:'revenge',   emoji:'🔄', label:'Revenge',   color:'var(--red)' },
+  ];
+  const stats = moodDefs.map(m => {
+    const mt = moodTrades.filter(x => x.mood === m.key);
+    if(!mt.length) return null;
+    const wins = mt.filter(x => x.result==='win').length;
+    const wr   = mt.length ? wins/mt.length*100 : 0;
+    const pnl  = mt.reduce((s,x)=>(s+(x.pnl||0)),0);
+    const avgPnl = pnl / mt.length;
+    return { ...m, n:mt.length, wr, pnl, avgPnl };
+  }).filter(Boolean);
+
+  const maxN = Math.max(...stats.map(s=>s.n));
+  const rows = stats.sort((a,b)=>b.wr-a.wr).map(s => {
+    const wrColor = s.wr>=60?'var(--green)':s.wr>=45?'var(--amber)':'var(--red)';
+    const pnlColor = s.avgPnl>=0?'var(--green)':'var(--red)';
+    return `<div style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span style="font-size:16px;">${s.emoji}</span>
+        <span style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--text);min-width:80px;">${s.label}</span>
+        <span style="font-size:11px;color:var(--muted);">${s.n} trade${s.n>1?'s':''}</span>
+        <span style="margin-left:auto;font-family:var(--font-head);font-weight:700;font-size:12px;color:${wrColor};">${s.wr.toFixed(0)}%</span>
+        <span style="font-family:var(--font-head);font-weight:700;font-size:11px;color:${pnlColor};min-width:70px;text-align:right;">${s.avgPnl>=0?'+':''}€${s.avgPnl.toFixed(0)}/trade</span>
+      </div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${s.wr}%;background:${wrColor};border-radius:3px;transition:width .5s;"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Beste en slechtste mindset
+  const best  = stats.reduce((a,b) => a.wr>b.wr?a:b);
+  const worst = stats.reduce((a,b) => a.wr<b.wr?a:b);
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div style="background:rgba(46,204,138,0.07);border:1px solid rgba(46,204,138,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:var(--green);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">🏆 Beste mindset</div>
+        <div style="font-size:22px;">${best.emoji}</div>
+        <div style="font-family:var(--font-head);font-weight:800;font-size:14px;color:var(--text);">${best.label}</div>
+        <div style="font-size:12px;color:var(--green);">${best.wr.toFixed(0)}% winrate · ${best.n} trades</div>
+      </div>
+      <div style="background:rgba(255,92,92,0.07);border:1px solid rgba(255,92,92,0.25);border-radius:10px;padding:12px;">
+        <div style="font-size:10px;color:var(--red);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">⚠ Pas op voor</div>
+        <div style="font-size:22px;">${worst.emoji}</div>
+        <div style="font-family:var(--font-head);font-weight:800;font-size:14px;color:var(--text);">${worst.label}</div>
+        <div style="font-size:12px;color:var(--red);">${worst.wr.toFixed(0)}% winrate · ${worst.n} trades</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;font-style:italic;">Winrate en gemiddelde P&amp;L per mindset — gesorteerd van beste naar slechtste</div>
+    ${rows}`;
 }
 
 // Stats worden getriggerd vanuit de bestaande showTab (zie hieronder)

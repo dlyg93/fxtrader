@@ -720,6 +720,60 @@
   @keyframes syncPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 
+  /* ── PSYCHOLOGIE TRACKER ── */
+  .mood-selector { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .mood-btn {
+    display:flex; align-items:center; gap:5px;
+    padding:6px 12px; border-radius:20px;
+    border:1px solid var(--border); background:var(--surface2);
+    color:var(--muted); cursor:pointer; font-family:var(--font-head);
+    font-weight:700; font-size:11px; letter-spacing:0.3px;
+    transition:all 0.15s; user-select:none;
+  }
+  .mood-btn:hover { border-color:var(--border2); color:var(--text); }
+  .mood-btn.selected { border-color:var(--accent); background:rgba(79,158,255,0.1); color:var(--text); }
+  .mood-btn[data-mood="rustig"].selected    { border-color:var(--green);  background:rgba(46,204,138,0.1);  color:var(--green); }
+  .mood-btn[data-mood="gefocust"].selected  { border-color:var(--accent); background:rgba(79,158,255,0.1);  color:var(--accent); }
+  .mood-btn[data-mood="gespannen"].selected { border-color:var(--amber);  background:rgba(245,166,35,0.1);  color:var(--amber); }
+  .mood-btn[data-mood="fomo"].selected      { border-color:var(--red);    background:rgba(255,92,92,0.1);   color:var(--red); }
+  .mood-btn[data-mood="vermoeid"].selected  { border-color:var(--muted);  background:rgba(122,128,153,0.1); color:var(--muted); }
+  .mood-btn[data-mood="revenge"].selected   { border-color:var(--red);    background:rgba(255,92,92,0.15);  color:var(--red); }
+  .mood-badge {
+    display:inline-flex; align-items:center; gap:4px;
+    font-size:10px; padding:2px 8px; border-radius:10px;
+    font-family:var(--font-head); font-weight:700;
+    background:var(--surface2); border:1px solid var(--border);
+    color:var(--muted);
+  }
+
+  /* ── PERFORMANCE HEATMAP ── */
+  .heatmap-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .heatmap-nav-btn { padding:4px 12px; border-radius:6px; border:1px solid var(--border); background:var(--surface2); color:var(--muted); cursor:pointer; font-family:var(--font-head); font-weight:700; font-size:12px; transition:all 0.15s; }
+  .heatmap-nav-btn:hover { color:var(--text); border-color:var(--border2); }
+  .heatmap-month-label { font-family:var(--font-head); font-weight:800; font-size:14px; }
+  .heatmap-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .heatmap-dow { text-align:center; font-size:10px; font-family:var(--font-head); font-weight:700; color:var(--muted); padding:4px 0; text-transform:uppercase; letter-spacing:0.5px; }
+  .heatmap-day {
+    aspect-ratio:1; border-radius:6px; padding:4px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    border:1px solid transparent; cursor:default;
+    transition:all 0.15s; position:relative; overflow:hidden;
+  }
+  .heatmap-day.has-trades { cursor:pointer; }
+  .heatmap-day.has-trades:hover { filter:brightness(1.15); border-color:rgba(255,255,255,0.15); }
+  .heatmap-day.today { border-color:var(--accent) !important; }
+  .heatmap-day.empty { background:transparent; border:none; cursor:default; }
+  .heatmap-day-num { font-size:10px; font-family:var(--font-head); font-weight:700; color:var(--text); opacity:0.7; }
+  .heatmap-day-pnl { font-size:9px; font-family:var(--font-head); font-weight:800; text-align:center; line-height:1; }
+  .heatmap-day-count { font-size:8px; color:rgba(255,255,255,0.5); text-align:right; }
+  .heatmap-legend { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--muted); margin-top:10px; flex-wrap:wrap; }
+  .heatmap-legend-cell { width:14px; height:14px; border-radius:3px; flex-shrink:0; }
+  .heatmap-week-total { text-align:right; font-size:10px; font-family:var(--font-head); font-weight:700; color:var(--muted); padding:4px 2px; display:flex; align-items:center; justify-content:flex-end; }
+  @media(max-width:768px){
+    .heatmap-day-pnl { font-size:8px; }
+    .heatmap-day-num { font-size:9px; }
+  }
+
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }

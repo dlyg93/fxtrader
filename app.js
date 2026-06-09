@@ -976,6 +976,19 @@ function clearEdgeFields(prefix) {
   const conf  = $(prefix + 'EdgeConf');  if(conf)  conf.value  = '';
 }
 
+let journalMood = '';
+
+function selectMood(btn, mood){
+  document.querySelectorAll('#moodSelector .mood-btn').forEach(b => b.classList.remove('selected'));
+  if(journalMood === mood){ journalMood = ''; } // toggle off
+  else { btn.classList.add('selected'); journalMood = mood; }
+}
+
+function clearMood(){
+  journalMood = '';
+  document.querySelectorAll('#moodSelector .mood-btn').forEach(b => b.classList.remove('selected'));
+}
+
 function addTrade(){
   const t = {
     id: Date.now(),
@@ -992,6 +1005,7 @@ function addTrade(){
     notes: $('jNotes').value.trim(),
     img: journalImageBase64 || null,
     accountId: $('jAccount')?.value || fxActiveAccountId || '',
+    mood: journalMood || null,
     ...getEdgeFields('j')
   };
   trades.unshift(t);
@@ -1001,6 +1015,7 @@ function addTrade(){
   $('jEntry').value=''; $('jLot').value=''; $('jSL').value=''; $('jTP').value='';
   clearEdgeFields('j');
   clearJournalImage();
+  clearMood();
   const rr2 = $('jReviewResult'); if(rr2){ rr2.style.display='none'; rr2.innerHTML=''; }
 }
 
@@ -2086,6 +2101,7 @@ function renderTrades(){
           <span class="trade-tag tag-${t.result}">${t.result.toUpperCase()}</span>
           ${t.pnl?`<span style="font-weight:500;color:${t.pnl>0?'var(--green)':'var(--red)'}">${t.pnl>0?'+':''}€${t.pnl}</span>`:''}
           ${t.rr?`<span style="color:var(--muted);font-size:11px">R:R ${t.rr}</span>`:''}
+          ${t.mood?`<span class="mood-badge">${{'rustig':'😌','gefocust':'🎯','gespannen':'😤','fomo':'😰','vermoeid':'😴','revenge':'🔄'}[t.mood]||''} ${t.mood}</span>`:''}
         </div>
         <div class="trade-meta">${t.date}</div>
         ${priceLine}

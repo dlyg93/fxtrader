@@ -662,6 +662,18 @@
     </div>
   </div>
 
+  <!-- PERFORMANCE HEATMAP -->
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--green)"></div>Performance kalender</div>
+    <div id="statsHeatmap"><div class="no-data-msg">Geen trades gevonden</div></div>
+  </div>
+
+  <!-- PSYCHOLOGIE STATS -->
+  <div class="card">
+    <div class="card-title"><div class="dot" style="background:var(--purple)"></div>🧠 Psychologie & mindset</div>
+    <div id="statsMood"><div class="no-data-msg">Log je mindset bij trades om correlaties te zien</div></div>
+  </div>
+
   <!-- MAANDELIJKS -->
   <div class="card">
     <div class="card-title"><div class="dot" style="background:var(--purple)"></div>Maandelijks P&amp;L overzicht</div>
@@ -757,6 +769,19 @@
           </select>
         </div>
       </div>
+      <!-- MOOD SELECTOR -->
+      <div class="field full" style="margin-bottom:12px;">
+        <label>Mindset / Psychologie</label>
+        <div class="mood-selector" id="moodSelector">
+          <button type="button" class="mood-btn" data-mood="rustig"    onclick="selectMood(this,'rustig')">😌 Rustig</button>
+          <button type="button" class="mood-btn" data-mood="gefocust"  onclick="selectMood(this,'gefocust')">🎯 Gefocust</button>
+          <button type="button" class="mood-btn" data-mood="gespannen" onclick="selectMood(this,'gespannen')">😤 Gespannen</button>
+          <button type="button" class="mood-btn" data-mood="fomo"      onclick="selectMood(this,'fomo')">😰 FOMO</button>
+          <button type="button" class="mood-btn" data-mood="vermoeid"  onclick="selectMood(this,'vermoeid')">😴 Vermoeid</button>
+          <button type="button" class="mood-btn" data-mood="revenge"   onclick="selectMood(this,'revenge')">🔄 Revenge</button>
+        </div>
+      </div>
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
         <div class="field">
           <label style="display:flex;align-items:center;gap:6px;">Trading edge <span style="font-size:10px;background:rgba(167,139,250,0.15);color:var(--purple);padding:2px 7px;border-radius:10px;font-family:var(--font-head);font-weight:700;">EDGE</span></label>
