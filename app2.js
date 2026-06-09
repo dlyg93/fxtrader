@@ -1391,6 +1391,7 @@ function closeQuiz() {
 }
 
 function renderQuizQuestion() {
+  quizAnswered = false;
   const cat = $('quizCatFilter')?.value || 'all';
   const l = currentLang;
   const pool = LEARN_DATA.filter(i => (cat === 'all' || i.cat === cat) && (i[l] || i['NL']));
