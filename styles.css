@@ -5,7 +5,7 @@
     --surface2: #1c2030;
     --border: #2a2f42;
     --border2: #363c54;
-    --text: #e8eaf0;
+    --text: #f0f1f8;
     --muted: #9099b8;
     --accent: #4f9eff;
     --accent2: #7c5cff;
@@ -67,7 +67,21 @@
   html.theme-light .theme-toggle-icon { transform: rotate(180deg); }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; font-size: 14px; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-body); font-weight: 400;
+    min-height: 100vh; font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* Donker thema: font-weight 500 voor betere leesbaarheid op donkere achtergrond */
+  html:not(.theme-light) body { font-weight: 500; }
+  html:not(.theme-light) .check-label,
+  html:not(.theme-light) .trade-notes,
+  html:not(.theme-light) .tl-desc,
+  html:not(.theme-light) .trade-meta,
+  html:not(.theme-light) .candle-short,
+  html:not(.theme-light) .deep-step-body { font-weight: 500; }
 
   header {
     display: flex; align-items: center; justify-content: space-between;
