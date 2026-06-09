@@ -278,7 +278,11 @@ async function gdriveLoadAll(silent){
     if(ls)ls.textContent='Geladen van Drive: '+new Date(data.savedAt).toLocaleString('nl-BE',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     setTimeout(()=>setSyncStatus('ok','Drive'),3000);
     if(!silent)alert('Data geladen van Google Drive!');
-  }catch(e){setSyncStatus('error','Fout');if(!silent)alert('Fout bij laden van Drive.');}
+  }catch(e){
+    setSyncStatus('error','Fout');
+    console.error('Drive load fout:', e);
+    if(!silent) alert('Fout bij laden van Drive:\n' + e.message);
+  }
 }
 
 // Auto-save to Drive 10 seconds after any data change

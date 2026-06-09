@@ -1207,9 +1207,9 @@ function renderAccountsList(){
       const statusLabel = cs.isBreached ? '❌ CHALLENGE GEFAALD' : cs.isPassed ? '✅ CHALLENGE GESLAAGD' : '🔄 IN PROGRESS';
       const pc = cs.pc;
 
-      // Helper: detail rijen
-      const fmt = (pnl) => (pnl>=0?'+':'')+pnl.toFixed(2);
-      const fmtPct = (p) => (p>=0?'+':'')+p.toFixed(2)+'%';
+      // Helper: detail rijen (veilig voor null/undefined)
+      const fmt = (pnl) => { const v = pnl ?? 0; return (v>=0?'+':'')+v.toFixed(2); };
+      const fmtPct = (p) => { const v = p ?? 0; return (v>=0?'+':'')+v.toFixed(2)+'%'; };
       const fmtDate = (d) => d ? d.slice(5).replace('-','/') : '—'; // MM/DD
 
       // Detail: profit target
