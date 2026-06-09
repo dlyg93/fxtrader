@@ -1029,14 +1029,35 @@ function saveAccounts(){
   scheduleDriveSave();
 }
 
+function togglePropFields(on){
+  const el = $('accPropFields');
+  if(el) el.style.display = on ? 'block' : 'none';
+}
+
 function addAccount(){
   const name = $('accName')?.value.trim();
   const size = parseFloat($('accSize')?.value) || 0;
   const desc = $('accDesc')?.value.trim();
   if(!name){ alert('Geef een naam in voor het account.'); return; }
-  const acc = { id: 'acc_'+Date.now(), name, desc, initialSize: size, createdAt: new Date().toISOString() };
+  const isProp = $('accIsProp')?.checked || false;
+  const acc = {
+    id: 'acc_'+Date.now(), name, desc, initialSize: size, createdAt: new Date().toISOString(),
+    propChallenge: isProp ? {
+      profitTarget: parseFloat($('accProfitTarget')?.value) || 0,
+      maxLoss:      parseFloat($('accMaxLoss')?.value)      || 0,
+      dailyLoss:    parseFloat($('accDailyLoss')?.value)    || 0,
+      minDays:      parseInt($('accMinDays')?.value)        || 0,
+      startDate:    new Date().toISOString().split('T')[0]
+    } : null
+  };
   fxAccounts.push(acc);
   saveAccounts();
+  // Reset prop velden
+  if($('accIsProp')){ $('accIsProp').checked = false; togglePropFields(false); }
+  if($('accProfitTarget')) $('accProfitTarget').value='';
+  if($('accMaxLoss'))      $('accMaxLoss').value='';
+  if($('accDailyLoss'))    $('accDailyLoss').value='';
+  if($('accMinDays'))      $('accMinDays').value='';
   if($('accName')) $('accName').value='';
   if($('accSize')) $('accSize').value='';
   if($('accDesc')) $('accDesc').value='';
@@ -1097,6 +1118,70 @@ function getAccountBalance(accId){
   return { initial: acc.initialSize, pnl, current: acc.initialSize + pnl, trades: accTrades.length };
 }
 
+function getPropChallengeStatus(accId){
+  const acc = fxAccounts.find(a => a.id === accId);
+  if(!acc || !acc.propChallenge) return null;
+  const pc = acc.propChallenge;
+  const initial = acc.initialSize || 1;
+  const closedTrades = trades.filter(t => t.accountId === accId && t.result !== 'open');
+
+  // Totale P&L
+  const totalPnl = closedTrades.reduce((s,t) => s + (t.pnl||0), 0);
+  const profitPct = (totalPnl / initial) * 100;
+
+  // Max totaal verlies check
+  const totalLossPct = (totalPnl / initial) * 100; // negatief als verlies
+  const totalLossBreached = pc.maxLoss > 0 && totalLossPct <= -pc.maxLoss;
+
+  // Max dagelijks verlies: slechtste dag
+  const dayMap = {};
+  closedTrades.forEach(t => {
+    const d = (t.date||'').slice(0,10);
+    if(!d) return;
+    dayMap[d] = (dayMap[d] || 0) + (t.pnl||0);
+  });
+  const dayPnls = Object.values(dayMap);
+  const worstDayPnl = dayPnls.length ? Math.min(...dayPnls) : 0;
+  const worstDayPct = (worstDayPnl / initial) * 100;
+  const dailyLossBreached = pc.dailyLoss > 0 && worstDayPct <= -pc.dailyLoss;
+
+  // Aantal trading days (dagen met minstens 1 closed trade)
+  const tradingDays = Object.keys(dayMap).length;
+
+  // Status
+  const isBreached = totalLossBreached || dailyLossBreached;
+  const targetReached = pc.profitTarget > 0 && profitPct >= pc.profitTarget;
+  const daysOk = pc.minDays === 0 || tradingDays >= pc.minDays;
+  const isPassed = !isBreached && targetReached && daysOk;
+  const isPassing = !isBreached && !isPassed;
+
+  return {
+    profitPct, totalLossPct, totalLossBreached,
+    worstDayPct, dailyLossBreached,
+    tradingDays, isBreached, isPassed, isPassing,
+    pc, initial
+  };
+}
+
+function _propBar(label, valuePct, targetPct, color, inverted){
+  // inverted = true: bar vult rood naarmate je dichter bij de limiet komt
+  const rawFill = targetPct > 0 ? Math.min(100, Math.abs(valuePct) / targetPct * 100) : 0;
+  const fillColor = inverted
+    ? (rawFill >= 100 ? 'var(--red)' : rawFill >= 75 ? 'var(--amber)' : 'var(--green)')
+    : (rawFill >= 100 ? 'var(--green)' : color);
+  const valStr = valuePct >= 0 ? `+${valuePct.toFixed(1)}%` : `${valuePct.toFixed(1)}%`;
+  const targetStr = inverted ? `-${targetPct}%` : `+${targetPct}%`;
+  return `<div style="margin-bottom:7px;">
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:3px;">
+      <span style="font-family:var(--font-head);font-weight:700;">${label}</span>
+      <span style="color:${fillColor};font-weight:700;">${valStr} <span style="color:var(--muted);font-weight:400;">/ ${targetStr}</span></span>
+    </div>
+    <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+      <div style="height:100%;width:${rawFill}%;background:${fillColor};border-radius:3px;transition:width .4s;"></div>
+    </div>
+  </div>`;
+}
+
 function renderAccountsList(){
   const el = $('accountsList');
   if(!el) return;
@@ -1106,35 +1191,74 @@ function renderAccountsList(){
   }
   el.innerHTML = fxAccounts.map(acc => {
     const bal = getAccountBalance(acc.id);
+    const cs = getPropChallengeStatus(acc.id);
     const isActive = acc.id === fxActiveAccountId;
     const isBreached = !!acc.breached;
     const pnlColor = (bal?.pnl||0) >= 0 ? 'var(--green)' : 'var(--red)';
     const growthPct = bal?.initial > 0 ? ((bal.pnl / bal.initial)*100).toFixed(1) : '—';
     const bgColor = isBreached ? 'rgba(255,92,92,0.07)' : isActive ? 'rgba(79,158,255,0.08)' : 'var(--surface2)';
     const borderColor = isBreached ? 'rgba(255,92,92,0.35)' : isActive ? 'rgba(79,158,255,0.3)' : 'var(--border)';
-    return `<div class="account-list-item" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:${bgColor};border:1px solid ${borderColor};border-radius:10px;margin-bottom:6px;${isBreached?'opacity:0.75;':''}">
-      <div style="flex:1;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-family:var(--font-head);font-weight:700;font-size:13px;color:${isBreached?'var(--red)':isActive?'var(--accent)':'var(--text)'};">${acc.name}</span>
-          ${isBreached?'<span style="font-size:9px;background:rgba(255,92,92,0.2);color:var(--red);padding:1px 6px;border-radius:4px;font-family:var(--font-head);font-weight:700;">GEBREACHT</span>':
-            isActive?'<span style="font-size:9px;background:rgba(79,158,255,0.2);color:var(--accent);padding:1px 6px;border-radius:4px;font-family:var(--font-head);font-weight:700;">ACTIEF</span>':''}
+
+    // Prop challenge status badge & blok
+    let challengeHtml = '';
+    if(cs){
+      const statusColor = cs.isBreached ? 'var(--red)' : cs.isPassed ? 'var(--green)' : 'var(--amber)';
+      const statusLabel = cs.isBreached ? '❌ CHALLENGE GEFAALD' : cs.isPassed ? '✅ CHALLENGE GESLAAGD' : '🔄 IN PROGRESS';
+      const pc = cs.pc;
+
+      const profitBar = pc.profitTarget > 0
+        ? _propBar('Profit Target', cs.profitPct, pc.profitTarget, 'var(--green)', false) : '';
+      const lossBar = pc.maxLoss > 0
+        ? _propBar('Max Totaal Verlies', cs.totalLossPct, pc.maxLoss, 'var(--red)', true) : '';
+      const dailyBar = pc.dailyLoss > 0
+        ? _propBar('Slechtste Dag', cs.worstDayPct, pc.dailyLoss, 'var(--amber)', true) : '';
+      const daysColor = cs.tradingDays >= pc.minDays ? 'var(--green)' : 'var(--muted)';
+      const daysBar = pc.minDays > 0 ? `<div style="margin-bottom:7px;">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:3px;">
+          <span style="font-family:var(--font-head);font-weight:700;">Trading Days</span>
+          <span style="color:${daysColor};font-weight:700;">${cs.tradingDays} <span style="color:var(--muted);font-weight:400;">/ min. ${pc.minDays}</span></span>
         </div>
-        ${acc.desc?`<div style="font-size:11px;color:var(--muted);margin-top:2px;">${acc.desc}</div>`:''}
-        <div style="display:flex;gap:12px;margin-top:6px;font-size:11px;">
-          <span style="color:var(--muted);">Start: <strong style="color:var(--text)">€${(acc.initialSize||0).toLocaleString()}</strong></span>
-          ${bal?`<span style="color:var(--muted);">Huidig: <strong style="color:var(--text)">€${(bal.current||0).toLocaleString('nl-BE',{minimumFractionDigits:0,maximumFractionDigits:0})}</strong></span>
-          <span style="color:${pnlColor};font-weight:700;">${(bal.pnl||0)>=0?'+':''}€${(bal.pnl||0).toFixed(0)} (${growthPct}%)</span>
-          <span style="color:var(--muted);">${bal.trades} trades</span>`:''}
+        <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${Math.min(100,cs.tradingDays/pc.minDays*100)}%;background:${daysColor};border-radius:3px;transition:width .4s;"></div>
+        </div>
+      </div>` : '';
+
+      challengeHtml = `<div style="margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(0,0,0,0.15);border:1px solid var(--border);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:10px;color:var(--muted);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🏆 Prop Challenge</span>
+          <span style="font-size:10px;font-family:var(--font-head);font-weight:700;color:${statusColor};">${statusLabel}</span>
+        </div>
+        ${profitBar}${lossBar}${dailyBar}${daysBar}
+      </div>`;
+    }
+
+    return `<div class="account-list-item" style="flex-direction:column;padding:10px 12px;background:${bgColor};border:1px solid ${borderColor};border-radius:10px;margin-bottom:6px;${isBreached?'opacity:0.75;':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:var(--font-head);font-weight:700;font-size:13px;color:${isBreached?'var(--red)':isActive?'var(--accent)':'var(--text)'};">${acc.name}</span>
+            ${isBreached?'<span style="font-size:9px;background:rgba(255,92,92,0.2);color:var(--red);padding:1px 6px;border-radius:4px;font-family:var(--font-head);font-weight:700;">GEBREACHT</span>':
+              isActive?'<span style="font-size:9px;background:rgba(79,158,255,0.2);color:var(--accent);padding:1px 6px;border-radius:4px;font-family:var(--font-head);font-weight:700;">ACTIEF</span>':''}
+            ${acc.propChallenge?'<span style="font-size:9px;background:rgba(167,139,250,0.2);color:var(--purple);padding:1px 6px;border-radius:4px;font-family:var(--font-head);font-weight:700;">PROP</span>':''}
+          </div>
+          ${acc.desc?`<div style="font-size:11px;color:var(--muted);margin-top:2px;">${acc.desc}</div>`:''}
+          <div style="display:flex;gap:12px;margin-top:6px;font-size:11px;flex-wrap:wrap;">
+            <span style="color:var(--muted);">Start: <strong style="color:var(--text)">€${(acc.initialSize||0).toLocaleString()}</strong></span>
+            ${bal?`<span style="color:var(--muted);">Huidig: <strong style="color:var(--text)">€${(bal.current||0).toLocaleString('nl-BE',{minimumFractionDigits:0,maximumFractionDigits:0})}</strong></span>
+            <span style="color:${pnlColor};font-weight:700;">${(bal.pnl||0)>=0?'+':''}€${(bal.pnl||0).toFixed(0)} (${growthPct}%)</span>
+            <span style="color:var(--muted);">${bal.trades} trades</span>`:''}
+          </div>
+        </div>
+        <div class="account-list-btns" style="display:flex;gap:6px;margin-left:10px;flex-wrap:wrap;justify-content:flex-end;align-self:flex-start;">
+          ${isBreached
+            ? `<button onclick="unbreachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;">Herstel</button>`
+            : `${!isActive?`<button onclick="switchAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--accent);background:rgba(79,158,255,0.1);color:var(--accent);cursor:pointer;font-family:var(--font-head);font-weight:700;">Activeer</button>`:''}
+               <button onclick="breachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid rgba(255,92,92,0.4);background:rgba(255,92,92,0.08);color:var(--red);cursor:pointer;font-family:var(--font-head);font-weight:700;">Gebreacht</button>`
+          }
+          <button onclick="deleteAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕</button>
         </div>
       </div>
-      <div class="account-list-btns" style="display:flex;gap:6px;margin-left:10px;flex-wrap:wrap;justify-content:flex-end;">
-        ${isBreached
-          ? `<button onclick="unbreachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font-head);font-weight:700;">Herstel</button>`
-          : `${!isActive?`<button onclick="switchAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--accent);background:rgba(79,158,255,0.1);color:var(--accent);cursor:pointer;font-family:var(--font-head);font-weight:700;">Activeer</button>`:''}
-             <button onclick="breachAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid rgba(255,92,92,0.4);background:rgba(255,92,92,0.08);color:var(--red);cursor:pointer;font-family:var(--font-head);font-weight:700;">Gebreacht</button>`
-        }
-        <button onclick="deleteAccount('${acc.id}')" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">✕</button>
-      </div>
+      ${challengeHtml}
     </div>`;
   }).join('');
 }

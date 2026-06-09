@@ -1540,6 +1540,24 @@
             <div><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Account size (€/$)</label><input type="number" id="accSize" placeholder="bv. 10000" style="width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;"></div>
           </div>
           <div style="margin-bottom:8px;"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Omschrijving</label><input type="text" id="accDesc" placeholder="bv. Live account prop firm, max 2% risico/trade" style="width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;"></div>
+          <!-- PROP FIRM CHALLENGE TOGGLE -->
+          <div style="margin-bottom:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-size:11px;color:var(--muted);font-family:var(--font-head);font-weight:700;">
+              <input type="checkbox" id="accIsProp" onchange="togglePropFields(this.checked)" style="width:14px;height:14px;accent-color:var(--accent);cursor:pointer;">
+              Prop Firm Challenge koppelen
+            </label>
+          </div>
+          <div id="accPropFields" style="display:none;background:rgba(79,158,255,0.05);border:1px solid rgba(79,158,255,0.2);border-radius:8px;padding:10px;margin-bottom:8px;">
+            <div style="font-size:10px;color:var(--accent);font-family:var(--font-head);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">⚙ Challenge parameters</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+              <div><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Profit Target (%)</label><input type="number" id="accProfitTarget" placeholder="bv. 10" step="0.5" min="0" style="width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;"></div>
+              <div><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Max totaal verlies (%)</label><input type="number" id="accMaxLoss" placeholder="bv. 10" step="0.5" min="0" style="width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Max dagelijks verlies (%)</label><input type="number" id="accDailyLoss" placeholder="bv. 5" step="0.5" min="0" style="width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;"></div>
+              <div><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px;">Min. trading days</label><input type="number" id="accMinDays" placeholder="bv. 4" step="1" min="0" style="width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:12px;"></div>
+            </div>
+          </div>
           <button onclick="addAccount()" class="save-btn" style="width:100%;justify-content:center;">Account toevoegen</button>
         </div>
       </div>
