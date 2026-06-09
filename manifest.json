@@ -1,7 +1,7 @@
 {
-  "name": "Dolly FX",
-  "short_name": "Dolly FX",
-  "description": "Forex Day Trader Tool",
+  "name": "DollyFX",
+  "short_name": "DollyFX",
+  "description": "Forex Trading Tool — positiebeheer, journal & analyse",
   "start_url": "/fxtrader/",
   "display": "standalone",
   "background_color": "#0d0f14",

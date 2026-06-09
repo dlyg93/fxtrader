@@ -1,16 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <!-- Achtergrond -->
   <rect width="32" height="32" rx="7" fill="#141720"/>
-
-  <!-- Candle 1: bearish (rood) -->
-  <line x1="7.5" y1="5" x2="7.5" y2="27" stroke="#ff5c5c" stroke-width="1.2" stroke-linecap="round"/>
-  <rect x="4.5" y="10" width="6" height="9" rx="1.2" fill="#ff5c5c"/>
-
-  <!-- Candle 2: bullish groot (groen) -->
-  <line x1="16" y1="4" x2="16" y2="28" stroke="#2ecc8a" stroke-width="1.2" stroke-linecap="round"/>
-  <rect x="13" y="8" width="6" height="13" rx="1.2" fill="#2ecc8a"/>
-
-  <!-- Candle 3: bullish klein (blauw accent) -->
-  <line x1="24.5" y1="7" x2="24.5" y2="25" stroke="#4f9eff" stroke-width="1.2" stroke-linecap="round"/>
-  <rect x="21.5" y="11" width="6" height="8" rx="1.2" fill="#4f9eff"/>
+  <!-- D lettermark -->
+  <text x="3" y="23" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="19" fill="#e8eaf0">D</text>
+  <!-- FX klein rechtsonder in accent kleur -->
+  <text x="17" y="27" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="10" fill="#4f9eff">FX</text>
+  <!-- Accent dot -->
+  <circle cx="15" cy="9" r="2.5" fill="#4f9eff" opacity="0.9"/>
 </svg>

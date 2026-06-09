@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dolly FX</title>
+<title>DollyFX</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Dolly FX">
+<meta name="apple-mobile-web-app-title" content="DollyFX">
 <meta name="theme-color" content="#0d0f14">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -96,7 +96,20 @@
 </div>
 
 <header>
-  <div class="logo" onclick="showTab('checklist', document.querySelector('.tab'))" style="cursor:pointer;" title="Terug naar Voorbereiding">FX<span>.</span>TRADER <span id="activeInstrumentLabel" style="font-size:12px;color:var(--muted);font-weight:400;letter-spacing:0">EUR/USD</span></div>
+  <div class="logo" onclick="showTab('checklist', document.querySelector('.tab'))" style="cursor:pointer;display:flex;align-items:center;gap:10px;" title="Terug naar Voorbereiding">
+    <!-- DollyFX inline logo -->
+    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+      <rect width="32" height="32" rx="7" fill="var(--surface2)"/>
+      <!-- 3 candlesticks -->
+      <line x1="8" y1="6"  x2="8"  y2="26" stroke="#ff5c5c" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="5.5" y="11" width="5" height="8"  rx="1" fill="#ff5c5c"/>
+      <line x1="16" y1="4"  x2="16" y2="28" stroke="#2ecc8a" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="13.5" y="8" width="5" height="12" rx="1" fill="#2ecc8a"/>
+      <line x1="24" y1="7"  x2="24" y2="25" stroke="#4f9eff" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="21.5" y="11" width="5" height="8"  rx="1" fill="#4f9eff"/>
+    </svg>
+    <span>Dolly<span style="color:var(--accent)">FX</span> <span id="activeInstrumentLabel" style="font-size:12px;color:var(--muted);font-weight:400;letter-spacing:0">EUR/USD</span></span>
+  </div>
   <div class="header-right">
     <!-- INSTRUMENT SELECTOR -->
     <div style="position:relative;">
