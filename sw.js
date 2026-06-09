@@ -1,4 +1,4 @@
-const CACHE = 'dollyfx-v8';
+const CACHE = 'dollyfx-v9';
 const ASSETS = [
   '/fxtrader/',
   '/fxtrader/index.html',
