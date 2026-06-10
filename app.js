@@ -3595,8 +3595,9 @@ function checkNotifPermOnLoad(){}
 function openPropFirmCheck() {
   const trades = (JSON.parse(localStorage.getItem('fxTrades2') || '[]'))
     .filter(t => t.result !== 'open');
+  const accounts = JSON.parse(localStorage.getItem('fxAccounts') || '[]');
 
-  const html = buildPropFirmReport(trades);
+  const html = buildPropFirmReport(trades, accounts);
   document.getElementById('propFirmContent').innerHTML = html;
   document.getElementById('propFirmModal').style.display = 'block';
   document.body.style.overflow = 'hidden';
@@ -3607,7 +3608,7 @@ function closePropFirmCheck() {
   document.body.style.overflow = '';
 }
 
-function buildPropFirmReport(trades) {
+function buildPropFirmReport(trades, accounts = []) {
   if (trades.length < 5) {
     return `<div style="text-align:center;padding:30px 0;color:var(--muted);font-size:13px;">
       Je hebt minimaal <strong style="color:var(--text)">5 gesloten trades</strong> nodig voor een betrouwbare analyse.<br>
@@ -3628,16 +3629,23 @@ function buildPropFirmReport(trades) {
   const rrValues = trades.filter(t => t.rr && t.rr > 0).map(t => t.rr);
   const avgRR = rrValues.length ? rrValues.reduce((a, b) => a + b, 0) / rrValues.length : 0;
 
-  // max drawdown op equity curve
-  let peak = 0, equity = 0, maxDD = 0;
+  // max drawdown op equity curve — zelfde logica als stats pagina
+  // Stap 1: absoluut bedrag (piek cumul. P&L minus dieptepunt erna)
   const sorted = [...trades].sort((a, b) => new Date(a.date) - new Date(b.date));
-  const totalEquity = sorted.reduce((s, t) => s + (t.pnl || 0), 0);
+  let runningPeak = 0, cumPnl = 0, maxDDeur = 0;
   for (const t of sorted) {
-    equity += (t.pnl || 0);
-    if (equity > peak) peak = equity;
-    const dd = peak > 0 ? ((peak - equity) / peak) * 100 : 0;
-    if (dd > maxDD) maxDD = dd;
+    cumPnl += (t.pnl || 0);
+    if (cumPnl > runningPeak) runningPeak = cumPnl;
+    const dd = runningPeak - cumPnl;
+    if (dd > maxDDeur) maxDDeur = dd;
   }
+  // Stap 2: % tov accountbalans (meest gebruikte account of som van alle accounts)
+  const accountId = trades.filter(t => t.accountId).map(t => t.accountId)
+    .reduce((acc, id) => { acc[id] = (acc[id] || 0) + 1; return acc; }, {});
+  const mainAccId = Object.keys(accountId).sort((a, b) => accountId[b] - accountId[a])[0];
+  const mainAcc = accounts.find(a => a.id === mainAccId);
+  const accSize = mainAcc?.initialSize || 0;
+  const maxDD = accSize > 0 ? (maxDDeur / accSize) * 100 : null;
 
   // unieke handelsdagen
   const tradingDays = new Set(trades.map(t => t.date)).size;
@@ -3685,10 +3693,14 @@ function buildPropFirmReport(trades) {
     },
     {
       label: 'Max Drawdown',
-      desc: 'Maximaal 10% van equity',
-      value: maxDD.toFixed(1) + '%',
-      pass: maxDD <= 5 ? 'green' : maxDD <= 9 ? 'yellow' : 'red',
-      tip: maxDD > 9 ? 'Gevaarlijk! Je zou een prop firm account al kwijt zijn. Verklein je positiegrootte.' : maxDD > 5 ? 'Let op: bij 10% verlies je het prop firm account. Blijf conservatief.' : null
+      desc: maxDD !== null ? 'Maximaal 10% van accountbalans' : 'Maximaal 10% van accountbalans',
+      value: maxDD !== null ? `${maxDD.toFixed(1)}% (€${maxDDeur.toFixed(0)})` : `€${maxDDeur.toFixed(0)} (geen accountgrootte)`,
+      pass: maxDD !== null ? (maxDD <= 5 ? 'green' : maxDD <= 9 ? 'yellow' : 'red') : (maxDDeur < 500 ? 'yellow' : 'red'),
+      tip: maxDD === null
+        ? 'Koppel een account met een startbalans om het % correct te berekenen.'
+        : maxDD > 9 ? 'Gevaarlijk! Je zou een prop firm account al kwijt zijn. Verklein je positiegrootte.'
+        : maxDD > 5 ? 'Let op: bij 10% verlies je het prop firm account. Blijf conservatief.'
+        : null
     },
     {
       label: 'Handelsdagen',
