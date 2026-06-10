@@ -3590,5 +3590,194 @@ function updateBackupInfo() {
 
 function checkNotifPermOnLoad(){}
 
+// ── PROP FIRM READINESS CHECK ──────────────────────────────────────────────
+
+function openPropFirmCheck() {
+  const trades = (JSON.parse(localStorage.getItem('fxTrades2') || '[]'))
+    .filter(t => t.result !== 'open');
+
+  const html = buildPropFirmReport(trades);
+  document.getElementById('propFirmContent').innerHTML = html;
+  document.getElementById('propFirmModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closePropFirmCheck() {
+  document.getElementById('propFirmModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function buildPropFirmReport(trades) {
+  if (trades.length < 5) {
+    return `<div style="text-align:center;padding:30px 0;color:var(--muted);font-size:13px;">
+      Je hebt minimaal <strong style="color:var(--text)">5 gesloten trades</strong> nodig voor een betrouwbare analyse.<br>
+      <span style="font-size:11px;margin-top:6px;display:block;">Je hebt er nu ${trades.length}.</span>
+    </div>`;
+  }
+
+  // ── berekeningen ──
+  const n = trades.length;
+  const wins = trades.filter(t => t.result === 'win');
+  const losses = trades.filter(t => t.result === 'loss');
+  const winrate = (wins.length / n) * 100;
+
+  const grossWin = wins.reduce((s, t) => s + (t.pnl || 0), 0);
+  const grossLoss = Math.abs(losses.reduce((s, t) => s + (t.pnl || 0), 0));
+  const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 999 : 0;
+
+  const rrValues = trades.filter(t => t.rr && t.rr > 0).map(t => t.rr);
+  const avgRR = rrValues.length ? rrValues.reduce((a, b) => a + b, 0) / rrValues.length : 0;
+
+  // max drawdown op equity curve
+  let peak = 0, equity = 0, maxDD = 0;
+  const sorted = [...trades].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const totalEquity = sorted.reduce((s, t) => s + (t.pnl || 0), 0);
+  for (const t of sorted) {
+    equity += (t.pnl || 0);
+    if (equity > peak) peak = equity;
+    const dd = peak > 0 ? ((peak - equity) / peak) * 100 : 0;
+    if (dd > maxDD) maxDD = dd;
+  }
+
+  // unieke handelsdagen
+  const tradingDays = new Set(trades.map(t => t.date)).size;
+
+  // edge discipline: % trades met edge "yes"
+  const edgeTagged = trades.filter(t => t.edge_match === 'yes' || t.edge_match === 'partial' || t.edge_match === 'no');
+  const edgeYes = trades.filter(t => t.edge_match === 'yes');
+  const edgeDiscipline = edgeTagged.length > 0 ? (edgeYes.length / edgeTagged.length) * 100 : null;
+
+  // psychologie: % trades in goede mood
+  const moodBad = ['gespannen', 'fomo', 'vermoeid', 'revenge'];
+  const moodTagged = trades.filter(t => t.mood);
+  const moodBadTrades = moodTagged.filter(t => moodBad.includes(t.mood));
+  const badMoodPct = moodTagged.length > 0 ? (moodBadTrades.length / moodTagged.length) * 100 : null;
+
+  // ── criteria ──
+  const criteria = [
+    {
+      label: 'Sample size',
+      desc: 'Minimaal 30 gesloten trades',
+      value: `${n} trades`,
+      pass: n >= 30 ? 'green' : n >= 20 ? 'yellow' : 'red',
+      tip: n < 20 ? `Log nog ${30 - n} trades voor een betrouwbaar beeld.` : n < 30 ? `Goed, maar ${30 - n} extra trades geeft nog meer zekerheid.` : null
+    },
+    {
+      label: 'Winrate',
+      desc: 'Minimaal 50%',
+      value: `${winrate.toFixed(1)}%`,
+      pass: winrate >= 55 ? 'green' : winrate >= 45 ? 'yellow' : 'red',
+      tip: winrate < 45 ? 'Prop firms vereisen consistente winstgevendheid. Analyseer je verliestrades.' : winrate < 55 ? 'Solid, maar streef naar 55%+ voor meer marge.' : null
+    },
+    {
+      label: 'Profit Factor',
+      desc: 'Minimaal 1.3',
+      value: profitFactor >= 999 ? '∞' : profitFactor.toFixed(2),
+      pass: profitFactor >= 1.5 ? 'green' : profitFactor >= 1.2 ? 'yellow' : 'red',
+      tip: profitFactor < 1.2 ? 'Je winsten dekken de verliezen niet voldoende. Focus op grotere winners of kleinere losers.' : profitFactor < 1.5 ? 'Bijna daar. Verhoog je gemiddelde winner of verklein losers.' : null
+    },
+    {
+      label: 'Gemiddelde R:R',
+      desc: 'Minimaal 1:1 per trade',
+      value: avgRR > 0 ? avgRR.toFixed(2) + 'R' : '—',
+      pass: avgRR >= 1.5 ? 'green' : avgRR >= 1.0 ? 'yellow' : 'red',
+      tip: avgRR < 1.0 ? 'Je riskeert meer dan je wint. Zet je TP verder of SL strakker.' : avgRR < 1.5 ? 'Goed, maar 1.5R+ geeft meer buffer bij een prop firm.' : null
+    },
+    {
+      label: 'Max Drawdown',
+      desc: 'Maximaal 10% van equity',
+      value: maxDD.toFixed(1) + '%',
+      pass: maxDD <= 5 ? 'green' : maxDD <= 9 ? 'yellow' : 'red',
+      tip: maxDD > 9 ? 'Gevaarlijk! Je zou een prop firm account al kwijt zijn. Verklein je positiegrootte.' : maxDD > 5 ? 'Let op: bij 10% verlies je het prop firm account. Blijf conservatief.' : null
+    },
+    {
+      label: 'Handelsdagen',
+      desc: 'Minimaal 10 unieke dagen',
+      value: `${tradingDays} dagen`,
+      pass: tradingDays >= 15 ? 'green' : tradingDays >= 10 ? 'yellow' : 'red',
+      tip: tradingDays < 10 ? 'Trade meer dagen om consistentie te bewijzen.' : null
+    },
+    ...(edgeDiscipline !== null ? [{
+      label: 'Edge discipline',
+      desc: '≥ 60% trades volledig op edge',
+      value: `${edgeDiscipline.toFixed(0)}%`,
+      pass: edgeDiscipline >= 75 ? 'green' : edgeDiscipline >= 60 ? 'yellow' : 'red',
+      tip: edgeDiscipline < 60 ? 'Je neemt te veel trades buiten je edge. Stop met FOMO-entries.' : edgeDiscipline < 75 ? 'Goed, maar meer discipline = minder onnodige verliezen.' : null
+    }] : []),
+    ...(badMoodPct !== null ? [{
+      label: 'Psychologie',
+      desc: '< 20% trades in slechte mood',
+      value: `${badMoodPct.toFixed(0)}% bad mood`,
+      pass: badMoodPct <= 10 ? 'green' : badMoodPct <= 20 ? 'yellow' : 'red',
+      tip: badMoodPct > 20 ? 'Te veel trades in gespannen/FOMO/revenge staat. Stop eerder op slechte dagen.' : null
+    }] : [])
+  ];
+
+  const greens = criteria.filter(c => c.pass === 'green').length;
+  const reds = criteria.filter(c => c.pass === 'red').length;
+  const total = criteria.length;
+  const score = Math.round((greens / total) * 100);
+
+  let verdict, verdictColor, verdictBg, verdictIcon;
+  if (reds === 0 && greens >= total * 0.7) {
+    verdict = 'JA — Je bent klaar!';
+    verdictColor = '#22c55e';
+    verdictBg = 'rgba(34,197,94,.12)';
+    verdictIcon = '🏆';
+  } else if (reds <= 1 && score >= 55) {
+    verdict = 'BIJNA — Nog even doorwerken';
+    verdictColor = '#f59e0b';
+    verdictBg = 'rgba(245,158,11,.12)';
+    verdictIcon = '⚡';
+  } else {
+    verdict = 'NOG NIET — Blijf oefenen';
+    verdictColor = '#ef4444';
+    verdictBg = 'rgba(239,68,68,.1)';
+    verdictIcon = '📈';
+  }
+
+  // score ring
+  const ring = `<svg width="80" height="80" viewBox="0 0 80 80">
+    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7"/>
+    <circle cx="40" cy="40" r="32" fill="none" stroke="${verdictColor}" stroke-width="7"
+      stroke-dasharray="${2 * Math.PI * 32}" stroke-dashoffset="${2 * Math.PI * 32 * (1 - score / 100)}"
+      stroke-linecap="round" transform="rotate(-90 40 40)"/>
+    <text x="40" y="45" text-anchor="middle" fill="${verdictColor}" font-size="16" font-weight="800" font-family="monospace">${score}%</text>
+  </svg>`;
+
+  const criteriaHTML = criteria.map(c => {
+    const colors = { green: '#22c55e', yellow: '#f59e0b', red: '#ef4444' };
+    const icons = { green: '✓', yellow: '~', red: '✕' };
+    const col = colors[c.pass];
+    return `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div style="min-width:24px;height:24px;border-radius:50%;background:${col}20;color:${col};font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;">${icons[c.pass]}</div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-family:var(--font-head);font-weight:700;font-size:12px;color:var(--text);">${c.label}</span>
+          <span style="font-family:var(--font-mono);font-size:12px;color:${col};font-weight:700;">${c.value}</span>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px;">${c.desc}</div>
+        ${c.tip ? `<div style="font-size:10px;color:${col};margin-top:3px;opacity:.85;">${c.tip}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div style="display:flex;align-items:center;gap:16px;padding:16px 18px;background:${verdictBg};border-radius:12px;margin-bottom:18px;border:1px solid ${verdictColor}30;">
+      <div>${ring}</div>
+      <div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Eindoordeel</div>
+        <div style="font-family:var(--font-head);font-weight:800;font-size:15px;color:${verdictColor};">${verdictIcon} ${verdict}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">${greens}/${total} criteria gehaald · ${n} trades geanalyseerd</div>
+      </div>
+    </div>
+    <div>${criteriaHTML}</div>
+    <div style="margin-top:14px;padding:12px 14px;background:var(--bg);border-radius:10px;font-size:10px;color:var(--muted);line-height:1.6;">
+      <strong style="color:var(--text);">Let op:</strong> Typische prop firm regels: 10% winstdoel, 5% max dagverlies, 10% max totaalverlies.
+      Dit rapport is gebaseerd op je demo/oefendata. Prestaties op een live account kunnen verschillen.
+    </div>
+  `;
+}
+
 // ---- INIT (early) ----
 const _jDate=$('jDate'); if(_jDate) _jDate.value=new Date().toISOString().split('T')[0];

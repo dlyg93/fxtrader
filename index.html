@@ -717,6 +717,27 @@
     <div class="stat-box"><span class="stat-val" id="sAvgRR" style="color:var(--accent)">0.0</span><span class="stat-lbl">Gem. R:R</span></div>
   </div>
 
+  <!-- Prop firm readiness knop -->
+  <div style="margin-bottom:14px;text-align:center;">
+    <button onclick="openPropFirmCheck()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:10px;padding:11px 22px;font-family:var(--font-head);font-weight:700;font-size:13px;cursor:pointer;letter-spacing:0.3px;box-shadow:0 4px 14px rgba(124,58,237,0.35);transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+      🏆 Ben ik klaar voor een prop firm challenge?
+    </button>
+  </div>
+
+  <!-- Prop firm modal -->
+  <div id="propFirmModal" onclick="if(event.target===this)closePropFirmCheck()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);overflow-y:auto;padding:20px 12px;">
+    <div style="max-width:520px;margin:0 auto;background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#7c3aed,#4f46e5);padding:20px 22px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-family:var(--font-head);font-weight:800;font-size:16px;color:#fff;">Prop Firm Readiness Check</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;">Gebaseerd op je journal data</div>
+        </div>
+        <button onclick="closePropFirmCheck()" style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:6px 11px;cursor:pointer;font-size:14px;">✕</button>
+      </div>
+      <div id="propFirmContent" style="padding:20px 22px;"></div>
+    </div>
+  </div>
+
   <!-- ── NIEUWE TRADE LOGGEN (volle breedte, inklapbaar) ── -->
   <div class="card" style="margin-bottom:14px;">
     <div class="card-title" onclick="toggleJournalForm()" style="cursor:pointer;user-select:none;justify-content:space-between;">
