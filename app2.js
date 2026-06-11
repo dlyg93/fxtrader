@@ -241,9 +241,16 @@ async function gdriveSaveAll(silent){
       if(ls)ls.textContent='Opgeslagen: '+new Date().toLocaleTimeString('nl-BE',{hour:'2-digit',minute:'2-digit'});
       setTimeout(()=>setSyncStatus('ok','Drive'),3000);
     }else{
-      setSyncStatus('error','Fout');
+      let errDetail='';
+      try{ const ed=await r.json(); errDetail=ed?.error?.message||ed?.error||''; }catch(_){}
+      console.error('[Drive] Save fout',r?.status, errDetail);
+      setSyncStatus('error','Fout '+(r?.status||''));
+      if(!silent) alert('Google Drive opslaan mislukt ('+(r?.status||'?')+'): '+(errDetail||'onbekende fout'));
     }
-  }catch(e){setSyncStatus('error','Fout');}
+  }catch(e){
+    console.error('[Drive] Save exception', e);
+    setSyncStatus('error','Fout');
+  }
 }
 
 async function gdriveLoadAll(silent){
