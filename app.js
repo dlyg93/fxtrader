@@ -806,6 +806,8 @@ let trades = [];
 try { trades = JSON.parse(localStorage.getItem('fxTrades2')||'[]'); } catch(e){}
 
 function saveTrades(){ try{localStorage.setItem('fxTrades2',JSON.stringify(trades));}catch(e){} }
+// Netto P&L = bruto P&L minus commissie
+function nPnl(t){ return (t.pnl||0) - (t.commission||0); }
 
 // ---- JOURNAL FILTERS ----
 let journalFilters = { dateFrom:'', dateTo:'', result:'', pair:'', edge:'', search:'' };
@@ -1001,6 +1003,7 @@ function addTrade(){
     sl: parseFloat($('jSL').value)||null,
     tp: parseFloat($('jTP').value)||null,
     pnl: parseFloat($('jPnl').value)||0,
+    commission: parseFloat($('jCommission').value)||0,
     rr: parseFloat($('jRR').value)||0,
     notes: $('jNotes').value.trim(),
     img: journalImageBase64 || null,
@@ -1011,7 +1014,7 @@ function addTrade(){
   trades.unshift(t);
   saveTrades();
   renderTrades();
-  $('jNotes').value=''; $('jPnl').value=''; $('jRR').value='';
+  $('jNotes').value=''; $('jPnl').value=''; $('jCommission').value=''; $('jRR').value='';
   $('jEntry').value=''; $('jLot').value=''; $('jSL').value=''; $('jTP').value='';
   clearEdgeFields('j');
   clearJournalImage();
@@ -1133,7 +1136,7 @@ function getAccountBalance(accId){
   const acc = fxAccounts.find(a => a.id === accId);
   if(!acc) return null;
   const accTrades = trades.filter(t => t.accountId === accId && t.result !== 'open');
-  const pnl = accTrades.reduce((s,t) => s + (t.pnl||0), 0);
+  const pnl = accTrades.reduce((s,t) => s + nPnl(t), 0);
   return { initial: acc.initialSize, pnl, current: acc.initialSize + pnl, trades: accTrades.length };
 }
 
@@ -1151,19 +1154,19 @@ function normalizePropChallenge(raw){
 
 function calcPhaseStatus(phase, phaseTrades, initial){
   const closedTrades = phaseTrades.filter(t => t.result !== 'open');
-  const totalPnl = closedTrades.reduce((s,t) => s + (t.pnl||0), 0);
+  const totalPnl = closedTrades.reduce((s,t) => s + nPnl(t), 0);
   const profitPct = (totalPnl / initial) * 100;
-  const winTrades  = closedTrades.filter(t => (t.pnl||0) > 0);
-  const lossTrades = closedTrades.filter(t => (t.pnl||0) < 0);
-  const winTotal   = winTrades.reduce((s,t)  => s + (t.pnl||0), 0);
-  const lossTotal  = lossTrades.reduce((s,t) => s + (t.pnl||0), 0);
-  const top3Losers  = [...closedTrades].sort((a,b) => (a.pnl||0)-(b.pnl||0)).slice(0,3);
-  const top3Winners = [...closedTrades].sort((a,b) => (b.pnl||0)-(a.pnl||0)).slice(0,3);
+  const winTrades  = closedTrades.filter(t => nPnl(t) > 0);
+  const lossTrades = closedTrades.filter(t => nPnl(t) < 0);
+  const winTotal   = winTrades.reduce((s,t)  => s + nPnl(t), 0);
+  const lossTotal  = lossTrades.reduce((s,t) => s + nPnl(t), 0);
+  const top3Losers  = [...closedTrades].sort((a,b) => nPnl(a)-nPnl(b)).slice(0,3);
+  const top3Winners = [...closedTrades].sort((a,b) => nPnl(b)-nPnl(a)).slice(0,3);
 
   const dayMap = {}, dayTradesMap = {};
   closedTrades.forEach(t => {
     const d = (t.date||'').slice(0,10); if(!d) return;
-    dayMap[d] = (dayMap[d]||0) + (t.pnl||0);
+    dayMap[d] = (dayMap[d]||0) + nPnl(t);
     if(!dayTradesMap[d]) dayTradesMap[d] = [];
     dayTradesMap[d].push(t);
   });
@@ -1757,7 +1760,7 @@ function openCalDay(dateStr){
         <span style="font-size:12px;font-weight:800;color:${resColor};background:${resColor}22;padding:3px 12px;border-radius:6px;font-family:var(--font-head);">${resLabel}</span>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:${t.notes||t.edge_desc||t.img?'10':'0'}px;">
-        ${t.pnl!=null?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:16px;font-weight:800;color:${(t.pnl||0)>=0?'var(--green)':'var(--red)'};">${(t.pnl||0)>=0?'+':''}€${(t.pnl||0).toFixed(0)}</div><div style="font-size:9px;color:var(--muted);">P&L</div></div>`:''}
+        ${t.pnl!=null?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:16px;font-weight:800;color:${nPnl(t)>=0?'var(--green)':'var(--red)'};">${nPnl(t)>=0?'+':''}€${nPnl(t).toFixed(2)}</div><div style="font-size:9px;color:var(--muted);">Netto P&L</div>${t.commission?`<div style="font-size:9px;color:var(--muted);margin-top:2px;">−€${(t.commission).toFixed(2)} commissie</div>`:''}</div>`:''}
         ${t.rr?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:16px;font-weight:800;color:var(--accent);">${t.rr}R</div><div style="font-size:9px;color:var(--muted);">R:R</div></div>`:''}
         ${t.entry?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:13px;font-weight:700;color:var(--text);">${t.entry}</div><div style="font-size:9px;color:var(--muted);">Entry</div></div>`:''}
         ${t.sl?`<div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px;"><div style="font-size:13px;font-weight:700;color:var(--red);">${t.sl}</div><div style="font-size:9px;color:var(--muted);">SL</div></div>`:''}
@@ -2153,6 +2156,7 @@ function openEditModal(id){
   $('eSL').value = t.sl||'';
   $('eTP').value = t.tp||'';
   $('ePnl').value = t.pnl||'';
+  $('eCommission').value = t.commission||'';
   $('eRR').value = t.rr||'';
   $('eNotes').value = t.notes||'';
   setEdgeFields('e', t);
@@ -2211,6 +2215,7 @@ function saveEditTrade(){
     sl: parseFloat($('eSL').value)||null,
     tp: parseFloat($('eTP').value)||null,
     pnl: parseFloat($('ePnl').value)||0,
+    commission: parseFloat($('eCommission').value)||0,
     rr: parseFloat($('eRR').value)||0,
     ...getEdgeFields('e'),
     notes: $('eNotes').value.trim(),
@@ -2226,7 +2231,7 @@ function saveEditTrade(){
 function updateStats(){
   const closed=trades.filter(t=>t.result!=='open');
   const wins=closed.filter(t=>t.result==='win').length;
-  const pnl=trades.reduce((s,t)=>s+(t.pnl||0),0);
+  const pnl=trades.reduce((s,t)=>s+nPnl(t),0);
   const rrTrades=trades.filter(t=>t.rr>0);
   const avgRR=rrTrades.length?rrTrades.reduce((s,t)=>s+t.rr,0)/rrTrades.length:0;
   $('sTotalTrades').textContent=trades.length;

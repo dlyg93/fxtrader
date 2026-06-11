@@ -1,4 +1,5 @@
 ﻿// Variabelen hier opnieuw declareren zou een conflict geven — al gedaan hierboven.
+// nPnl is gedefinieerd in app.js en beschikbaar als globale helper
 
 // ---- GOOGLE DRIVE SYNC ----
 const GDRIVE_FILENAME = 'fxtrader-data.json';
@@ -3832,10 +3833,10 @@ function renderStats(){
   const wins   = t.filter(x => x.result === 'win');
   const losses = t.filter(x => x.result === 'loss');
   const wr     = t.length ? (wins.length / t.length * 100) : 0;
-  const totalPnl = t.reduce((s, x) => s + (x.pnl || 0), 0);
+  const totalPnl = t.reduce((s, x) => s + nPnl(x), 0);
   const avgRR  = t.length ? t.reduce((s, x) => s + (x.rr || 0), 0) / t.length : 0;
-  const grossW = wins.reduce((s, x) => s + (x.pnl || 0), 0);
-  const grossL = Math.abs(losses.reduce((s, x) => s + (x.pnl || 0), 0));
+  const grossW = wins.reduce((s, x) => s + nPnl(x), 0);
+  const grossL = Math.abs(losses.reduce((s, x) => s + nPnl(x), 0));
   const pf     = grossL > 0 ? grossW / grossL : grossW > 0 ? Infinity : 0;
   const expect = t.length ? totalPnl / t.length : 0;
 
@@ -3865,7 +3866,7 @@ function renderStats(){
   // ---- Equity curve met assen ----
   const sorted = [...t].sort((a,b) => a.date.localeCompare(b.date));
   let cum = 0;
-  const points = sorted.map(x => { cum += (x.pnl||0); return cum; });
+  const points = sorted.map(x => { cum += nPnl(x); return cum; });
   const svgEl = $('equitySvg');
   if(svgEl){
     const W = 600, H = 180;
@@ -3928,8 +3929,8 @@ function renderStats(){
   sorted.forEach(x => {
     if(x.result==='win'){ curW++; curL=0; maxWS=Math.max(maxWS,curW); }
     else if(x.result==='loss'){ curL++; curW=0; maxLS=Math.max(maxLS,curL); }
-    if(bestT===null || (x.pnl||0) > (bestT.pnl||0)) bestT=x;
-    if(worstT===null || (x.pnl||0) < (worstT.pnl||0)) worstT=x;
+    if(bestT===null || nPnl(x) > nPnl(bestT)) bestT=x;
+    if(worstT===null || nPnl(x) < nPnl(worstT)) worstT=x;
   });
   const streakBox = $('streakBox');
   if(streakBox) streakBox.innerHTML = `
@@ -4038,7 +4039,7 @@ function renderStats(){
   let peak = 0, maxDD = 0, ddStart = '', ddEnd = '';
   let runPeak = 0;
   sorted.forEach((x, i) => {
-    runPeak += (x.pnl||0);
+    runPeak += nPnl(x);
     if(runPeak > peak){ peak = runPeak; ddStart = x.date; }
     const dd = peak - runPeak;
     if(dd > maxDD){ maxDD = dd; ddEnd = x.date; }
@@ -4066,8 +4067,8 @@ function renderStats(){
     </div>`;
 
   // ---- Gem. win vs verlies ----
-  const avgWin  = wins.length  ? wins.reduce((s,x)=>s+(x.pnl||0),0)/wins.length   : 0;
-  const avgLoss = losses.length ? Math.abs(losses.reduce((s,x)=>s+(x.pnl||0),0)/losses.length) : 0;
+  const avgWin  = wins.length  ? wins.reduce((s,x)=>s+nPnl(x),0)/wins.length   : 0;
+  const avgLoss = losses.length ? Math.abs(losses.reduce((s,x)=>s+nPnl(x),0)/losses.length) : 0;
   const avgWLEl = $('statsAvgWL');
   if(avgWLEl) avgWLEl.innerHTML = `
     <div style="padding:8px 0;">
@@ -4114,7 +4115,7 @@ function renderStats(){
   const byMonth = {};
   t.forEach(x => {
     const key = x.date ? x.date.slice(0,7) : null;
-    if(key){ byMonth[key] = (byMonth[key]||0) + (x.pnl||0); }
+    if(key){ byMonth[key] = (byMonth[key]||0) + nPnl(x); }
   });
   const monthEl = $('statsMonthly');
   if(monthEl){
@@ -4301,7 +4302,7 @@ function renderMoodStats(t){
     if(!mt.length) return null;
     const wins = mt.filter(x => x.result==='win').length;
     const wr   = mt.length ? wins/mt.length*100 : 0;
-    const pnl  = mt.reduce((s,x)=>(s+(x.pnl||0)),0);
+    const pnl  = mt.reduce((s,x)=>(s+nPnl(x)),0);
     const avgPnl = pnl / mt.length;
     return { ...m, n:mt.length, wr, pnl, avgPnl };
   }).filter(Boolean);
